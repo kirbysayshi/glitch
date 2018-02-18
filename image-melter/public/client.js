@@ -19,6 +19,12 @@ function imageToCanvas(image, opt_cvs, cb) {
   cb(null, cvs);
 }
 
+function makeCanvas() {
+  const cvs = document.createElement('canvas');
+  const ctx = cvs.getContext('2d');
+  return { cvs, ctx };
+}
+
 const melterInput = document.querySelector('#melter-input');
 melterInput.addEventListener('change', e => {
   e.stopPropagation();
@@ -29,9 +35,24 @@ melterInput.addEventListener('change', e => {
   });
 });
 
+function createSlice (ctx, sliceIdx, width) {
+  const slice = {
+    ...makeCanvas(),
+    sliceIdx,
+  }
+
+  slice.cvs.width = width;
+  slice.cvs.height = ctx.canvas.height;
+  slice.ctx.drawImage(ctx.canvas, 0, 0, 
+  
+  return {
+    
+  }
+}
+
 const initialWipeState = {
   inputCvs: null,
   slices: 10,
   ys: [],
-  max
+  maxStartOffset: 16, // pixels?
 };
