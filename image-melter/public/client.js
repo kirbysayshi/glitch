@@ -72,6 +72,12 @@ function reduceState(action, state=defaultState) {
       slices,
     }; 
   }
+    
+  if (action.type === 'RENDER_FRAME') {
+    // create a frame from a canvas copy
+    // if all ys === height, then just ignore?
+    // Or does this require a frame number as payload.
+  }
 }
 
 let AppState = {};
