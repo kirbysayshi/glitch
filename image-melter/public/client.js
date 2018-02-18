@@ -58,10 +58,12 @@ function reduceState(action, state=defaultState) {
   if (action.type === 'SLICE_COUNT_CHANGE') {
     const numSlices = action.payload;
     const slices = [];
-    const sliceWidth = state.inputCvs.width / numSlices;
+    const sliceWidth = (state.inputCvs ? state.inputCvs.width / numSlices : 0);
     
-    for (let i = 0; i < numSlices; i++) {
-      slices.push(createSlice(state.inputCvs, i, sliceWidth));
+    if (state.inputCvs) { 
+      for (let i = 0; i < numSlices; i++) {
+        slices.push(createSlice(state.inputCvs, i, sliceWidth));
+      }
     }
     
     return {
@@ -90,6 +92,8 @@ melterInput.addEventListener('change', e => {
   
 const sliceCountInput = document.querySelector('#melter-slice-count');
 sliceCountInput.addEventListener('change', e => {
-  e.stopPropagation();
+  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: e.target.value });
+});
+sliceCountInput.addEventListener('keyup', e => {
   dispatch({ type: 'SLICE_COUNT_CHANGE', payload: e.target.value });
 });
