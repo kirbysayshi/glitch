@@ -40,12 +40,8 @@ function createSlice (cvs, sliceIdx, width) {
   
   return slice;
 }
-  
-function initWipeState(state, cvs) {
-  
-}
 
-const defaultWipeState = {
+const defaultState = {
   inputCvs: null,
   numSlices: 10,
   slices: [],
@@ -53,19 +49,47 @@ const defaultWipeState = {
   maxStartOffset: 16, // pixels?
 };
   
+  
+function reduceState(action, state=defaultState) {
+  if (action.type === 'IMAGE_LOAD') {
+    return { ...state, inputCvs: action.payload };
+  }
+  
+  if (action.type === 'SLICE_COUNT_CHANGE') {
+    const numSlices = action.payload;
+    const slices = [];
+    const sliceWidth = state.inputCvs.width / numSlices;
+    
+    for (let i = 0; i < numSlices; i++) {
+      slices.push(createSlice(state.inputCvs, i, sliceWidth));
+    }
+    
+    return {
+      ...state,
+      numSlices,
+      slices,
+    }; 
+  }
+}
+
+let AppState = {};
+function dispatch(action) {
+  AppState = reduceState(action, AppState);
+  console.log('next state', AppState);
+}
+  
 const melterInput = document.querySelector('#melter-input');
 melterInput.addEventListener('change', e => {
   e.stopPropagation();
   fileToImage(e.target.files[0], (err, img) => {
     imageToCanvas(img, (err, cvs) => {
-      console.log(cvs);
-      
-      const state = {
-        ...defaultWipeState,  
-      };
-      
-      const slice = createSlice(cvs, 2, cvs.width / 20);
-      console.log(slice);
+      dispatch({ type: 'IMAGE_LOAD', payload: cvs });
     });
   });
+});
+  
+const sliceCountInput = document.querySelector('#melter-slice-count');
+sliceCountInput.addEventListener('change', e => {
+  e.stopPropagation();
+  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: e.target.value });
 });
