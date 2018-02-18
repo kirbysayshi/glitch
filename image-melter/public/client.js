@@ -92,8 +92,8 @@ melterInput.addEventListener('change', e => {
   
 const sliceCountInput = document.querySelector('#melter-slice-count');
 sliceCountInput.addEventListener('change', e => {
-  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: e.target.value });
+  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(e.target.value, 10) });
 });
 sliceCountInput.addEventListener('keyup', e => {
-  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: e.target.value });
+  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(e.target.value, 10) });
 });
