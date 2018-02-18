@@ -1,1 +1,28 @@
+function fileToImage(file, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(file);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  }
+  img.src = url;
+}
 
+function imageToCanvas(image, opt_cvs, cb) {
+  if (!cb) { cb = opt_cvs; opt_cvs = null; }
+  var cvs = opt_cvs || document.createElement('canvas');
+  var ctx = cvs.getContext('2d');
+  cvs.width = image.width;
+  cvs.height = image.height;
+  ctx.drawImage(image, 0, 0);
+  cb(null, cvs);
+}
+
+const melterInput = document.querySelector('#melter-input');
+melterInput.addEventListener('change', e => {
+  e.stopPropagation();
+  fileToImage(e.target.files[0], (err, img) => {
+    imageToCanvas(
+  });
+});
