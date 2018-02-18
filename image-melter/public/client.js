@@ -23,6 +23,15 @@ const melterInput = document.querySelector('#melter-input');
 melterInput.addEventListener('change', e => {
   e.stopPropagation();
   fileToImage(e.target.files[0], (err, img) => {
-    imageToCanvas(
+    imageToCanvas(img, (err, cvs) => {
+      console.log(cvs);
+    });
   });
 });
+
+const initialWipeState = {
+  inputCvs: null,
+  slices: 10,
+  ys: [],
+  max
+};
