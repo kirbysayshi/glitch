@@ -47,6 +47,19 @@ function createSlice (cvs, sliceIdx, width) {
   return slice;
 }
 
+function createFrame (inputCvs,  slices, frameNum) {
+  const { cvs, ctx } = makeCanvas();
+  cvs.height = inputCvs.height;
+  cvs.width = inputCvs.width;
+  
+  for (let i = 0; i < slices.length; i++) {
+    const slice = slices[i];
+    const y = 
+  }
+  
+  return cvs;
+}
+
 const defaultState = {
   inputCvs: null,
   numSlices: 10,
@@ -67,27 +80,30 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'SLICE_COUNT_CHANGE') {
-    const numSlices = action.payload;
-    const slices = [];
-    const sliceWidth = (state.inputCvs ? state.inputCvs.width / numSlices : 0);
-    
-    if (state.inputCvs) { 
-      for (let i = 0; i < numSlices; i++) {
-        slices.push(createSlice(state.inputCvs, i, sliceWidth));
-      }
-    }
-    
-    return {
-      ...state,
-      numSlices,
-      slices,
-    }; 
+    return { ...state, numSlices: action.payload };
   }
     
-  if (action.type === 'RENDER_FRAME') {
+  if (action.type === 'RENDER_FRAMES') {
     // create a frame from a canvas copy
     // if all ys === height, then just ignore?
     // Or does this require a frame number as payload.
+    
+    if (!state.inputCvs) return state;
+    
+    // create slices
+    const slices = [];
+    const sliceWidth = state.inputCvs.width / state.numSlices;
+    
+    for (let i = 0; i < state.numSlices; i++) {
+      slices.push(createSlice(state.inputCvs, i, sliceWidth));
+    }
+  
+    // create frames
+    const frames = [];
+    const frameCount = Math.ceil(state.inputCvs.height / state.verticalInc);
+    for (let i = 0; i < frameCount; i++) {
+      
+    }
   }
 }
 
