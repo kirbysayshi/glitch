@@ -51,6 +51,8 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   const { cvs, ctx } = makeCanvas();
   cvs.height = inputCvs.height;
   cvs.width = inputCvs.width;
+
+  ctx.fillStyle = '#fff';
   
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
@@ -58,11 +60,21 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
     // otherwise copy the slice appropriately!
-    ctx.
-    ctx.fillRect(
+    
+    const sx = 0;
+    const sy = 0;
+    const swidth = slice.cvs.width;
+    const sheight = slice.cvs.height;
+    
+    const dx = slice.idx * slice.cvs.width;
+    const dy = y < 0 ? 0 : y;
+    const dwidth = slice.cvs.width;
+    const dheight = slice.cvs.height;
+    
+    ctx.fillRect(dx, 0, dwidth, dheight);
     ctx.drawImage(slice.cvs,
-      0, 0, slice.cvs.width, slice.cvs.height,
-      slice.idx * slice.cvs.width, y < 0 ? 0 : y, slice.cvs.width, slice.cvs.height
+      sx, sy, swidth, sheight,
+      dx, dy, dwidth, dheight
     );
   }
   
@@ -75,6 +87,7 @@ const defaultState = {
   frames: [],
   maxStartOffset: 16, // pixels?
   verticalInc: 10,
+  renderingGif: false,
   
   animation: {
     frameIdx: 0,
@@ -127,7 +140,11 @@ function reduceState(action, state=defaultState) {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
     }
     
-    return { ...state, frames };
+    return { ...state, renderingGif: true, frames };
+  }
+  
+  if (action.type === 'GIF_COMPLETED') {
+    return { ...state, renderingGif: false };
   }
   
 //   if (action.type === 'INIT_ANIMATE_FRAMES') {
@@ -178,6 +195,9 @@ onInputChangeReadValue('#melter-max-start-offset', value => {
 });  
 
 document.querySelector('#melter-render').addEventListener('click', e => {
+  
+  if (AppState.renderingGif) return;
+  
   dispatch({ type: 'RENDER_FRAMES' });
   
   const gifComplete = (obj) => {
@@ -193,7 +213,7 @@ document.querySelector('#melter-render').addEventListener('click', e => {
     'images': [...AppState.frames],
     gifWidth: AppState.inputCvs.width,
     gifHeight: AppState.inputCvs.height,
-    frameDuration: 1,
+    frameDuration: 0.5,
     progressCallback: (progress) => { console.log({ progress }) },
   }, gifComplete);
   
