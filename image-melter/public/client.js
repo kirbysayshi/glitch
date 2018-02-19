@@ -58,6 +58,8 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
     // otherwise copy the slice appropriately!
+    ctx.
+    ctx.fillRect(
     ctx.drawImage(slice.cvs,
       0, 0, slice.cvs.width, slice.cvs.height,
       slice.idx * slice.cvs.width, y < 0 ? 0 : y, slice.cvs.width, slice.cvs.height
@@ -128,21 +130,21 @@ function reduceState(action, state=defaultState) {
     return { ...state, frames };
   }
   
-  if (action.type === 'INIT_ANIMATE_FRAMES') {
-    const { cvs, ctx } = makeCanvas();
-    cvs.width = state.inputCvs.width;
-    cvs.height = state.inputCvs.height;
+//   if (action.type === 'INIT_ANIMATE_FRAMES') {
+//     const { cvs, ctx } = makeCanvas();
+//     cvs.width = state.inputCvs.width;
+//     cvs.height = state.inputCvs.height;
     
-    return {
-      ...state,
-      animation: {
-        ...state.animation,
-        cvs: cvs,
-        rendering: true,
-        frameIdx: 0
-      }
-    }
-  }
+//     return {
+//       ...state,
+//       animation: {
+//         ...state.animation,
+//         cvs: cvs,
+//         rendering: true,
+//         frameIdx: 0
+//       }
+//     }
+//   }
   
   return state;
 }
@@ -178,15 +180,32 @@ onInputChangeReadValue('#melter-max-start-offset', value => {
 document.querySelector('#melter-render').addEventListener('click', e => {
   dispatch({ type: 'RENDER_FRAMES' });
   
+  const gifComplete = (obj) => {
+    if(!obj.error) {
+      var image = obj.image,
+      animatedImage = document.createElement('img');
+      animatedImage.src = image;
+      document.body.appendChild(animatedImage);
+    }
+  }
+  
+  window.gifshot.createGIF({
+    'images': [...AppState.frames],
+    gifWidth: AppState.inputCvs.width,
+    gifHeight: AppState.inputCvs.height,
+    frameDuration: 1,
+    progressCallback: (progress) => { console.log({ progress }) },
+  }, gifComplete);
+  
   // AppState.frames.forEach(frame => {
   //   frame.style.display = 'block';
   //   document.body.append(frame);
   // });
 });
 
-(function animator(dt) {
-  if (AppState.animation.rendering && AppState.animation.cvs) {
+// (function animator(dt) {
+//   if (AppState && AppState.animation.rendering && AppState.animation.cvs) {
     
-  }
-  window.requestAnimationFrame(animator);
-}())
+//   }
+//   window.requestAnimationFrame(animator);
+// }());
