@@ -64,6 +64,9 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   cvs.width = inputCvs.width;
 
   ctx.fillStyle = '#fff';
+  // TODO: should there be a background color?
+  // Or just the original image for loop effect?
+  ctx.drawImage(inputCvs, 0, 0);
   
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
@@ -82,7 +85,6 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const dwidth = slice.cvs.width;
     const dheight = slice.cvs.height;
     
-    //ctx.fillRect(dx, 0, dwidth, dheight);
     ctx.drawImage(slice.cvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
@@ -124,19 +126,9 @@ function reduceState(action, state=defaultState) {
     
     // create slices
     const slices = [];
-//     const inputWidth = state.inputCvs.width;
-//     const desiredSlices = state.numSlices;
-//     const minSliceWidth = 1;
-//     let sliceCount = state.numSlices;
-    
-//     while( inputWidth % sliceCount !== 0 ) {
-      
-//     }
-    
     const desiredSlices = state.numSlices;
     const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
     const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-    
     for (let i = 0; i < actualNumSlices; i++) {
       slices.push(createSlice(state.inputCvs, i, sliceWidth));
     }
@@ -242,6 +234,8 @@ document.querySelector('#melter-render').addEventListener('click', e => {
   
   dispatch({ type: 'RENDER_FRAMES' });
   
+  // TODO: tell the user this is done and that GIF processing is starting!
+  
   var gif = new window.GIF({
     workerScript: 'gif/gif.worker.js',
     workers: 2,
@@ -266,10 +260,3 @@ document.querySelector('#melter-render').addEventListener('click', e => {
 
   gif.render();
 });
-
-// (function animator(dt) {
-//   if (AppState && AppState.animation.rendering && AppState.animation.cvs) {
-    
-//   }
-//   window.requestAnimationFrame(animator);
-// }());
