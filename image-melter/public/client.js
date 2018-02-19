@@ -73,6 +73,12 @@ const defaultState = {
   frames: [],
   maxStartOffset: 16, // pixels?
   verticalInc: 10,
+  
+  animation: {
+    frameIdx: 0,
+    rendering: false,
+    cvs: null,
+  }
 };
   
   
@@ -115,11 +121,27 @@ function reduceState(action, state=defaultState) {
     const frames = [];
     const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
     const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    for (let i = 0; i < frameCount; i++) {
+    for (let i = 0; i <= frameCount; i++) {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
     }
     
     return { ...state, frames };
+  }
+  
+  if (action.type === 'INIT_ANIMATE_FRAMES') {
+    const { cvs, ctx } = makeCanvas();
+    cvs.width = state.inputCvs.width;
+    cvs.height = state.inputCvs.height;
+    
+    return {
+      ...state,
+      animation: {
+        ...state.animation,
+        cvs: cvs,
+        rendering: true,
+        frameIdx: 0
+      }
+    }
   }
   
   return state;
@@ -156,8 +178,15 @@ onInputChangeReadValue('#melter-max-start-offset', value => {
 document.querySelector('#melter-render').addEventListener('click', e => {
   dispatch({ type: 'RENDER_FRAMES' });
   
-  AppState.frames.forEach(frame => {
-    frame.style.display = 'block';
-    document.body.append(frame);
-  })
+  // AppState.frames.forEach(frame => {
+  //   frame.style.display = 'block';
+  //   document.body.append(frame);
+  // });
 });
+
+(function animator(dt) {
+  if (AppState.animation.rendering && AppState.animation.cvs) {
+    
+  }
+  window.requestAnimationFrame(animator);
+}())
