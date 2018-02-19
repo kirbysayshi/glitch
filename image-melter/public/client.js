@@ -124,6 +124,10 @@ function reduceState(action, state=defaultState) {
     
     // create slices
     const slices = [];
+    const inputWidth = state.inputCvs.width;
+    const desiredSliced = state.numSlices;
+    const minSliceWidth = 1;
+    for (let i = 1; 
     const sliceWidth = state.inputCvs.width / state.numSlices;
     
     for (let i = 0; i < state.numSlices; i++) {
@@ -239,7 +243,6 @@ document.querySelector('#melter-render').addEventListener('click', e => {
 
   AppState.frames.forEach(frame => {
     gif.addFrame(frame, { delay: 16 });
-    
   });
   
   gif.on('finished', function(blob) {
@@ -247,6 +250,10 @@ document.querySelector('#melter-render').addEventListener('click', e => {
     // window.open(URL.createObjectURL(blob));
     blobToImage(blob, (err, img) => {
       document.body.appendChild(img);
+      AppState.frames.forEach(frame => {
+        frame.style.display = 'block';
+        document.body.appendChild(frame);
+      });
     })
   });
 
