@@ -66,7 +66,7 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  ctx.drawImage(inputCvs, 0, 0);
+  // ctx.drawImage(inputCvs, 0, 0);
   
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
@@ -106,6 +106,7 @@ const defaultState = {
   
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
+    // TODO: use inputCvs.width to set a good initial slice count
     return { ...state, inputCvs: action.payload };
   }
   
@@ -251,10 +252,10 @@ document.querySelector('#melter-render').addEventListener('click', e => {
     // window.open(URL.createObjectURL(blob));
     blobToImage(blob, (err, img) => {
       document.body.appendChild(img);
-      AppState.frames.forEach(frame => {
-        frame.style.display = 'block';
-        document.body.appendChild(frame);
-      });
+      // AppState.frames.forEach(frame => {
+      //   frame.style.display = 'block';
+      //   document.body.appendChild(frame);
+      // });
     })
   });
 
