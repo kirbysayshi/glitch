@@ -60,7 +60,7 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     // otherwise copy the slice appropriately!
     ctx.drawImage(slice.cvs,
       0, 0, slice.cvs.width, slice.cvs.height,
-      slice.idx * slice.cvs.width, y, slice.cvs.width, slice.cvs.height
+      slice.idx * slice.cvs.width, y < 0 ? 0 : y, slice.cvs.width, slice.cvs.height
     );
   }
   
@@ -70,8 +70,7 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
 const defaultState = {
   inputCvs: null,
   numSlices: 10,
-  slices: [],
-  initialYs: [],
+  frames: [],
   maxStartOffset: 16, // pixels?
   verticalInc: 1,
 };
@@ -91,10 +90,6 @@ function reduceState(action, state=defaultState) {
   }
     
   if (action.type === 'RENDER_FRAMES') {
-    // create a frame from a canvas copy
-    // if all ys === height, then just ignore?
-    // Or does this require a frame number as payload.
-    
     if (!state.inputCvs) return state;
     
     // create slices
@@ -116,9 +111,10 @@ function reduceState(action, state=defaultState) {
     const frames = [];
     const frameCount = Math.ceil(state.inputCvs.height / state.verticalInc);
     for (let i = 0; i < frameCount; i++) {
-      // inputCvs, initialYs, verticalInc, slices, frameNum
-      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, )); 
+      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
     }
+    
+    return { ...state, frames };
   }
 }
 
@@ -145,3 +141,7 @@ onInputChangeReadValue('#melter-slice-count', value => {
 onInputChangeReadValue('#melter-vertical-inc', value => {
   dispatch({ type: 'VERTICAL_INC_CHANGE', payload: parseInt(value, 10) });
 });  
+
+document.querySelector('#melter-render').addEventListener('click', e => {
+  dispatch({ type: 'RENDER_FRAMES' });
+});
