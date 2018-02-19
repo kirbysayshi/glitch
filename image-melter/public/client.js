@@ -85,6 +85,10 @@ function reduceState(action, state=defaultState) {
     return { ...state, verticalInc: action.payload };
   }
   
+  if (action.type === 'MAX_START_OFFSET_CHANGE') {
+    return { ...state, maxStartOffset: action.payload };
+  }
+  
   if (action.type === 'SLICE_COUNT_CHANGE') {
     return { ...state, numSlices: action.payload };
   }
@@ -109,7 +113,8 @@ function reduceState(action, state=defaultState) {
   
     // create frames
     const frames = [];
-    const frameCount = Math.ceil(state.inputCvs.height / state.verticalInc);
+    const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
+    const frameCount = Math.ceil(maxYTravel / state.verticalInc);
     for (let i = 0; i < frameCount; i++) {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
     }
@@ -142,8 +147,17 @@ onInputChangeReadValue('#melter-slice-count', value => {
   
 onInputChangeReadValue('#melter-vertical-inc', value => {
   dispatch({ type: 'VERTICAL_INC_CHANGE', payload: parseInt(value, 10) });
+});
+
+onInputChangeReadValue('#melter-max-start-offset', value => {
+  dispatch({ type: 'MAX_START_OFFSET_CHANGE', payload: parseInt(value, 10) });
 });  
 
 document.querySelector('#melter-render').addEventListener('click', e => {
   dispatch({ type: 'RENDER_FRAMES' });
+  
+  AppState.frames.forEach(frame => {
+    frame.style.display = 'block';
+    document.body.append(frame);
+  })
 });
