@@ -124,19 +124,26 @@ function reduceState(action, state=defaultState) {
     
     // create slices
     const slices = [];
-    const inputWidth = state.inputCvs.width;
-    const desiredSliced = state.numSlices;
-    const minSliceWidth = 1;
-    for (let i = 1; 
-    const sliceWidth = state.inputCvs.width / state.numSlices;
+//     const inputWidth = state.inputCvs.width;
+//     const desiredSlices = state.numSlices;
+//     const minSliceWidth = 1;
+//     let sliceCount = state.numSlices;
     
-    for (let i = 0; i < state.numSlices; i++) {
+//     while( inputWidth % sliceCount !== 0 ) {
+      
+//     }
+    
+    const desiredSlices = state.numSlices;
+    const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
+    const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+    
+    for (let i = 0; i < actualNumSlices; i++) {
       slices.push(createSlice(state.inputCvs, i, sliceWidth));
     }
     
     // create initial ys
     const initialYs = [];
-    for (let i = 0; i < state.numSlices; i++) {
+    for (let i = 0; i < actualNumSlices; i++) {
       const r = Math.floor(Math.random() * 256);
       initialYs.push(-r % state.maxStartOffset);
     }
