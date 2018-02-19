@@ -82,7 +82,7 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const dwidth = slice.cvs.width;
     const dheight = slice.cvs.height;
     
-    ctx.fillRect(dx, 0, dwidth, dheight);
+    //ctx.fillRect(dx, 0, dwidth, dheight);
     ctx.drawImage(slice.cvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
@@ -94,9 +94,9 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
 
 const defaultState = {
   inputCvs: null,
-  numSlices: 10,
+  numSlices: 400,
   frames: [],
-  maxStartOffset: 16, // pixels?
+  maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingGif: false,
 };
@@ -157,12 +157,34 @@ function reduceState(action, state=defaultState) {
 
 const doms = [
   {
-    el: () => document.querySelector('#melter-slice-count'),
-    select: (state) => state.numSlices,
-    update: (el, state) => el.setAttribute('value', state),
-    dispatch: (value) => ({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(value, 10) }),
+    el: () => document.querySelector("#melter-slice-count"),
+    select: state => state.numSlices,
+    update: (el, state) => el.setAttribute("value", state),
+    dispatch: value => ({
+      type: "SLICE_COUNT_CHANGE",
+      payload: parseInt(value, 10)
+    })
+  },
+  {
+    el: () => document.querySelector("#melter-vertical-inc"),
+    select: state => state.verticalInc,
+    update: (el, state) => el.setAttribute("value", state),
+    dispatch: value => ({
+      type: "VERTICAL_INC_CHANGE",
+      payload: parseInt(value, 10)
+    })
+  },
+  {
+    el: () => document.querySelector("#melter-max-start-offset"),
+    select: state => state.maxStartOffset,
+    update: (el, state) => el.setAttribute("value", state),
+    dispatch: value => ({
+      type: "MAX_START_OFFSET_CHANGE",
+      payload: parseInt(value, 10)
+    })
   }
 ];
+
 
 doms.forEach(desc => {
   const el = desc.el();
@@ -170,8 +192,8 @@ doms.forEach(desc => {
     e.stopPropagation();
     dispatch(desc.dispatch(e.target.value));
   }
-  el.addEventListener('change', e => handleUpdate);
-  el.addEventListener('keyup', e => handleUpdate);
+  el.addEventListener('change', e => handleUpdate(e));
+  el.addEventListener('keyup', e => handleUpdate(e));
 });
 
 let AppState;
@@ -182,14 +204,16 @@ function dispatch(action) {
   
   if (curr === AppState) return;
   
-  // Do the bindings!
+  // Update the bindings!
  
   doms.forEach(desc => {
     const el = desc.el();
-    const value = desc.select();
-    d
-  })
+    const value = desc.select(AppState);
+    desc.update(el, value);
+  });
 }
+
+dispatch({ type: '@@BOOT@@' });
 
 const melterInput = document.querySelector('#melter-input');
 melterInput.addEventListener('change', e => {
@@ -200,18 +224,6 @@ melterInput.addEventListener('change', e => {
     });
   });
 });
-
-onInputChangeReadValue('#melter-slice-count', value => {
-  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(value, 10) });
-});
-  
-onInputChangeReadValue('#melter-vertical-inc', value => {
-  dispatch({ type: 'VERTICAL_INC_CHANGE', payload: parseInt(value, 10) });
-});
-
-onInputChangeReadValue('#melter-max-start-offset', value => {
-  dispatch({ type: 'MAX_START_OFFSET_CHANGE', payload: parseInt(value, 10) });
-});  
 
 document.querySelector('#melter-render').addEventListener('click', e => {
   
