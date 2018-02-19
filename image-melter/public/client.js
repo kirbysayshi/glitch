@@ -19,6 +19,17 @@ function imageToCanvas(image, opt_cvs, cb) {
   cb(null, cvs);
 }
 
+function blobToImage(blob, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(blob);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  }
+  img.src = url;
+}
+
 function makeCanvas() {
   const cvs = document.createElement('canvas');
   const ctx = cvs.getContext('2d');
@@ -88,12 +99,6 @@ const defaultState = {
   maxStartOffset: 16, // pixels?
   verticalInc: 10,
   renderingGif: false,
-  
-  animation: {
-    frameIdx: 0,
-    rendering: false,
-    cvs: null,
-  }
 };
   
   
@@ -147,29 +152,23 @@ function reduceState(action, state=defaultState) {
     return { ...state, renderingGif: false };
   }
   
-//   if (action.type === 'INIT_ANIMATE_FRAMES') {
-//     const { cvs, ctx } = makeCanvas();
-//     cvs.width = state.inputCvs.width;
-//     cvs.height = state.inputCvs.height;
-    
-//     return {
-//       ...state,
-//       animation: {
-//         ...state.animation,
-//         cvs: cvs,
-//         rendering: true,
-//         frameIdx: 0
-//       }
-//     }
-//   }
-  
   return state;
 }
 
+const doms = [
+  { s: '',
+]
+
 let AppState;
 function dispatch(action) {
-  AppState = reduceState(action, AppState);
+  let curr = AppState;
+  AppState = reduceState(action, curr);
   console.log('next state', AppState);
+  
+  if (curr === AppState) return;
+  
+  // Do the bindings!
+  
 }
 
 const melterInput = document.querySelector('#melter-input');
@@ -200,49 +199,26 @@ document.querySelector('#melter-render').addEventListener('click', e => {
   
   dispatch({ type: 'RENDER_FRAMES' });
   
-  var gif = new GIF({
-  workers: 2,
-  quality: 10
-});
+  var gif = new window.GIF({
+    workerScript: 'gif/gif.worker.js',
+    workers: 2,
+    quality: 10
+  });
 
-// add an image element
-gif.addFrame(imageElement);
-
-// or a canvas element
-gif.addFrame(canvasElement, {delay: 200});
-
-// or copy the pixels from a canvas context
-gif.addFrame(ctx, {copy: true});
-
-gif.on('finished', function(blob) {
-  window.open(URL.createObjectURL(blob));
-});
-
-gif.render();
-  
-//   const gifComplete = (obj) => {
-//     if(!obj.error) {
-//       var image = obj.image,
-//       animatedImage = document.createElement('img');
-//       animatedImage.src = image;
-//       document.body.appendChild(animatedImage);
-//     }
+  AppState.frames.forEach(frame => {
+    gif.addFrame(frame, { delay: 16 });
     
-//     dispatch({ type: 'GIF_COMPLETED' });
-//   }
+  });
   
-//   window.gifshot.createGIF({
-//     'images': [...AppState.frames],
-//     gifWidth: AppState.inputCvs.width,
-//     gifHeight: AppState.inputCvs.height,
-//     frameDuration: 0.5,
-//     progressCallback: (progress) => { console.log({ progress }) },
-//   }, gifComplete);
-  
-  // AppState.frames.forEach(frame => {
-  //   frame.style.display = 'block';
-  //   document.body.append(frame);
-  // });
+  gif.on('finished', function(blob) {
+    dispatch({ type: 'GIF_COMPLETED' });
+    // window.open(URL.createObjectURL(blob));
+    blobToImage(blob, (err, img) => {
+      document.body.appendChild(img);
+    })
+  });
+
+  gif.render();
 });
 
 // (function animator(dt) {
