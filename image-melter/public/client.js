@@ -25,6 +25,12 @@ function makeCanvas() {
   return { cvs, ctx };
 }
 
+function onInputChangeReadValue(id, cb) {
+  const input = document.querySelector(id);
+  input.addEventListener('change', e => { e.stopPropagation(); cb(e.target.value) });
+  input.addEventListener('keyup', e => { e.stopPropagation(); cb(e.target.value) });
+}
+
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
     ...makeCanvas(),
@@ -47,12 +53,17 @@ const defaultState = {
   slices: [],
   ys: [],
   maxStartOffset: 16, // pixels?
+  verticalInc: 1,
 };
   
   
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
     return { ...state, inputCvs: action.payload };
+  }
+  
+  if (action.type === 'VERTICAL_INC_CHANGE') {
+    return { ...state, verticalInc: action.payload };
   }
   
   if (action.type === 'SLICE_COUNT_CHANGE') {
@@ -85,7 +96,7 @@ function dispatch(action) {
   AppState = reduceState(action, AppState);
   console.log('next state', AppState);
 }
-  
+
 const melterInput = document.querySelector('#melter-input');
 melterInput.addEventListener('change', e => {
   e.stopPropagation();
@@ -95,11 +106,11 @@ melterInput.addEventListener('change', e => {
     });
   });
 });
+
+onInputChangeReadValue('#melter-slice-count', value => {
+  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(value, 10) });
+});
   
-const sliceCountInput = document.querySelector('#melter-slice-count');
-sliceCountInput.addEventListener('change', e => {
-  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(e.target.value, 10) });
-});
-sliceCountInput.addEventListener('keyup', e => {
-  dispatch({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(e.target.value, 10) });
-});
+onInputChangeReadValue('#melter-vertical-inc', value => {
+  dispatch({ type: 'VERTICAL_INC_CHANGE', payload: parseInt(value, 10) });
+});  
