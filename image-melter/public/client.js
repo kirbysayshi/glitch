@@ -36,12 +36,6 @@ function makeCanvas() {
   return { cvs, ctx };
 }
 
-function onInputChangeReadValue(id, cb) {
-  const input = document.querySelector(id);
-  input.addEventListener('change', e => { e.stopPropagation(); cb(e.target.value) });
-  input.addEventListener('keyup', e => { e.stopPropagation(); cb(e.target.value) });
-}
-
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
     ...makeCanvas(),
@@ -73,7 +67,6 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const initialY = initialYs[i];
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
-    // otherwise copy the slice appropriately!
     
     const sx = 0;
     const sy = 0;
@@ -189,7 +182,7 @@ const doms = [
   }
 ];
 
-
+// Initial Event Binding
 doms.forEach(desc => {
   const el = desc.el();
   const handleUpdate = (e) => {
@@ -208,7 +201,7 @@ function dispatch(action) {
   
   if (curr === AppState) return;
   
-  // Update the bindings!
+  // Update the "bindings"!
  
   doms.forEach(desc => {
     const el = desc.el();
@@ -217,6 +210,7 @@ function dispatch(action) {
   });
 }
 
+// Make sure we have a good initial state.
 dispatch({ type: '@@BOOT@@' });
 
 const melterInput = document.querySelector('#melter-input');
