@@ -156,8 +156,23 @@ function reduceState(action, state=defaultState) {
 }
 
 const doms = [
-  { s: '',
-]
+  {
+    el: () => document.querySelector('#melter-slice-count'),
+    select: (state) => state.numSlices,
+    update: (el, state) => el.setAttribute('value', state),
+    dispatch: (value) => ({ type: 'SLICE_COUNT_CHANGE', payload: parseInt(value, 10) }),
+  }
+];
+
+doms.forEach(desc => {
+  const el = desc.el();
+  const handleUpdate = (e) => {
+    e.stopPropagation();
+    dispatch(desc.dispatch(e.target.value));
+  }
+  el.addEventListener('change', e => handleUpdate);
+  el.addEventListener('keyup', e => handleUpdate);
+});
 
 let AppState;
 function dispatch(action) {
@@ -168,7 +183,12 @@ function dispatch(action) {
   if (curr === AppState) return;
   
   // Do the bindings!
-  
+ 
+  doms.forEach(desc => {
+    const el = desc.el();
+    const value = desc.select();
+    d
+  })
 }
 
 const melterInput = document.querySelector('#melter-input');
