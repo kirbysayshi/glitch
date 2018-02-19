@@ -200,22 +200,44 @@ document.querySelector('#melter-render').addEventListener('click', e => {
   
   dispatch({ type: 'RENDER_FRAMES' });
   
-  const gifComplete = (obj) => {
-    if(!obj.error) {
-      var image = obj.image,
-      animatedImage = document.createElement('img');
-      animatedImage.src = image;
-      document.body.appendChild(animatedImage);
-    }
-  }
+  var gif = new GIF({
+  workers: 2,
+  quality: 10
+});
+
+// add an image element
+gif.addFrame(imageElement);
+
+// or a canvas element
+gif.addFrame(canvasElement, {delay: 200});
+
+// or copy the pixels from a canvas context
+gif.addFrame(ctx, {copy: true});
+
+gif.on('finished', function(blob) {
+  window.open(URL.createObjectURL(blob));
+});
+
+gif.render();
   
-  window.gifshot.createGIF({
-    'images': [...AppState.frames],
-    gifWidth: AppState.inputCvs.width,
-    gifHeight: AppState.inputCvs.height,
-    frameDuration: 0.5,
-    progressCallback: (progress) => { console.log({ progress }) },
-  }, gifComplete);
+//   const gifComplete = (obj) => {
+//     if(!obj.error) {
+//       var image = obj.image,
+//       animatedImage = document.createElement('img');
+//       animatedImage.src = image;
+//       document.body.appendChild(animatedImage);
+//     }
+    
+//     dispatch({ type: 'GIF_COMPLETED' });
+//   }
+  
+//   window.gifshot.createGIF({
+//     'images': [...AppState.frames],
+//     gifWidth: AppState.inputCvs.width,
+//     gifHeight: AppState.inputCvs.height,
+//     frameDuration: 0.5,
+//     progressCallback: (progress) => { console.log({ progress }) },
+//   }, gifComplete);
   
   // AppState.frames.forEach(frame => {
   //   frame.style.display = 'block';
