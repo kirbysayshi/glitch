@@ -34,7 +34,7 @@ function onInputChangeReadValue(id, cb) {
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
     ...makeCanvas(),
-    sliceIdx,
+    idx: sliceIdx,
   }
 
   slice.cvs.width = width;
@@ -47,14 +47,21 @@ function createSlice (cvs, sliceIdx, width) {
   return slice;
 }
 
-function createFrame (inputCvs,  slices, frameNum) {
+function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   const { cvs, ctx } = makeCanvas();
   cvs.height = inputCvs.height;
   cvs.width = inputCvs.width;
   
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
-    const y = 
+    const initialY = initialYs[i];
+    const y = initialY + (verticalInc * frameNum);
+    if (y > inputCvs.height) continue; // this slice is done
+    // otherwise copy the slice appropriately!
+    ctx.drawImage(slice.cvs,
+      0, 0, slice.cvs.width, slice.cvs.height,
+      slice.idx * slice.cvs.width, y, slice.cvs.width, slice.cvs.height
+    );
   }
   
   return cvs;
@@ -64,7 +71,7 @@ const defaultState = {
   inputCvs: null,
   numSlices: 10,
   slices: [],
-  ys: [],
+  initialYs: [],
   maxStartOffset: 16, // pixels?
   verticalInc: 1,
 };
@@ -97,12 +104,20 @@ function reduceState(action, state=defaultState) {
     for (let i = 0; i < state.numSlices; i++) {
       slices.push(createSlice(state.inputCvs, i, sliceWidth));
     }
+    
+    // create initial ys
+    const initialYs = [];
+    for (let i = 0; i < state.numSlices; i++) {
+      const r = Math.floor(Math.random() * 256);
+      initialYs.push(-r % state.maxStartOffset);
+    }
   
     // create frames
     const frames = [];
     const frameCount = Math.ceil(state.inputCvs.height / state.verticalInc);
     for (let i = 0; i < frameCount; i++) {
-      
+      // inputCvs, initialYs, verticalInc, slices, frameNum
+      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, )); 
     }
   }
 }
