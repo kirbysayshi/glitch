@@ -152,9 +152,12 @@ function reduceState(action, state=defaultState) {
   return state;
 }
 
+const bind
+
 const doms = [
   {
     el: () => document.querySelector("#melter-slice-count"),
+    mounted: () => 
     select: state => state.numSlices,
     update: (el, state) => el.setAttribute("value", state),
     dispatch: value => ({
@@ -245,7 +248,8 @@ document.querySelector('#melter-render').addEventListener('click', e => {
     dispatch({ type: 'GIF_COMPLETED' });
     // window.open(URL.createObjectURL(blob));
     blobToImage(blob, (err, img) => {
-      document.body.appendChild(img);
+      const dest = document.querySelector('#melter-render-output');
+      dest.appendChild(img);
       // AppState.frames.forEach(frame => {
       //   frame.style.display = 'block';
       //   document.body.appendChild(frame);

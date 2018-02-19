@@ -17,24 +17,26 @@
     </header>
 
     <main>
-      <p>DOOM and <a href="https://www.youtube.com/watch?v=4Xe6leSt_dU">Castlevania</a> both used a very specific transition effect:
+      <p>DOOM and <a href="https://www.youtube.com/watch?v=4Xe6leSt_dU">Castlevania: Symphony of the Night</a>
+        both used a very specific transition effect:
         the <a href="http://doom.wikia.com/wiki/Screen_melt">screen melt</a> or screen wipe.
       </p>
+      <p>
+        Now, you too can wield this powerful effect!
+      </p>
       <aside>
-        <img src="">
-
+        <img alt="DOOM Screen melt effect transitioning from the title screen to the first level"
+             src="https://vignette.wikia.nocookie.net/doom/images/0/04/Screen_melt.gif/revision/latest?cb=20100614021739">
       </aside>
       <form>
         <input id="melter-input" type="file">
         <label>Slices<input id="melter-slice-count" type="text" value="256"></label>
         <label>Vertical Increment<input id="melter-vertical-inc" type="text" value="10"></label>
         <label>Maximum Start Offset<input id="melter-max-start-offset" type="text" value="16"></label>
-        
         <input id="melter-render" type="button" value="Render">
       </form>
-      <section class="dreams">
-        <ul id="dreams">
-        </ul>
+      <section>
+        <div id="melter-render-output"></div>
       </section>
     </main>
 
