@@ -72,7 +72,7 @@ const defaultState = {
   numSlices: 10,
   frames: [],
   maxStartOffset: 16, // pixels?
-  verticalInc: 1,
+  verticalInc: 10,
 };
   
   
@@ -116,9 +116,11 @@ function reduceState(action, state=defaultState) {
     
     return { ...state, frames };
   }
+  
+  return state;
 }
 
-let AppState = {};
+let AppState;
 function dispatch(action) {
   AppState = reduceState(action, AppState);
   console.log('next state', AppState);
