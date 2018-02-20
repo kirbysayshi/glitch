@@ -1,4 +1,16 @@
-c
+class Component {
+  
+  onMount (el) {}
+  reconcile (el, state) {}
+  render() {}
+}
+
+class LabeledInput extends Component {
+  
+  render () {
+    return   
+  }
+}
 
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
