@@ -163,7 +163,7 @@ class LabeledInput {
     this.el.setAttribute("value", state);
   }
   
-  bindEvents () {
+  mounted () {
     const { el } = this;
     const handleUpdate = (e) => {
       e.stopPropagation();
@@ -174,18 +174,25 @@ class LabeledInput {
   }
 }
 
-const LabeledInput = domd(() => {
-  
-});
-
-const bindUpdateEvents = (desc) => {
-  const el = desc.el();
-  const handleUpdate = (e) => {
-    e.stopPropagation();
-    dispatch(desc.dispatch(e.target.value));
+const labeledInput = (id, selector, action) => {
+  return {
+    el: () => document.querySelector(id),
+    mounted: (desc) => {
+      const el = desc.el();
+      const handleUpdate = (e) => {
+        e.stopPropagation();
+        dispatch(desc.dispatch(e.target.value));
+      }
+      el.addEventListener('change', e => handleUpdate(e));
+      el.addEventListener('keyup', e => handleUpdate(e));
+    }, 
+    select: selector,
+    update: (el, state) => el.setAttribute("value", state),
+    dispatch: value => ({
+      type: action,
+      payload: parseInt(value, 10)
+    })
   }
-  el.addEventListener('change', e => handleUpdate(e));
-  el.addEventListener('keyup', e => handleUpdate(e));
 }
 
 const sliceCount = new LabeledInput(
@@ -195,6 +202,7 @@ const sliceCount = new LabeledInput(
 );
 
 const doms = [
+  labeledInput(
   {
     el: () => document.querySelector("#melter-slice-count"),
     mounted: bindUpdateEvents, 
