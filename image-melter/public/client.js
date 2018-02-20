@@ -133,13 +133,12 @@ function reduceState(action, state=defaultState) {
     ];
     for (let i = 1; i < actualNumSlices; i++) {
       const prev = initialYs[i - 1];
-      const amount = Math.floor(Math.random() * 256) % (state.maxStartOffset / 3);
-      const dir =  > 0.5
-        ? 1
-        : -1;
-      const proposed = prev + dir;
-
-      const r = Math.min(Math.max(proposed, -state.maxStartOffset), 0);
+      const amount = Math.floor(Math.random() * 256) % 3;
+      const proposed = prev + amount;
+      let r;
+      if (proposed > 0) r = 0;
+      if (proposed 
+       = Math.min(Math.max(proposed, -state.maxStartOffset + 1), 0);
       initialYs.push(r);
     }
   
