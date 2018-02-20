@@ -128,22 +128,19 @@ function reduceState(action, state=defaultState) {
     }
     
     // create initial ys
-    const initialYs = [];
-    for (let i = 0; i < actualNumSlices; i++) {
-      if (i === 0) {
-        const r = Math.floor(Math.random() * 256);
-        initialYs.push(-r % state.maxStartOffset);
-      } else {
-        const prev = initialYs[i - 1];
-        const dir = Math.random() > 0.5
-          ? 1
-          : -1;
-        const proposed = prev + dir;
-        const r = proposed > state.maxStartOffset
-          ? state.maxStartOffset
-          : Math.min(proposed, 0);
-        initialYs.push(-r);
-      }
+    const initialYs = [
+      -Math.floor(Math.random() * 256) % state.maxStartOffset
+    ];
+    for (let i = 1; i < actualNumSlices; i++) {
+      const prev = initialYs[i - 1];
+      const amount = Math.floor(Math.random() * 256) % (state.maxStartOffset / 3);
+      const dir =  > 0.5
+        ? 1
+        : -1;
+      const proposed = prev + dir;
+
+      const r = Math.min(Math.max(proposed, -state.maxStartOffset), 0);
+      initialYs.push(r);
     }
   
     // create frames
