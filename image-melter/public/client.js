@@ -185,35 +185,46 @@ const labeledInput = (id, selector, action) => {
   }
 }
 
-var { h, Component } = window.preact;
-var hx = window.hyperx( (tag, props, kids=[]) => h(tag, props, ...kids) );
+// var { h, Component } = window.preact;
+// var hx = window.hyperx( (tag, props, kids=[]) => h(tag, props, ...kids) );
 
-const LabeledInput = ({ labelText, children, value, onChange }) => {
-  const readVal = (e) => onChange(e.target.value);
-  return (hx`
-    <label>${labelText}
-      <input
-        type="text"
-        value="${value}"
-        onchange=${readVal}
-        onkeyup=${readVal}
-      ></label>
-  `);
-}
+// const LabeledInput = ({ labelText, value, onChange }) => {
+//   const readVal = (e) => onChange(e.target.value);
+//   return (hx`
+//     <label>${labelText}
+//       <input
+//         type="text"
+//         value="${value}"
+//         onchange=${readVal}
+//         onkeyup=${readVal}
+//       ></label>
+//   `);
+// }
 
-class InputPanel extends Component {
-  constructor(props, context) {
-		super(props, context);
-  }
+// class InputPanel extends Component {
+//   constructor(props, context) {
+// 		super(props, context);
+//     this.state = {};
+//   }
   
-  render() {
-    return (hx`
-      ${LabeledInput()}
-    `);
-  }
-}
+//   render(props, state) {
+//     return (hx`
+//       <form>
+//       <input id="melter-input2" type="file">
+//       ${LabeledInput({
+//         labelText: 'Vertical Slices',
+//         value: 3333,
+//         onChange: (value) => dispatch({
+//           type: 'SLICE_COUNT_CHANGE',
+//           payload: parseInt(value, 10)
+//         })
+//       })}
+//       </form>
+//     `);
+//   }
+// }
 
-window.preact.render(h(LabeledInput), document.body);
+// window.preact.render(h(InputPanel), document.body);
 
 const doms = [
   labeledInput(
