@@ -1,10 +1,37 @@
 const o_o = (tagName, props, children) => {
   const _children = children || props;
   const _props = children ? props : {};
-  _children.forEach(child => {
+  return { _children, _props };
+}
+
+class Reconciler {
+
+  constructor(root) {
+    this._lastId = 0;
+    this.keys = new window.Map();
+    this.root = root;
     
-  });
-  return 
+    const makeKeys = (parentPath, child) => {
+      const key = this.keyFor(child);
+      let childPath = parentPath + '.' 
+      Array.from(child.childNodes).forEach(child => makeKeys(child));
+    }
+    
+    makeKeys(this.root);
+  }
+  
+  keyFor (element) {
+    let key = this.keys.get(element);
+    if (key) return key;
+    this.keys.set(element, this._lastId++);
+  }
+  
+  reconcile (inputTree, domTree) {
+  }
+}
+
+const reconcile = (inputTree, domTree) => {
+  
 }
 
 class Component {
