@@ -1,53 +1,3 @@
-const o_o = (tagName, props, children) => {
-  const _children = children || props;
-  const _props = children ? props : {};
-  return { _children, _props };
-}
-
-class Reconciler {
-
-  constructor(root) {
-    this._lastId = 0;
-    this.keys = new window.Map();
-    this.root = root;
-    
-    const makeKeys = (parentPath, child) => {
-      const key = this.keyFor(child);
-      let childPath = parentPath + '.' 
-      Array.from(child.childNodes).forEach(child => makeKeys(child));
-    }
-    
-    makeKeys(this.root);
-  }
-  
-  keyFor (element) {
-    let key = this.keys.get(element);
-    if (key) return key;
-    this.keys.set(element, this._lastId++);
-  }
-  
-  reconcile (inputTree, domTree) {
-  }
-}
-
-const reconcile = (inputTree, domTree) => {
-  
-}
-
-class Component {
-  
-  onMount (el) {}
-  reconcile (el, state) {}
-  render() {}
-}
-
-class LabeledInput extends Component {
-  
-  render () {
-    return o_o('label', [])
-  }
-}
-
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
@@ -202,6 +152,32 @@ function reduceState(action, state=defaultState) {
   return state;
 }
 
+class LabeledInput {
+  constructor (id, stateSelector, actionType) {
+    this.el = document.querySelector(id);
+    this.selector = stateSelector;
+    this.actionType = actionType;
+  }
+  
+  reconcile (state) {
+    this.el.setAttribute("value", state);
+  }
+  
+  bindEvents () {
+    const { el } = this;
+    const handleUpdate = (e) => {
+      e.stopPropagation();
+      dispatch({ type: this.actionType, payload: e.target.value });
+    }
+    el.addEventListener('change', e => handleUpdate(e));
+    el.addEventListener('keyup', e => handleUpdate(e));
+  }
+}
+
+const LabeledInput = domd(() => {
+  
+});
+
 const bindUpdateEvents = (desc) => {
   const el = desc.el();
   const handleUpdate = (e) => {
@@ -211,6 +187,12 @@ const bindUpdateEvents = (desc) => {
   el.addEventListener('change', e => handleUpdate(e));
   el.addEventListener('keyup', e => handleUpdate(e));
 }
+
+const sliceCount = new LabeledInput(
+  '#melter-slice-count',
+  state => state.numSlices,
+  'SLICE_COUNT_CHANGE'
+);
 
 const doms = [
   {
