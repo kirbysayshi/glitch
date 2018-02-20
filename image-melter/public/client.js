@@ -1,3 +1,5 @@
+c
+
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
@@ -198,7 +200,6 @@ const doms = [
     el: () => document.querySelector("#melter-render"),
     mounted: (desc) => {
       desc.el().addEventListener('click', e => {
-  
         if (AppState.renderingGif) return;
 
         dispatch({ type: 'RENDER_FRAMES' });
@@ -229,7 +230,7 @@ const doms = [
         });
 
         gif.render();
-      })
+      });
     },
     select: state => state.renderingGif,
     update: (el, state) => {
@@ -237,7 +238,23 @@ const doms = [
         ? "RENDERING"
         : "Render";
       el.setAttribute("value", value);
+    }
+  },
+  
+  {
+    el: () => document.querySelector("#melter-input"),
+    mounted: (desc) => {
+      desc.el().addEventListener('change', e => {
+        e.stopPropagation();
+        fileToImage(e.target.files[0], (err, img) => {
+          imageToCanvas(img, (err, cvs) => {
+            dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+          });
+        });
+      })
     },
+    select: state => null,
+    update: (el, state) => {}
   }
 ];
 
@@ -266,47 +283,3 @@ function dispatch(action) {
 
 // Make sure we have a good initial state.
 dispatch({ type: '@@BOOT@@' });
-
-const melterInput = document.querySelector('#melter-input');
-melterInput.addEventListener('change', e => {
-  e.stopPropagation();
-  fileToImage(e.target.files[0], (err, img) => {
-    imageToCanvas(img, (err, cvs) => {
-      dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-    });
-  });
-});
-
-document.querySelector('#melter-render').addEventListener('click', e => {
-  
-  if (AppState.renderingGif) return;
-  
-  dispatch({ type: 'RENDER_FRAMES' });
-  
-  // TODO: tell the user this is done and that GIF processing is starting!
-  
-  var gif = new window.GIF({
-    workerScript: 'gif/gif.worker.js',
-    workers: 2,
-    quality: 10
-  });
-
-  AppState.frames.forEach(frame => {
-    gif.addFrame(frame, { delay: 16 });
-  });
-  
-  gif.on('finished', function(blob) {
-    dispatch({ type: 'GIF_COMPLETED' });
-    // window.open(URL.createObjectURL(blob));
-    blobToImage(blob, (err, img) => {
-      const dest = document.querySelector('#melter-render-output');
-      dest.appendChild(img);
-      // AppState.frames.forEach(frame => {
-      //   frame.style.display = 'block';
-      //   document.body.appendChild(frame);
-      // });
-    })
-  });
-
-  gif.render();
-});
