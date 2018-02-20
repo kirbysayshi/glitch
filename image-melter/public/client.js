@@ -30,6 +30,8 @@ function blobToImage(blob, opt_image, cb) {
   img.src = url;
 }
 
+function ll()
+
 function makeCanvas() {
   const cvs = document.createElement('canvas');
   const ctx = cvs.getContext('2d');
@@ -181,7 +183,6 @@ const labeledInput = (id, selector, action) => {
     })
   }
 }
-
 
 const doms = [
   labeledInput(
