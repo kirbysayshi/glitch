@@ -152,12 +152,20 @@ function reduceState(action, state=defaultState) {
   return state;
 }
 
-const bind
+const bindUpdateEvents = (desc) => {
+  const el = desc.el();
+  const handleUpdate = (e) => {
+    e.stopPropagation();
+    dispatch(desc.dispatch(e.target.value));
+  }
+  el.addEventListener('change', e => handleUpdate(e));
+  el.addEventListener('keyup', e => handleUpdate(e));
+}
 
 const doms = [
   {
     el: () => document.querySelector("#melter-slice-count"),
-    mounted: () => 
+    mounted: bindUpdateEvents, 
     select: state => state.numSlices,
     update: (el, state) => el.setAttribute("value", state),
     dispatch: value => ({
@@ -167,6 +175,7 @@ const doms = [
   },
   {
     el: () => document.querySelector("#melter-vertical-inc"),
+    mounted: bindUpdateEvents,
     select: state => state.verticalInc,
     update: (el, state) => el.setAttribute("value", state),
     dispatch: value => ({
@@ -176,24 +185,66 @@ const doms = [
   },
   {
     el: () => document.querySelector("#melter-max-start-offset"),
+    mounted: bindUpdateEvents,
     select: state => state.maxStartOffset,
     update: (el, state) => el.setAttribute("value", state),
     dispatch: value => ({
       type: "MAX_START_OFFSET_CHANGE",
       payload: parseInt(value, 10)
     })
+  },
+  
+  {
+    el: () => document.querySelector("#melter-render"),
+    mounted: (desc) => {
+      desc.el().addEventListener('click', e => {
+  
+        if (AppState.renderingGif) return;
+
+        dispatch({ type: 'RENDER_FRAMES' });
+
+        // TODO: tell the user this is done and that GIF processing is starting!
+
+        var gif = new window.GIF({
+          workerScript: 'gif/gif.worker.js',
+          workers: 2,
+          quality: 10
+        });
+
+        AppState.frames.forEach(frame => {
+          gif.addFrame(frame, { delay: 16 });
+        });
+
+        gif.on('finished', function(blob) {
+          dispatch({ type: 'GIF_COMPLETED' });
+          // window.open(URL.createObjectURL(blob));
+          blobToImage(blob, (err, img) => {
+            const dest = document.querySelector('#melter-render-output');
+            dest.appendChild(img);
+            // AppState.frames.forEach(frame => {
+            //   frame.style.display = 'block';
+            //   document.body.appendChild(frame);
+            // });
+          })
+        });
+
+        gif.render();
+      })
+    },
+    select: state => state.renderingGif,
+    update: (el, state) => {
+      const value = state === true
+        ? "RENDERING"
+        : "Render";
+      el.setAttribute("value", value);
+    },
   }
 ];
 
-// Initial Event Binding
+// Lol "lifecycle events for lyfe"
 doms.forEach(desc => {
   const el = desc.el();
-  const handleUpdate = (e) => {
-    e.stopPropagation();
-    dispatch(desc.dispatch(e.target.value));
-  }
-  el.addEventListener('change', e => handleUpdate(e));
-  el.addEventListener('keyup', e => handleUpdate(e));
+  desc.mounted(desc);
 });
 
 let AppState;
