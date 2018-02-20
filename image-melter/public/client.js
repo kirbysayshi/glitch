@@ -130,8 +130,20 @@ function reduceState(action, state=defaultState) {
     // create initial ys
     const initialYs = [];
     for (let i = 0; i < actualNumSlices; i++) {
-      const r = Math.floor(Math.random() * 256);
-      initialYs.push(-r % state.maxStartOffset);
+      if (i === 0) {
+        const r = Math.floor(Math.random() * 256);
+        initialYs.push(-r % state.maxStartOffset);
+      } else {
+        const prev = initialYs[i - 1];
+        const dir = Math.random() > 0.5
+          ? 1
+          : -1;
+        const proposed = prev + dir;
+        const r = proposed > state.maxStartOffset
+          ? state.maxStartOffset
+          : Math.min(proposed, 0);
+        initialYs.push(-r);
+      }
     }
   
     // create frames
@@ -150,28 +162,6 @@ function reduceState(action, state=defaultState) {
   }
   
   return state;
-}
-
-class LabeledInput {
-  constructor (id, stateSelector, actionType) {
-    this.el = document.querySelector(id);
-    this.selector = stateSelector;
-    this.actionType = actionType;
-  }
-  
-  reconcile (state) {
-    this.el.setAttribute("value", state);
-  }
-  
-  mounted () {
-    const { el } = this;
-    const handleUpdate = (e) => {
-      e.stopPropagation();
-      dispatch({ type: this.actionType, payload: e.target.value });
-    }
-    el.addEventListener('change', e => handleUpdate(e));
-    el.addEventListener('keyup', e => handleUpdate(e));
-  }
 }
 
 const labeledInput = (id, selector, action) => {
@@ -195,44 +185,23 @@ const labeledInput = (id, selector, action) => {
   }
 }
 
-const sliceCount = new LabeledInput(
-  '#melter-slice-count',
-  state => state.numSlices,
-  'SLICE_COUNT_CHANGE'
-);
 
 const doms = [
   labeledInput(
-  {
-    el: () => document.querySelector("#melter-slice-count"),
-    mounted: bindUpdateEvents, 
-    select: state => state.numSlices,
-    update: (el, state) => el.setAttribute("value", state),
-    dispatch: value => ({
-      type: "SLICE_COUNT_CHANGE",
-      payload: parseInt(value, 10)
-    })
-  },
-  {
-    el: () => document.querySelector("#melter-vertical-inc"),
-    mounted: bindUpdateEvents,
-    select: state => state.verticalInc,
-    update: (el, state) => el.setAttribute("value", state),
-    dispatch: value => ({
-      type: "VERTICAL_INC_CHANGE",
-      payload: parseInt(value, 10)
-    })
-  },
-  {
-    el: () => document.querySelector("#melter-max-start-offset"),
-    mounted: bindUpdateEvents,
-    select: state => state.maxStartOffset,
-    update: (el, state) => el.setAttribute("value", state),
-    dispatch: value => ({
-      type: "MAX_START_OFFSET_CHANGE",
-      payload: parseInt(value, 10)
-    })
-  },
+    '#melter-slice-count',
+    state => state.numSlices,
+    'SLICE_COUNT_CHANGE'
+  ),
+  labeledInput(
+    '#melter-vertical-inc',
+    state => state.verticalInc,
+    'VERTICAL_INC_CHANGE'
+  ),
+  labeledInput(
+    '#melter-max-start-offset',
+    state => state.maxStartOffset,
+    'MAX_START_OFFSET_CHANGE'
+  ),
   
   {
     el: () => document.querySelector("#melter-render"),
