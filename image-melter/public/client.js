@@ -186,15 +186,34 @@ const labeledInput = (id, selector, action) => {
 }
 
 var { h, Component } = window.preact;
-var hx = window.hyperx( (tag, props, kids) => h(tag, props, ...kids) );
+var hx = window.hyperx( (tag, props, kids=[]) => h(tag, props, ...kids) );
 
-class LabeledInput extends Component {
-  render({ labelText, children, value }) {
+const LabeledInput = ({ labelText, children, value, onChange }) => {
+  const readVal = (e) => onChange(e.target.value);
+  return (hx`
+    <label>${labelText}
+      <input
+        type="text"
+        value="${value}"
+        onchange=${readVal}
+        onkeyup=${readVal}
+      ></label>
+  `);
+}
+
+class InputPanel extends Component {
+  constructor(props, context) {
+		super(props, context);
+  }
+  
+  render() {
     return (hx`
-      <label>${labelText}<input type="text" value="${value}"></label>
+      ${LabeledInput()}
     `);
   }
 }
+
+window.preact.render(h(LabeledInput), document.body);
 
 const doms = [
   labeledInput(
