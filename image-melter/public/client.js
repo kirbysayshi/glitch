@@ -87,6 +87,11 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   return cvs;
 }
 
+const doomRand = () => Math.floor(Math.random() * 256);
+
+
+
+
 const defaultState = {
   inputCvs: null,
   numSlices: 400,
@@ -95,8 +100,6 @@ const defaultState = {
   verticalInc: 10,
   renderingGif: false,
 };
-
-const doomRand = () => Math.floor(Math.random() * 256);
   
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
@@ -179,6 +182,17 @@ const labeledInput = (id, selector, action) => {
       type: action,
       payload: parseInt(value, 10)
     })
+  }
+}
+
+var { h, Component } = window.preact;
+var hx = window.hyperx( (tag, props, kids) => h(tag, props, ...kids) );
+
+class LabeledInput extends Component {
+  render({ labelText, children, value }) {
+    return (hx`
+      <label>${labelText}<input type="text" value="${value}"></label>
+    `);
   }
 }
 
