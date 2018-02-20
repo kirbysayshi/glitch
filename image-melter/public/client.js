@@ -1,3 +1,12 @@
+const o_o = (tagName, props, children) => {
+  const _children = children || props;
+  const _props = children ? props : {};
+  _children.forEach(child => {
+    
+  });
+  return 
+}
+
 class Component {
   
   onMount (el) {}
@@ -8,7 +17,7 @@ class Component {
 class LabeledInput extends Component {
   
   render () {
-    return   
+    return o_o('label', [])
   }
 }
 
