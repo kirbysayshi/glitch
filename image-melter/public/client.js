@@ -134,7 +134,8 @@ function reduceState(action, state=defaultState) {
     ];
     for (let i = 1; i < actualNumSlices; i++) {
       const prev = initialYs[i - 1];
-      const amount = state.maxStartOffset(doomRand() % 3) - 1;
+      const maxInc = Math.floor(state.maxStartOffset / 10.333);
+      const amount = maxInc * ((doomRand() % 3) - 1);
       const proposed = prev + amount;
       let r = proposed;
       if (proposed > 0) r = 0;
