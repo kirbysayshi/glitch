@@ -95,7 +95,8 @@ const defaultState = {
   verticalInc: 10,
   renderingGif: false,
 };
-  
+
+const doomRand = () => Math.floor(Math.random() * 256);
   
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
@@ -129,16 +130,15 @@ function reduceState(action, state=defaultState) {
     
     // create initial ys
     const initialYs = [
-      -Math.floor(Math.random() * 256) % state.maxStartOffset
+      -doomRand() % state.maxStartOffset
     ];
     for (let i = 1; i < actualNumSlices; i++) {
       const prev = initialYs[i - 1];
-      const amount = Math.floor(Math.random() * 256) % 3;
+      const amount = state.maxStartOffset(doomRand() % 3) - 1;
       const proposed = prev + amount;
-      let r;
+      let r = proposed;
       if (proposed > 0) r = 0;
-      if (proposed 
-       = Math.min(Math.max(proposed, -state.maxStartOffset + 1), 0);
+      else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
       initialYs.push(r);
     }
   
