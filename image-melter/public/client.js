@@ -103,6 +103,8 @@ const defaultState = {
   gifPercent: 0,
   gif: null,
 };
+
+// TODO: replace all the ... with Object.assign, sigh. Or add babel + browserify...
   
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
@@ -161,7 +163,7 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'GIF_START') {
-    return { ...state, renderingGif: true };
+    return { ...state, renderingGif: true, gifPercent: 0, gif: null };
   }
   
   if (action.type === 'GIF_PROGRESS') {
@@ -255,7 +257,7 @@ class RenderButton extends Component {
         setTimeout(() => {
           dispatch({ type: 'RENDER_FRAMES' });
           this.makeGif(props);
-        });
+        }, 100);
       }
     });
   }
@@ -265,7 +267,7 @@ class ImgHolder extends Component {
   shouldComponentUpdate() { return false; }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.img) {
+    if (!this.props.img) {
       this.base.innerHTML = '';  
     }
     
@@ -344,10 +346,10 @@ class InputPanel extends Component {
 }
 
 const AppContainer = (props) => {
-  return [
+  return h('div', null, [
     h(InputPanel, props),
     h(ImgHolder, { img: props.app.gif })
-  ]
+  ])
 }
 
 // END RENDER RENDER RENDER
@@ -368,7 +370,7 @@ function dispatch(action) {
 const DomRoot = document.querySelector('#preact-root');
 let AppDom;
 function render() {
-  const app = h(InputPanel, { app: AppState, dispatch });
+  const app = h(AppContainer, { app: AppState, dispatch });
   AppDom = window.preact.render(app, DomRoot, AppDom);
 }
 
