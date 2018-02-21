@@ -190,46 +190,46 @@ const labeledInput = (id, selector, action) => {
   }
 }
 
-// var { h, Component } = window.preact;
+var { h, Component } = window.preact;
 // var hx = window.hyperx( (tag, props, kids=[]) => h(tag, props, ...kids) );
 
-// const LabeledInput = ({ labelText, value, onChange }) => {
-//   const readVal = (e) => onChange(e.target.value);
-//   return (hx`
-//     <label>${labelText}
-//       <input
-//         type="text"
-//         value="${value}"
-//         onchange=${readVal}
-//         onkeyup=${readVal}
-//       ></label>
-//   `);
-// }
+const LabeledInput = ({ labelText, value, onChange }) => {
+  const readVal = (e) => onChange(e.target.value);
+  return h('label', null, [
+    labelText,
+    h('input', {
+      type: 'text',
+      value,
+      onchange: readVal,
+      onkeyup: readVal,
+    })
+  ]);
+}
 
-// class InputPanel extends Component {
-//   constructor(props, context) {
-// 		super(props, context);
-//     this.state = {};
-//   }
+class InputPanel extends Component {
+  constructor(props, context) {
+		super(props, context);
+    this.state = {};
+  }
   
-//   render(props, state) {
-//     return (hx`
-//       <form>
-//       <input id="melter-input2" type="file">
-//       ${LabeledInput({
-//         labelText: 'Vertical Slices',
-//         value: 3333,
-//         onChange: (value) => dispatch({
-//           type: 'SLICE_COUNT_CHANGE',
-//           payload: parseInt(value, 10)
-//         })
-//       })}
-//       </form>
-//     `);
-//   }
-// }
+  render(props, state) {
+    return h('form', null, [
+      h('input', { type: 'file', }, []),
+      LabeledInput({
+        labelText: 'Vertical Slices',
+        value: 3333,
+        onChange: (value) => dispatch({
+          type: 'SLICE_COUNT_CHANGE',
+          payload: parseInt(value, 10)  
+        })
+      })
+    ]);
+  }
+}
 
-// window.preact.render(h(InputPanel), document.body);
+const AppRoot = h(InputPanel);
+window.preact.render(AppRoot, document.body);
+console.log(AppRoot, AppRoot.setState);
 
 const doms = [
   labeledInput(
