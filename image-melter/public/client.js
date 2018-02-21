@@ -275,19 +275,43 @@ class RenderButton {
   }
 }
 
+const FileInput = ({
+  dispatch,
+  app: {
+    inputCvs,
+  } = {},
+}) => {
+  
+  const elProps = {
+    type: 'file',
+    onchange: (e) => {
+      fileToImage(e.target.files[0], (err, img) => {
+        imageToCanvas(img, (err, cvs) => {
+          dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+        });
+      });  
+    }
+  };
+  
+  if(!inputCvs) elProps.value = '';
+  
+  return h('input', elProps))
+}
+
 class InputPanel extends Component {  
   render(props) {
     console.log('propstate', props);
     const {
       dispatch,
       app: {
+        inputCvs,
         numSlices,
         verticalInc,
         maxStartOffset,
       } = {},
     } = props;
     return h('form', null, [
-      h('input', { type: 'file', }, []),
+      FileInput(props),
       
       LabeledInput({
         labelText: 'Vertical Slices',
@@ -316,7 +340,7 @@ class InputPanel extends Component {
         })
       }),
       
-      RenderButton(props),
+      h(RenderButton, props),
     ]);
   }
 }
