@@ -205,11 +205,74 @@ const LabeledInput = ({ labelText, value, onChange }) => {
   ]);
 }
 
-const RenderButton = ({ renderingGif, gifPercent }) => {
-  const value = state.renderingGif === true
-        ? `RENDERING ${(state.gifPercent * 100).toFixed(2)}%`
-        : "Render";
-      el.setAttribute("value", value);
+class RenderButton {
+  
+  makeGif ({
+    dispatch,
+    app: {
+      frames
+    } = {}
+  }) {
+    var gif = new window.GIF({
+      workerScript: 'gif/gif.worker.js',
+      workers: 2,
+      quality: 10
+    });
+
+    AppState.frames.forEach(frame => {
+      gif.addFrame(frame, { delay: 16 });
+    });
+
+    gif.on('progress', percent => {
+      console.log('progress', percent);
+      dispatch({ type: 'GIF_PROGRESS', payload: percent });
+    });
+
+    gif.on('finished', function(blob) {
+      dispatch({ type: 'GIF_COMPLETED' });
+      // window.open(URL.createObjectURL(blob));
+      blobToImage(blob, (err, img) => {
+        const dest = document.querySelector('#melter-render-output');
+        dest.appendChild(img);
+        // AppState.frames.forEach(frame => {
+        //   frame.style.display = 'block';
+        //   document.body.appendChild(frame);
+        // });
+      })
+    });
+
+    gif.render();
+  }
+  
+  render (props) {
+    
+    const {
+      dispatch,
+      app: { renderingGif, gifPercent } = {}
+    } = props;
+    
+    const value = renderingGif === true
+      ? `RENDERING ${(gifPercent * 100).toFixed(2)}%`
+      : "Render";
+
+    return h('input', {
+      type: 'button',
+      value,
+      disabled: renderingGif ? 'disabled' : null,
+      onclick: () => {
+        if (renderingGif) return;
+
+        dispatch({ type: 'RENDER_START' });
+
+        // ensure we get at least a tick to update UI before RENDER_FRAMES
+        // locks up...
+        setTimeout(() => {
+          dispatch({ type: 'RENDER_FRAMES' });
+          this.makeGif(props);
+        });
+      }
+    });
+  }
 }
 
 class InputPanel extends Component {  
@@ -253,7 +316,7 @@ class InputPanel extends Component {
         })
       }),
       
-      h('input', { type: 'button' }, '')
+      RenderButton(props),
     ]);
   }
 }
