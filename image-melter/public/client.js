@@ -99,6 +99,7 @@ const defaultState = {
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingGif: false,
+  gifPercent: 0,
 };
   
 function reduceState(action, state=defaultState) {
@@ -155,6 +156,10 @@ function reduceState(action, state=defaultState) {
     }
     
     return { ...state, renderingGif: true, frames };
+  }
+  
+  if (action.type === 'GIF_PROGRESS') {
+    return { ...state, gifPercent: action.payload };
   }
   
   if (action.type === 'GIF_COMPLETED') {
@@ -262,6 +267,11 @@ const doms = [
         AppState.frames.forEach(frame => {
           gif.addFrame(frame, { delay: 16 });
         });
+        
+        gif.on('progress', percent => {
+          console.log('progress', percent);
+          dispatch({ type: 'GIF_PROGRESS', payload: percent });
+        });
 
         gif.on('finished', function(blob) {
           dispatch({ type: 'GIF_COMPLETED' });
@@ -279,10 +289,10 @@ const doms = [
         gif.render();
       });
     },
-    select: state => state.renderingGif,
+    select: state => state,
     update: (el, state) => {
-      const value = state === true
-        ? "RENDERING"
+      const value = state.renderingGif === true
+        ? `RENDERING ${(state.gifPercent * 100).toFixed(2)}%`
         : "Render";
       el.setAttribute("value", value);
     }
