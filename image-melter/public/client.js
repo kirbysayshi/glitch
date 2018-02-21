@@ -209,7 +209,7 @@ const LabeledInput = ({ labelText, value, onChange }) => {
 class InputPanel extends Component {
   constructor(props, context) {
 		super(props, context);
-    this.state = {};
+    this.state = props.state;
   }
   
   render(props, state) {
@@ -227,9 +227,7 @@ class InputPanel extends Component {
   }
 }
 
-const AppRoot = h(InputPanel);
-window.preact.render(AppRoot, document.body);
-console.log(AppRoot, AppRoot.setState);
+
 
 const doms = [
   labeledInput(
@@ -337,6 +335,14 @@ function dispatch(action) {
     desc.update(el, value);
   });
 }
+
+const DomRoot = document.body;
+let AppDom;
+function render() {
+  AppDom = window.preact.render(h(InputPanel), document.body, AppDom);
+}
+
+render();
 
 // Make sure we have a good initial state.
 dispatch({ type: '@@BOOT@@' });
