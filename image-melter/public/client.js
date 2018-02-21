@@ -87,10 +87,11 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   return cvs;
 }
 
+// https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
 const doomRand = () => Math.floor(Math.random() * 256);
 
 
-
+// BEGIN STATE MANAGEMENT
 
 const defaultState = {
   inputCvs: null,
@@ -100,6 +101,7 @@ const defaultState = {
   verticalInc: 10,
   renderingGif: false,
   gifPercent: 0,
+  gif: null,
 };
   
 function reduceState(action, state=defaultState) {
@@ -167,13 +169,15 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'GIF_COMPLETED') {
-    return { ...state, renderingGif: false };
+    return { ...state, renderingGif: false, gif: action.payload };
   }
   
   return state;
 }
 
+// END STATE MANAGEMENT
 
+// BEGIN RENDER RENDER RENDER
 
 var { h, Component } = window.preact;
 
@@ -190,7 +194,7 @@ const LabeledInput = ({ labelText, value, onChange }) => {
   ]);
 }
 
-class RenderButton {
+class RenderButton extends Component {
   
   makeGif ({
     dispatch,
@@ -214,11 +218,12 @@ class RenderButton {
     });
 
     gif.on('finished', function(blob) {
-      dispatch({ type: 'GIF_COMPLETED' });
+      
       // window.open(URL.createObjectURL(blob));
       blobToImage(blob, (err, img) => {
-        const dest = document.querySelector('#melter-render-output');
-        dest.appendChild(img);
+        // const dest = document.querySelector('#melter-render-output');
+        // dest.appendChild(img);
+        dispatch({ type: 'GIF_COMPLETED', payload: img });
       })
     });
 
@@ -256,15 +261,37 @@ class RenderButton {
   }
 }
 
+class ImgHolder extends Component {
+  shouldComponentUpdate() { return false; }
+
+  componentWillReceiveProps(nextProps) {
+    // you can do something with incoming props here if you need
+  }
+
+  componentDidMount() {
+    // now mounted, can freely modify the DOM:
+    let thing = document.createElement('maybe-a-custom-element');
+    this.base.appendChild(thing);
+  }
+
+  componentWillUnmount() {
+    // component is about to be removed from the DOM, perform any cleanup.
+  }
+
+  render() {
+    return <div class="example" />;
+  }
+}
+
 class InputPanel extends Component {  
   render(props) {
-    console.log('propstate', props);
     const {
       dispatch,
       app: {
         numSlices,
         verticalInc,
         maxStartOffset,
+        gif,
       },
     } = props;
     return h('form', null, [
@@ -307,14 +334,16 @@ class InputPanel extends Component {
       }),
       
       h(RenderButton, props),
+      
+      h('section', null, [gif])
     ]);
   }
 }
 
+// END RENDER RENDER RENDER
+
 
 // BEGIN APP BOOT PROCESS
-
-
 let AppState;
 function dispatch(action) {
   let curr = AppState;
