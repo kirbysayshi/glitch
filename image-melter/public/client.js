@@ -265,13 +265,18 @@ class ImgHolder extends Component {
   shouldComponentUpdate() { return false; }
 
   componentWillReceiveProps(nextProps) {
-    // you can do something with incoming props here if you need
+    if (this.props.img) {
+      this.base.innerHTML = '';  
+    }
+    
+    if (nextProps.img) {
+      this.base.appendChild(nextProps.img);    
+    }
   }
 
   componentDidMount() {
     // now mounted, can freely modify the DOM:
-    let thing = document.createElement('maybe-a-custom-element');
-    this.base.appendChild(thing);
+    
   }
 
   componentWillUnmount() {
@@ -279,7 +284,7 @@ class ImgHolder extends Component {
   }
 
   render() {
-    return <div class="example" />;
+    return h('div', null, '');
   }
 }
 
@@ -334,10 +339,15 @@ class InputPanel extends Component {
       }),
       
       h(RenderButton, props),
-      
-      h('section', null, [gif])
     ]);
   }
+}
+
+const AppContainer = (props) => {
+  return [
+    h(InputPanel, props),
+    h(ImgHolder, { img: props.app.gif })
+  ]
 }
 
 // END RENDER RENDER RENDER
