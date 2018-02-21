@@ -191,7 +191,6 @@ const labeledInput = (id, selector, action) => {
 }
 
 var { h, Component } = window.preact;
-// var hx = window.hyperx( (tag, props, kids=[]) => h(tag, props, ...kids) );
 
 const LabeledInput = ({ labelText, value, onChange }) => {
   const readVal = (e) => onChange(e.target.value);
@@ -206,23 +205,55 @@ const LabeledInput = ({ labelText, value, onChange }) => {
   ]);
 }
 
-class InputPanel extends Component {
-  constructor(props, context) {
-		super(props, context);
-    this.state = props.state;
-  }
-  
-  render(props, state) {
+const RenderButton = ({ renderingGif, gifPercent }) => {
+  const value = state.renderingGif === true
+        ? `RENDERING ${(state.gifPercent * 100).toFixed(2)}%`
+        : "Render";
+      el.setAttribute("value", value);
+}
+
+class InputPanel extends Component {  
+  render(props) {
+    console.log('propstate', props);
+    const {
+      dispatch,
+      app: {
+        numSlices,
+        verticalInc,
+        maxStartOffset,
+      } = {},
+    } = props;
     return h('form', null, [
       h('input', { type: 'file', }, []),
+      
       LabeledInput({
         labelText: 'Vertical Slices',
-        value: 3333,
+        value: numSlices,
         onChange: (value) => dispatch({
           type: 'SLICE_COUNT_CHANGE',
           payload: parseInt(value, 10)  
         })
-      })
+      }),
+      
+      LabeledInput({
+        labelText: 'Vertical Increment',
+        value: verticalInc,
+        onChange: (value) => dispatch({
+          type: 'VERTICAL_INC_CHANGE',
+          payload: parseInt(value, 10)  
+        })
+      }),
+      
+      LabeledInput({
+        labelText: 'Maximum Start Offset',
+        value: maxStartOffset,
+        onChange: (value) => dispatch({
+          type: 'MAX_START_OFFSET_CHANGE',
+          payload: parseInt(value, 10)  
+        })
+      }),
+      
+      h('input', { type: 'button' }, '')
     ]);
   }
 }
@@ -327,6 +358,7 @@ function dispatch(action) {
   
   if (curr === AppState) return;
   
+  render();
   // Update the "bindings"!
  
   doms.forEach(desc => {
@@ -339,7 +371,8 @@ function dispatch(action) {
 const DomRoot = document.body;
 let AppDom;
 function render() {
-  AppDom = window.preact.render(h(InputPanel), document.body, AppDom);
+  const app = h(InputPanel, { app: AppState, dispatch });
+  AppDom = window.preact.render(app, DomRoot, AppDom);
 }
 
 render();
