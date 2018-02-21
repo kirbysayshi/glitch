@@ -155,7 +155,11 @@ function reduceState(action, state=defaultState) {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
     }
     
-    return { ...state, renderingGif: true, frames };
+    return { ...state, frames };
+  }
+  
+  if (action.type === 'GIF_START') {
+    return { ...state, renderingGif: true };
   }
   
   if (action.type === 'GIF_PROGRESS') {
@@ -169,26 +173,7 @@ function reduceState(action, state=defaultState) {
   return state;
 }
 
-const labeledInput = (id, selector, action) => {
-  return {
-    el: () => document.querySelector(id),
-    mounted: (desc) => {
-      const el = desc.el();
-      const handleUpdate = (e) => {
-        e.stopPropagation();
-        dispatch(desc.dispatch(e.target.value));
-      }
-      el.addEventListener('change', e => handleUpdate(e));
-      el.addEventListener('keyup', e => handleUpdate(e));
-    }, 
-    select: selector,
-    update: (el, state) => el.setAttribute("value", state),
-    dispatch: value => ({
-      type: action,
-      payload: parseInt(value, 10)
-    })
-  }
-}
+
 
 var { h, Component } = window.preact;
 
@@ -211,7 +196,7 @@ class RenderButton {
     dispatch,
     app: {
       frames
-    } = {}
+    }
   }) {
     var gif = new window.GIF({
       workerScript: 'gif/gif.worker.js',
@@ -234,10 +219,6 @@ class RenderButton {
       blobToImage(blob, (err, img) => {
         const dest = document.querySelector('#melter-render-output');
         dest.appendChild(img);
-        // AppState.frames.forEach(frame => {
-        //   frame.style.display = 'block';
-        //   document.body.appendChild(frame);
-        // });
       })
     });
 
@@ -248,7 +229,7 @@ class RenderButton {
     
     const {
       dispatch,
-      app: { renderingGif, gifPercent } = {}
+      app: { renderingGif, gifPercent }
     } = props;
     
     const value = renderingGif === true
@@ -262,7 +243,7 @@ class RenderButton {
       onclick: () => {
         if (renderingGif) return;
 
-        dispatch({ type: 'RENDER_START' });
+        dispatch({ type: 'GIF_START' });
 
         // ensure we get at least a tick to update UI before RENDER_FRAMES
         // locks up...
@@ -275,43 +256,28 @@ class RenderButton {
   }
 }
 
-const FileInput = ({
-  dispatch,
-  app: {
-    inputCvs,
-  } = {},
-}) => {
-  
-  const elProps = {
-    type: 'file',
-    onchange: (e) => {
-      fileToImage(e.target.files[0], (err, img) => {
-        imageToCanvas(img, (err, cvs) => {
-          dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-        });
-      });  
-    }
-  };
-  
-  if(!inputCvs) elProps.value = '';
-  
-  return h('input', elProps))
-}
-
 class InputPanel extends Component {  
   render(props) {
     console.log('propstate', props);
     const {
       dispatch,
       app: {
-        inputCvs,
         numSlices,
         verticalInc,
         maxStartOffset,
-      } = {},
+      },
     } = props;
     return h('form', null, [
-      FileInput(props),
+      h('input', {
+        type: 'file',
+        onchange: (e) => {
+          fileToImage(e.target.files[0], (err, img) => {
+            imageToCanvas(img, (err, cvs) => {
+              dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+            });
+          });  
+        }
+      }),
       
       LabeledInput({
         labelText: 'Vertical Slices',
@@ -346,96 +312,8 @@ class InputPanel extends Component {
 }
 
 
+// BEGIN APP BOOT PROCESS
 
-const doms = [
-  labeledInput(
-    '#melter-slice-count',
-    state => state.numSlices,
-    'SLICE_COUNT_CHANGE'
-  ),
-  labeledInput(
-    '#melter-vertical-inc',
-    state => state.verticalInc,
-    'VERTICAL_INC_CHANGE'
-  ),
-  labeledInput(
-    '#melter-max-start-offset',
-    state => state.maxStartOffset,
-    'MAX_START_OFFSET_CHANGE'
-  ),
-  
-  {
-    el: () => document.querySelector("#melter-render"),
-    mounted: (desc) => {
-      desc.el().addEventListener('click', e => {
-        if (AppState.renderingGif) return;
-
-        dispatch({ type: 'RENDER_FRAMES' });
-
-        // TODO: tell the user this is done and that GIF processing is starting!
-
-        var gif = new window.GIF({
-          workerScript: 'gif/gif.worker.js',
-          workers: 2,
-          quality: 10
-        });
-
-        AppState.frames.forEach(frame => {
-          gif.addFrame(frame, { delay: 16 });
-        });
-        
-        gif.on('progress', percent => {
-          console.log('progress', percent);
-          dispatch({ type: 'GIF_PROGRESS', payload: percent });
-        });
-
-        gif.on('finished', function(blob) {
-          dispatch({ type: 'GIF_COMPLETED' });
-          // window.open(URL.createObjectURL(blob));
-          blobToImage(blob, (err, img) => {
-            const dest = document.querySelector('#melter-render-output');
-            dest.appendChild(img);
-            // AppState.frames.forEach(frame => {
-            //   frame.style.display = 'block';
-            //   document.body.appendChild(frame);
-            // });
-          })
-        });
-
-        gif.render();
-      });
-    },
-    select: state => state,
-    update: (el, state) => {
-      const value = state.renderingGif === true
-        ? `RENDERING ${(state.gifPercent * 100).toFixed(2)}%`
-        : "Render";
-      el.setAttribute("value", value);
-    }
-  },
-  
-  {
-    el: () => document.querySelector("#melter-input"),
-    mounted: (desc) => {
-      desc.el().addEventListener('change', e => {
-        e.stopPropagation();
-        fileToImage(e.target.files[0], (err, img) => {
-          imageToCanvas(img, (err, cvs) => {
-            dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-          });
-        });
-      })
-    },
-    select: state => null,
-    update: (el, state) => {}
-  }
-];
-
-// Lol "lifecycle events for lyfe"
-doms.forEach(desc => {
-  const el = desc.el();
-  desc.mounted(desc);
-});
 
 let AppState;
 function dispatch(action) {
@@ -446,23 +324,16 @@ function dispatch(action) {
   if (curr === AppState) return;
   
   render();
-  // Update the "bindings"!
- 
-  doms.forEach(desc => {
-    const el = desc.el();
-    const value = desc.select(AppState);
-    desc.update(el, value);
-  });
 }
 
-const DomRoot = document.body;
+const DomRoot = document.querySelector('#preact-root');
 let AppDom;
 function render() {
   const app = h(InputPanel, { app: AppState, dispatch });
   AppDom = window.preact.render(app, DomRoot, AppDom);
 }
 
-render();
-
 // Make sure we have a good initial state.
 dispatch({ type: '@@BOOT@@' });
+
+render();
