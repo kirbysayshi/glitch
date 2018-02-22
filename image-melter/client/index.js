@@ -1,3 +1,5 @@
+const GIF = require('gif.js');
+
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
@@ -181,7 +183,7 @@ function reduceState(action, state=defaultState) {
 
 // BEGIN RENDER RENDER RENDER
 
-var { h, Component } = window.preact;
+const { h, Component, render: PreactRender } = require('preact');
 
 const LabeledInput = ({ labelText, value, onChange }) => {
   const readVal = (e) => onChange(e.target.value);
@@ -204,7 +206,7 @@ class RenderButton extends Component {
       frames
     }
   }) {
-    var gif = new window.GIF({
+    var gif = new GIF({
       workerScript: 'gif/gif.worker.js',
       workers: 2,
       quality: 10
@@ -371,7 +373,7 @@ const DomRoot = document.querySelector('#preact-root');
 let AppDom;
 function render() {
   const app = h(AppContainer, { app: AppState, dispatch });
-  AppDom = window.preact.render(app, DomRoot, AppDom);
+  AppDom = PreactRender(app, DomRoot, AppDom);
 }
 
 // Make sure we have a good initial state.
