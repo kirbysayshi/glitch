@@ -1,0 +1,304 @@
+{
+  "{\"filename\":\"/app/server.js\",\"env\":{\"development\":{\"plugins\":[]}},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.26.0": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/server.js",
+      "filenameRelative": "/app/server.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "server.js",
+      "sourceFileName": "server.js",
+      "sourceRoot": "/app",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "server"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\n// server.js\n// where your node app starts\n\n// init project\nvar express = require('express');\nvar app = express();\n\n// we've started you off with Express, \n// but feel free to use whatever libs or frameworks you'd like through `package.json`.\n\n// http://expressjs.com/en/starter/static-files.html\napp.use(express.static('public'));\n\n// http://expressjs.com/en/starter/basic-routing.html\napp.get(\"/\", function (request, response) {\n  response.sendFile(__dirname + '/views/index.html');\n});\n\napp.get(\"/dreams\", function (request, response) {\n  response.send(dreams);\n});\n\n// could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body\napp.post(\"/dreams\", function (request, response) {\n  dreams.push(request.query.dream);\n  response.sendStatus(200);\n});\n\n// Simple in-memory store for now\nvar dreams = [\"Find and count some sheep\", \"Climb a really tall mountain\", \"Wash the dishes\"];\n\n// listen for requests :)\nvar listener = app.listen(process.env.PORT, function () {\n  console.log('Your app is listening on port ' + listener.address().port);\n});\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNlcnZlci5qcyJdLCJuYW1lcyI6WyJleHByZXNzIiwicmVxdWlyZSIsImFwcCIsInVzZSIsInN0YXRpYyIsImdldCIsInJlcXVlc3QiLCJyZXNwb25zZSIsInNlbmRGaWxlIiwiX19kaXJuYW1lIiwic2VuZCIsImRyZWFtcyIsInBvc3QiLCJwdXNoIiwicXVlcnkiLCJkcmVhbSIsInNlbmRTdGF0dXMiLCJsaXN0ZW5lciIsImxpc3RlbiIsInByb2Nlc3MiLCJlbnYiLCJQT1JUIiwiY29uc29sZSIsImxvZyIsImFkZHJlc3MiLCJwb3J0Il0sIm1hcHBpbmdzIjoiOztBQUFBO0FBQ0E7O0FBRUE7QUFDQSxJQUFJQSxVQUFVQyxRQUFRLFNBQVIsQ0FBZDtBQUNBLElBQUlDLE1BQU1GLFNBQVY7O0FBRUE7QUFDQTs7QUFFQTtBQUNBRSxJQUFJQyxHQUFKLENBQVFILFFBQVFJLE1BQVIsQ0FBZSxRQUFmLENBQVI7O0FBRUE7QUFDQUYsSUFBSUcsR0FBSixDQUFRLEdBQVIsRUFBYSxVQUFVQyxPQUFWLEVBQW1CQyxRQUFuQixFQUE2QjtBQUN4Q0EsV0FBU0MsUUFBVCxDQUFrQkMsWUFBWSxtQkFBOUI7QUFDRCxDQUZEOztBQUlBUCxJQUFJRyxHQUFKLENBQVEsU0FBUixFQUFtQixVQUFVQyxPQUFWLEVBQW1CQyxRQUFuQixFQUE2QjtBQUM5Q0EsV0FBU0csSUFBVCxDQUFjQyxNQUFkO0FBQ0QsQ0FGRDs7QUFJQTtBQUNBVCxJQUFJVSxJQUFKLENBQVMsU0FBVCxFQUFvQixVQUFVTixPQUFWLEVBQW1CQyxRQUFuQixFQUE2QjtBQUMvQ0ksU0FBT0UsSUFBUCxDQUFZUCxRQUFRUSxLQUFSLENBQWNDLEtBQTFCO0FBQ0FSLFdBQVNTLFVBQVQsQ0FBb0IsR0FBcEI7QUFDRCxDQUhEOztBQUtBO0FBQ0EsSUFBSUwsU0FBUyxDQUNYLDJCQURXLEVBRVgsOEJBRlcsRUFHWCxpQkFIVyxDQUFiOztBQU1BO0FBQ0EsSUFBSU0sV0FBV2YsSUFBSWdCLE1BQUosQ0FBV0MsUUFBUUMsR0FBUixDQUFZQyxJQUF2QixFQUE2QixZQUFZO0FBQ3REQyxVQUFRQyxHQUFSLENBQVksbUNBQW1DTixTQUFTTyxPQUFULEdBQW1CQyxJQUFsRTtBQUNELENBRmMsQ0FBZiIsImZpbGUiOiJzZXJ2ZXIuanMiLCJzb3VyY2VSb290IjoiL2FwcCIsInNvdXJjZXNDb250ZW50IjpbIi8vIHNlcnZlci5qc1xuLy8gd2hlcmUgeW91ciBub2RlIGFwcCBzdGFydHNcblxuLy8gaW5pdCBwcm9qZWN0XG52YXIgZXhwcmVzcyA9IHJlcXVpcmUoJ2V4cHJlc3MnKTtcbnZhciBhcHAgPSBleHByZXNzKCk7XG5cbi8vIHdlJ3ZlIHN0YXJ0ZWQgeW91IG9mZiB3aXRoIEV4cHJlc3MsIFxuLy8gYnV0IGZlZWwgZnJlZSB0byB1c2Ugd2hhdGV2ZXIgbGlicyBvciBmcmFtZXdvcmtzIHlvdSdkIGxpa2UgdGhyb3VnaCBgcGFja2FnZS5qc29uYC5cblxuLy8gaHR0cDovL2V4cHJlc3Nqcy5jb20vZW4vc3RhcnRlci9zdGF0aWMtZmlsZXMuaHRtbFxuYXBwLnVzZShleHByZXNzLnN0YXRpYygncHVibGljJykpO1xuXG4vLyBodHRwOi8vZXhwcmVzc2pzLmNvbS9lbi9zdGFydGVyL2Jhc2ljLXJvdXRpbmcuaHRtbFxuYXBwLmdldChcIi9cIiwgZnVuY3Rpb24gKHJlcXVlc3QsIHJlc3BvbnNlKSB7XG4gIHJlc3BvbnNlLnNlbmRGaWxlKF9fZGlybmFtZSArICcvdmlld3MvaW5kZXguaHRtbCcpO1xufSk7XG5cbmFwcC5nZXQoXCIvZHJlYW1zXCIsIGZ1bmN0aW9uIChyZXF1ZXN0LCByZXNwb25zZSkge1xuICByZXNwb25zZS5zZW5kKGRyZWFtcyk7XG59KTtcblxuLy8gY291bGQgYWxzbyB1c2UgdGhlIFBPU1QgYm9keSBpbnN0ZWFkIG9mIHF1ZXJ5IHN0cmluZzogaHR0cDovL2V4cHJlc3Nqcy5jb20vZW4vYXBpLmh0bWwjcmVxLmJvZHlcbmFwcC5wb3N0KFwiL2RyZWFtc1wiLCBmdW5jdGlvbiAocmVxdWVzdCwgcmVzcG9uc2UpIHtcbiAgZHJlYW1zLnB1c2gocmVxdWVzdC5xdWVyeS5kcmVhbSk7XG4gIHJlc3BvbnNlLnNlbmRTdGF0dXMoMjAwKTtcbn0pO1xuXG4vLyBTaW1wbGUgaW4tbWVtb3J5IHN0b3JlIGZvciBub3dcbnZhciBkcmVhbXMgPSBbXG4gIFwiRmluZCBhbmQgY291bnQgc29tZSBzaGVlcFwiLFxuICBcIkNsaW1iIGEgcmVhbGx5IHRhbGwgbW91bnRhaW5cIixcbiAgXCJXYXNoIHRoZSBkaXNoZXNcIlxuXTtcblxuLy8gbGlzdGVuIGZvciByZXF1ZXN0cyA6KVxudmFyIGxpc3RlbmVyID0gYXBwLmxpc3Rlbihwcm9jZXNzLmVudi5QT1JULCBmdW5jdGlvbiAoKSB7XG4gIGNvbnNvbGUubG9nKCdZb3VyIGFwcCBpcyBsaXN0ZW5pbmcgb24gcG9ydCAnICsgbGlzdGVuZXIuYWRkcmVzcygpLnBvcnQpO1xufSk7XG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "server.js"
+      ],
+      "names": [
+        "express",
+        "require",
+        "app",
+        "use",
+        "static",
+        "get",
+        "request",
+        "response",
+        "sendFile",
+        "__dirname",
+        "send",
+        "dreams",
+        "post",
+        "push",
+        "query",
+        "dream",
+        "sendStatus",
+        "listener",
+        "listen",
+        "process",
+        "env",
+        "PORT",
+        "console",
+        "log",
+        "address",
+        "port"
+      ],
+      "mappings": ";;AAAA;AACA;;AAEA;AACA,IAAIA,UAAUC,QAAQ,SAAR,CAAd;AACA,IAAIC,MAAMF,SAAV;;AAEA;AACA;;AAEA;AACAE,IAAIC,GAAJ,CAAQH,QAAQI,MAAR,CAAe,QAAf,CAAR;;AAEA;AACAF,IAAIG,GAAJ,CAAQ,GAAR,EAAa,UAAUC,OAAV,EAAmBC,QAAnB,EAA6B;AACxCA,WAASC,QAAT,CAAkBC,YAAY,mBAA9B;AACD,CAFD;;AAIAP,IAAIG,GAAJ,CAAQ,SAAR,EAAmB,UAAUC,OAAV,EAAmBC,QAAnB,EAA6B;AAC9CA,WAASG,IAAT,CAAcC,MAAd;AACD,CAFD;;AAIA;AACAT,IAAIU,IAAJ,CAAS,SAAT,EAAoB,UAAUN,OAAV,EAAmBC,QAAnB,EAA6B;AAC/CI,SAAOE,IAAP,CAAYP,QAAQQ,KAAR,CAAcC,KAA1B;AACAR,WAASS,UAAT,CAAoB,GAApB;AACD,CAHD;;AAKA;AACA,IAAIL,SAAS,CACX,2BADW,EAEX,8BAFW,EAGX,iBAHW,CAAb;;AAMA;AACA,IAAIM,WAAWf,IAAIgB,MAAJ,CAAWC,QAAQC,GAAR,CAAYC,IAAvB,EAA6B,YAAY;AACtDC,UAAQC,GAAR,CAAY,mCAAmCN,SAASO,OAAT,GAAmBC,IAAlE;AACD,CAFc,CAAf",
+      "file": "server.js",
+      "sourceRoot": "/app",
+      "sourcesContent": [
+        "// server.js\n// where your node app starts\n\n// init project\nvar express = require('express');\nvar app = express();\n\n// we've started you off with Express, \n// but feel free to use whatever libs or frameworks you'd like through `package.json`.\n\n// http://expressjs.com/en/starter/static-files.html\napp.use(express.static('public'));\n\n// http://expressjs.com/en/starter/basic-routing.html\napp.get(\"/\", function (request, response) {\n  response.sendFile(__dirname + '/views/index.html');\n});\n\napp.get(\"/dreams\", function (request, response) {\n  response.send(dreams);\n});\n\n// could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body\napp.post(\"/dreams\", function (request, response) {\n  dreams.push(request.query.dream);\n  response.sendStatus(200);\n});\n\n// Simple in-memory store for now\nvar dreams = [\n  \"Find and count some sheep\",\n  \"Climb a really tall mountain\",\n  \"Wash the dishes\"\n];\n\n// listen for requests :)\nvar listener = app.listen(process.env.PORT, function () {\n  console.log('Your app is listening on port ' + listener.address().port);\n});\n"
+      ]
+    },
+    "mtime": 1519269288225
+  }
+}

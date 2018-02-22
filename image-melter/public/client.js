@@ -105,7 +105,7 @@ const defaultState = {
 };
 
 // TODO: replace all the ... with Object.assign, sigh. Or add babel + browserify...
-  
+
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count

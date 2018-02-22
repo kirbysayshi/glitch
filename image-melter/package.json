@@ -8,13 +8,35 @@
   "description": "What am I about?",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start": "rimraf ./bundled && webpack && babel-register server"
   },
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "babel-loader": "^7.0.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.5.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "babel-register-cli": "^4.0.0",
+    "css-loader": "^0.27.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "html-webpack-plugin": "*",
+    "rimraf": "^2.6.1",
+    "webpack": "^2.5.0",
+    "webpack-dev-server": "^2.5.0",
+    "style-loader": "^0.16.1"
   },
   "engines": {
     "node": "8.x"
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react",
+      "stage-2"
+    ]
   },
   "repository": {
     "url": "https://glitch.com/edit/#!/welcome-project"
