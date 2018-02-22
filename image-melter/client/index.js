@@ -1,4 +1,5 @@
 const GIF = require('gif.js');
+const GIF_WORKER_PATH = 'gif.worker.js';
 
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
@@ -207,7 +208,7 @@ class RenderButton extends Component {
     }
   }) {
     var gif = new GIF({
-      workerScript: 'gif/gif.worker.js',
+      workerScript: GIF_WORKER_PATH,
       workers: 2,
       quality: 10
     });
@@ -217,7 +218,6 @@ class RenderButton extends Component {
     });
 
     gif.on('progress', percent => {
-      console.log('progress', percent);
       dispatch({ type: 'GIF_PROGRESS', payload: percent });
     });
 
@@ -225,8 +225,6 @@ class RenderButton extends Component {
       
       // window.open(URL.createObjectURL(blob));
       blobToImage(blob, (err, img) => {
-        // const dest = document.querySelector('#melter-render-output');
-        // dest.appendChild(img);
         dispatch({ type: 'GIF_COMPLETED', payload: img });
       })
     });

@@ -15,5 +15,5 @@
       "^client/"
     ]
   },
-  "throttle": 100
+  "throttle": 400
 }
