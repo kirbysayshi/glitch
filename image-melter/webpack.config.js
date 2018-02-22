@@ -6,10 +6,10 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: {
-    main: "./public/client"
+    main: "./client/index.js"
   },
   output: {
-    filename: 'bundled/client.js'
+    filename: 'public/client.js'
   },
   module: {
     rules: [
