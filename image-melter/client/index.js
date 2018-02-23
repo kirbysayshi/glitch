@@ -87,6 +87,8 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   // Or just the original image for loop effect?
   // ctx.drawImage(inputCvs, 0, 0);
   
+  // TODO: this should operate on the original canvas + ys, not slices.
+  // TODO: add an acceleration to the Ys.
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
     const initialY = initialYs[i];
@@ -120,7 +122,7 @@ const doomRand = () => Math.floor(Math.random() * 256);
 
 const defaultState = {
   inputCvs: null,
-  numSlices: 200,
+  numSlices: 350,
   frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
@@ -231,45 +233,7 @@ function reduceState(action, state=defaultState) {
   if (action.type === 'SLICE_COUNT_CHANGE') {
     return { ...state, numSlices: action.payload };
   }
-    
-//   if (action.type === 'RENDER_FRAMES') {
-//     if (!state.inputCvs) return state;
-    
-//     // create slices
-//     const slices = [];
-//     const desiredSlices = state.numSlices;
-//     const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
-//     const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-//     for (let i = 0; i < actualNumSlices; i++) {
-//       slices.push(createSlice(state.inputCvs, i, sliceWidth));
-//     }
-    
-//     // create initial ys
-//     const initialYs = [
-//       -doomRand() % state.maxStartOffset
-//     ];
-//     for (let i = 1; i < actualNumSlices; i++) {
-//       const prev = initialYs[i - 1];
-//       const maxInc = Math.floor(state.maxStartOffset / 10.333);
-//       const amount = maxInc * ((doomRand() % 3) - 1);
-//       const proposed = prev + amount;
-//       let r = proposed;
-//       if (proposed > 0) r = 0;
-//       else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-//       initialYs.push(r);
-//     }
-  
-//     // create frames
-//     const frames = [];
-//     const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
-//     const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-//     for (let i = 0; i <= frameCount; i++) {
-//       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
-//     }
-    
-//     return { ...state, frames };
-//   }
-  
+
   if (action.type === 'FRAMES_START') {
     return { ...state, renderingFrames: true, processingStepsTotal: 0, processingStepsFinished: 0 }; 
   }
@@ -397,10 +361,10 @@ class InputPanel extends Component {
         onchange: (e) => {
           fileToImage(e.target.files[0], (err, img) => {
             const cvs = downscaleImageToCanvas(img,
-              //window.screen.width * (window.pixelDeviceRatio || 1),
-              window.screen.width / 4,
-              //window.screen.height * (window.pixelDeviceRatio || 1));
-              window.screen.height / 4);
+              window.screen.width * (window.pixelDeviceRatio || 1),
+              // 1024,
+              window.screen.height * (window.pixelDeviceRatio || 1));
+              // 1024);
               dispatch({ type: 'IMAGE_LOAD', payload: cvs });
           });  
         }
