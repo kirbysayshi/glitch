@@ -384,8 +384,9 @@ function dispatch(action) {
   let curr = AppState;
   
   if (typeof action === 'function') {
-    // thunk
-    
+    // It's a thunk!
+    action(dispatch, () => curr);
+    return;
   }
   
   AppState = reduceState(action, curr);

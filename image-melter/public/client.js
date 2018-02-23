@@ -1537,8 +1537,11 @@ function dispatch(action) {
   var curr = AppState;
 
   if (typeof action === 'function') {
-    // thunk
-
+    // It's a thunk!
+    action(dispatch, function () {
+      return curr;
+    });
+    return;
   }
 
   AppState = reduceState(action, curr);
