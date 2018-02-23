@@ -1322,7 +1322,7 @@ var asyncMakeGif = function asyncMakeGif(frames) {
       quality: 10
     });
 
-    getState().frames.forEach(function (frame) {
+    frames.forEach(function (frame) {
       gif.addFrame(frame, { delay: 16 });
     });
 
@@ -1472,8 +1472,8 @@ var RenderButton = function (_Component) {
           processingStepsFinished = _props$app.processingStepsFinished;
 
 
-      var framePercent = processingStepsFinished / processingStepsTotal;
-      var percent = (gifPercent * 100 + framePercent * 100).toFixed(2);
+      var framePercent = processingStepsFinished / (processingStepsTotal || 1);
+      var percent = ((gifPercent * 100 + framePercent * 100) / 2).toFixed(2);
 
       var value = renderingGif === true ? 'RENDERING ' + percent + '%' : "Render";
 

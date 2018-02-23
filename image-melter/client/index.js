@@ -197,7 +197,7 @@ const asyncMakeGif = (frames) => (dispatch, getState) => {
     quality: 10
   });
 
-  getState().frames.forEach(frame => {
+  frames.forEach(frame => {
     gif.addFrame(frame, { delay: 16 });
   });
 
@@ -327,8 +327,8 @@ class RenderButton extends Component {
       app: { renderingGif, gifPercent, renderingFrames, processingStepsTotal, processingStepsFinished  }
     } = props;
     
-    const framePercent = processingStepsFinished / processingStepsTotal;
-    const percent = (gifPercent * 100 + framePercent * 100).toFixed(2);
+    const framePercent = processingStepsFinished / (processingStepsTotal || 1);
+    const percent = ((gifPercent * 100 + framePercent * 100) / 2).toFixed(2);
     
     const value = renderingGif === true
       ? `RENDERING ${percent}%`
