@@ -1240,9 +1240,10 @@ var defaultState = {
   frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
-  renderingGif: false,
+  renderingFrames: false,
   processingStepsTotal: 0,
-  processingStepsCompleted: 0,
+  processingStepsFinished: 0,
+  renderingGif: false,
   gifPercent: 0,
   gif: null
 };
@@ -1251,17 +1252,21 @@ var asyncCreateFrames = function asyncCreateFrames() {
   return function (dispatch, getState) {
     var state = getState();
 
+    dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
+
     // create slices
     var slices = [];
     var desiredSlices = state.numSlices;
     var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
     var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
 
     var _loop = function _loop(i) {
       var idx = i;
       setTimeout(function () {
         slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-        console.log('created slice', slices[slices.length - 1], idx);
+        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+        // console.log('created slice', slices[slices.length-1], idx);
       });
     };
 
@@ -1285,12 +1290,14 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var frames = [];
     var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
     var frameCount = Math.ceil(maxYTravel / state.verticalInc);
+    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
 
     var _loop2 = function _loop2(_i) {
       var idx = _i;
       setTimeout(function () {
         frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
-        console.log('created frame', frames[frames.length - 1], idx);
+        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+        // console.log('created frame', frames[frames.length-1], idx);
       });
     };
 
@@ -1302,7 +1309,35 @@ var asyncCreateFrames = function asyncCreateFrames() {
       // if the event loop works right... when this baby hits 88 miles per hour...
       // all the previous tasks will have completed.
       console.log('frames done?', frames);
+      dispatch(asyncMakeGif(frames));
     });
+  };
+};
+
+var asyncMakeGif = function asyncMakeGif(frames) {
+  return function (dispatch, getState) {
+    var gif = new GIF({
+      workerScript: GIF_WORKER_PATH,
+      workers: 2,
+      quality: 10
+    });
+
+    getState().frames.forEach(function (frame) {
+      gif.addFrame(frame, { delay: 16 });
+    });
+
+    gif.on('progress', function (percent) {
+      dispatch({ type: 'GIF_PROGRESS', payload: percent });
+    });
+
+    gif.on('finished', function (blob) {
+      // window.open(URL.createObjectURL(blob));
+      blobToImage(blob, function (err, img) {
+        dispatch({ type: 'GIF_COMPLETED', payload: img });
+      });
+    });
+
+    gif.render();
   };
 };
 
@@ -1326,47 +1361,54 @@ function reduceState(action) {
     return _extends({}, state, { numSlices: action.payload });
   }
 
-  if (action.type === 'RENDER_FRAMES') {
-    if (!state.inputCvs) return state;
+  //   if (action.type === 'RENDER_FRAMES') {
+  //     if (!state.inputCvs) return state;
 
-    // create slices
-    var slices = [];
-    var desiredSlices = state.numSlices;
-    var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
-    var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-    for (var i = 0; i < actualNumSlices; i++) {
-      slices.push(createSlice(state.inputCvs, i, sliceWidth));
-    }
+  //     // create slices
+  //     const slices = [];
+  //     const desiredSlices = state.numSlices;
+  //     const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
+  //     const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+  //     for (let i = 0; i < actualNumSlices; i++) {
+  //       slices.push(createSlice(state.inputCvs, i, sliceWidth));
+  //     }
 
-    // create initial ys
-    var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var _i2 = 1; _i2 < actualNumSlices; _i2++) {
-      var prev = initialYs[_i2 - 1];
-      var maxInc = Math.floor(state.maxStartOffset / 10.333);
-      var amount = maxInc * (doomRand() % 3 - 1);
-      var proposed = prev + amount;
-      var r = proposed;
-      if (proposed > 0) r = 0;else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-      initialYs.push(r);
-    }
+  //     // create initial ys
+  //     const initialYs = [
+  //       -doomRand() % state.maxStartOffset
+  //     ];
+  //     for (let i = 1; i < actualNumSlices; i++) {
+  //       const prev = initialYs[i - 1];
+  //       const maxInc = Math.floor(state.maxStartOffset / 10.333);
+  //       const amount = maxInc * ((doomRand() % 3) - 1);
+  //       const proposed = prev + amount;
+  //       let r = proposed;
+  //       if (proposed > 0) r = 0;
+  //       else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+  //       initialYs.push(r);
+  //     }
 
-    // create frames
-    var frames = [];
-    var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
-    var frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    for (var _i3 = 0; _i3 <= frameCount; _i3++) {
-      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, _i3));
-    }
+  //     // create frames
+  //     const frames = [];
+  //     const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
+  //     const frameCount = Math.ceil(maxYTravel / state.verticalInc);
+  //     for (let i = 0; i <= frameCount; i++) {
+  //       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, i)); 
+  //     }
 
-    return _extends({}, state, { frames: frames });
-  }
+  //     return { ...state, frames };
+  //   }
 
-  if (action.type === 'SET_TOTAL_PROCESSING_STEPS') {
-    return _extends({}, state, { totalProcessingSteps: 0 });
+  if (action.type === 'FRAMES_START') {
+    return _extends({}, state, { renderingFrames: true, processingStepsTotal: 0, processingStepsFinished: 0 });
   }
 
   if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
-    return _extends({}, state, { totalProcessingSteps: state.totalProcessingSteps + action.payload });
+    return _extends({}, state, { processingStepsTotal: state.processingStepsTotal + action.payload });
+  }
+
+  if (action.type === 'INC_FINISHED_PROCESSING_STEPS') {
+    return _extends({}, state, { processingStepsFinished: state.processingStepsFinished + action.payload });
   }
 
   if (action.type === 'GIF_START') {
@@ -1419,54 +1461,28 @@ var RenderButton = function (_Component) {
   }
 
   _createClass(RenderButton, [{
-    key: 'makeGif',
-    value: function makeGif(_ref2) {
-      var dispatch = _ref2.dispatch,
-          frames = _ref2.app.frames;
-
-      var gif = new GIF({
-        workerScript: GIF_WORKER_PATH,
-        workers: 2,
-        quality: 10
-      });
-
-      AppState.frames.forEach(function (frame) {
-        gif.addFrame(frame, { delay: 16 });
-      });
-
-      gif.on('progress', function (percent) {
-        dispatch({ type: 'GIF_PROGRESS', payload: percent });
-      });
-
-      gif.on('finished', function (blob) {
-
-        // window.open(URL.createObjectURL(blob));
-        blobToImage(blob, function (err, img) {
-          dispatch({ type: 'GIF_COMPLETED', payload: img });
-        });
-      });
-
-      gif.render();
-    }
-  }, {
     key: 'render',
     value: function render(props) {
-      var _this2 = this;
-
       var dispatch = props.dispatch,
           _props$app = props.app,
           renderingGif = _props$app.renderingGif,
-          gifPercent = _props$app.gifPercent;
+          gifPercent = _props$app.gifPercent,
+          renderingFrames = _props$app.renderingFrames,
+          processingStepsTotal = _props$app.processingStepsTotal,
+          processingStepsFinished = _props$app.processingStepsFinished;
 
 
-      var value = renderingGif === true ? 'RENDERING ' + (gifPercent * 100).toFixed(2) + '%' : "Render";
+      var framePercent = processingStepsFinished / processingStepsTotal;
+      var percent = (gifPercent * 100 + framePercent * 100).toFixed(2);
+
+      var value = renderingGif === true ? 'RENDERING ' + percent + '%' : "Render";
 
       return h('input', {
         type: 'button',
         value: value,
         disabled: renderingGif ? 'disabled' : null,
         onclick: function onclick() {
-          if (renderingGif) return;
+          if (renderingFrames || renderingGif) return;
 
           dispatch({ type: 'GIF_START' });
 
@@ -1475,7 +1491,7 @@ var RenderButton = function (_Component) {
           setTimeout(function () {
             dispatch(asyncCreateFrames());
             //dispatch({ type: 'RENDER_FRAMES' });
-            _this2.makeGif(props);
+            // this.makeGif(props);
           }, 100);
         }
       });
