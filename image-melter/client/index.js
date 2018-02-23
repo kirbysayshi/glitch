@@ -46,8 +46,19 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
     : maxHeight / Math.max(img.height, maxHeight);
   cvs.width = img.width * ratio;
   cvs.height = img.height * ratio;
-  const x
-  ctx.drawImage(
+  const sx = 0;
+  const sy = 0;
+  const swidth = img.width;
+  const sheight = img.height;
+  const dx = 0;
+  const dy = 0;
+  const dwidth = cvs.width;
+  const dheight = cvs.height;
+  ctx.drawImage(img,
+    sx, sy, swidth, sheight,
+    dx, dy, dwidth, dheight
+  );
+  return cvs;
 }
 
 function createSlice (cvs, sliceIdx, width) {
@@ -317,9 +328,10 @@ class InputPanel extends Component {
         type: 'file',
         onchange: (e) => {
           fileToImage(e.target.files[0], (err, img) => {
-            imageToCanvas(img, (err, cvs) => {
+            const cvs = downscaleImageToCanvas(img,
+              window.screen.width * (window.pixelDeviceRatio || 1),
+              window.screen.height * (window.pixelDeviceRatio || 1));
               dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-            });
           });  
         }
       }),
@@ -370,6 +382,12 @@ const AppContainer = (props) => {
 let AppState;
 function dispatch(action) {
   let curr = AppState;
+  
+  if (typeof action === 'function') {
+    // thunk
+    
+  }
+  
   AppState = reduceState(action, curr);
   console.log('next state', AppState);
   

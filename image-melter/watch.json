@@ -12,7 +12,8 @@
     ],
     "include": [
       "\\.json",
-      "^client/"
+      "^client/",
+      "^views/"
     ]
   },
   "throttle": 400
