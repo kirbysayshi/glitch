@@ -120,7 +120,7 @@ const doomRand = () => Math.floor(Math.random() * 256);
 
 const defaultState = {
   inputCvs: null,
-  numSlices: 400,
+  numSlices: 200,
   frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
@@ -216,7 +216,8 @@ const asyncMakeGif = (frames) => (dispatch, getState) => {
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
-    return { ...state, inputCvs: action.payload };
+    const inputCvs = action.payload;
+    return { ...state, inputCvs, };
   }
   
   if (action.type === 'VERTICAL_INC_CHANGE') {
@@ -397,9 +398,9 @@ class InputPanel extends Component {
           fileToImage(e.target.files[0], (err, img) => {
             const cvs = downscaleImageToCanvas(img,
               //window.screen.width * (window.pixelDeviceRatio || 1),
-              window.screen.width,
+              window.screen.width / 4,
               //window.screen.height * (window.pixelDeviceRatio || 1));
-              window.screen.height);
+              window.screen.height / 4);
               dispatch({ type: 'IMAGE_LOAD', payload: cvs });
           });  
         }
@@ -410,7 +411,7 @@ class InputPanel extends Component {
         value: numSlices,
         onChange: (value) => dispatch({
           type: 'SLICE_COUNT_CHANGE',
-          payload: Math.min(parseInt(value, 10) || 0, window.screen.width / 
+          payload: parseInt(value, 10) || 0,
         })
       }),
       
