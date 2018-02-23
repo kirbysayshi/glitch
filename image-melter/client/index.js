@@ -125,11 +125,63 @@ const defaultState = {
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingGif: false,
+  processingStepsTotal: 0,
+  processingStepsCompleted: 0,
   gifPercent: 0,
   gif: null,
 };
 
-// TODO: replace all the ... with Object.assign, sigh. Or add babel + browserify...
+
+const asyncCreateFrames = () => (dispatch, getState) => {
+  const state = getState();
+
+  // create slices
+  const slices = [];
+  const desiredSlices = state.numSlices;
+  const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
+  const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+  for (let i = 0; i < actualNumSlices; i++) {
+    const idx = i;
+    setTimeout(() => {
+      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+      console.log('created slice', slices[slices.length-1], idx);
+    });
+  }
+  
+  // create initial ys
+  const initialYs = [
+    -doomRand() % state.maxStartOffset
+  ];
+  for (let i = 1; i < actualNumSlices; i++) {
+    const prev = initialYs[i - 1];
+    const maxInc = Math.floor(state.maxStartOffset / 10.333);
+    const amount = maxInc * ((doomRand() % 3) - 1);
+    const proposed = prev + amount;
+    let r = proposed;
+    if (proposed > 0) r = 0;
+    else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+    initialYs.push(r);
+  }
+  
+  // create frames
+  const frames = [];
+  const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
+  const frameCount = Math.ceil(maxYTravel / state.verticalInc);
+  for (let i = 0; i <= frameCount; i++) {
+    const idx = i;
+    setTimeout(() => {
+      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx)); 
+      console.log('created frame', frames[frames.length-1], idx);
+    });
+  }
+  
+  setTimeout(() => {
+    // if the event loop works right... when this baby hits 88 miles per hour...
+    // all the previous tasks will have completed.
+    console.log('frames done?', frames);
+  });
+}
+
 
 function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
@@ -185,6 +237,14 @@ function reduceState(action, state=defaultState) {
     }
     
     return { ...state, frames };
+  }
+  
+  if (action.type === 'SET_TOTAL_PROCESSING_STEPS') {
+    return { ...state, totalProcessingSteps: 0 }; 
+  }
+  
+  if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
+    return { ...state, totalProcessingSteps: state.totalProcessingSteps + action.payload }; 
   }
   
   if (action.type === 'GIF_START') {
@@ -277,7 +337,8 @@ class RenderButton extends Component {
         // ensure we get at least a tick to update UI before RENDER_FRAMES
         // locks up...
         setTimeout(() => {
-          dispatch({ type: 'RENDER_FRAMES' });
+          dispatch(asyncCreateFrames());
+          //dispatch({ type: 'RENDER_FRAMES' });
           this.makeGif(props);
         }, 100);
       }

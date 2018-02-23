@@ -1241,11 +1241,70 @@ var defaultState = {
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingGif: false,
+  processingStepsTotal: 0,
+  processingStepsCompleted: 0,
   gifPercent: 0,
   gif: null
 };
 
-// TODO: replace all the ... with Object.assign, sigh. Or add babel + browserify...
+var asyncCreateFrames = function asyncCreateFrames() {
+  return function (dispatch, getState) {
+    var state = getState();
+
+    // create slices
+    var slices = [];
+    var desiredSlices = state.numSlices;
+    var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
+    var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+
+    var _loop = function _loop(i) {
+      var idx = i;
+      setTimeout(function () {
+        slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+        console.log('created slice', slices[slices.length - 1], idx);
+      });
+    };
+
+    for (var i = 0; i < actualNumSlices; i++) {
+      _loop(i);
+    }
+
+    // create initial ys
+    var initialYs = [-doomRand() % state.maxStartOffset];
+    for (var i = 1; i < actualNumSlices; i++) {
+      var prev = initialYs[i - 1];
+      var maxInc = Math.floor(state.maxStartOffset / 10.333);
+      var amount = maxInc * (doomRand() % 3 - 1);
+      var proposed = prev + amount;
+      var r = proposed;
+      if (proposed > 0) r = 0;else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+      initialYs.push(r);
+    }
+
+    // create frames
+    var frames = [];
+    var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
+    var frameCount = Math.ceil(maxYTravel / state.verticalInc);
+
+    var _loop2 = function _loop2(_i) {
+      var idx = _i;
+      setTimeout(function () {
+        frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
+        console.log('created frame', frames[frames.length - 1], idx);
+      });
+    };
+
+    for (var _i = 0; _i <= frameCount; _i++) {
+      _loop2(_i);
+    }
+
+    setTimeout(function () {
+      // if the event loop works right... when this baby hits 88 miles per hour...
+      // all the previous tasks will have completed.
+      console.log('frames done?', frames);
+    });
+  };
+};
 
 function reduceState(action) {
   var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultState;
@@ -1281,8 +1340,8 @@ function reduceState(action) {
 
     // create initial ys
     var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var _i = 1; _i < actualNumSlices; _i++) {
-      var prev = initialYs[_i - 1];
+    for (var _i2 = 1; _i2 < actualNumSlices; _i2++) {
+      var prev = initialYs[_i2 - 1];
       var maxInc = Math.floor(state.maxStartOffset / 10.333);
       var amount = maxInc * (doomRand() % 3 - 1);
       var proposed = prev + amount;
@@ -1295,11 +1354,19 @@ function reduceState(action) {
     var frames = [];
     var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
     var frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    for (var _i2 = 0; _i2 <= frameCount; _i2++) {
-      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, _i2));
+    for (var _i3 = 0; _i3 <= frameCount; _i3++) {
+      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, _i3));
     }
 
     return _extends({}, state, { frames: frames });
+  }
+
+  if (action.type === 'SET_TOTAL_PROCESSING_STEPS') {
+    return _extends({}, state, { totalProcessingSteps: 0 });
+  }
+
+  if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
+    return _extends({}, state, { totalProcessingSteps: state.totalProcessingSteps + action.payload });
   }
 
   if (action.type === 'GIF_START') {
@@ -1406,7 +1473,8 @@ var RenderButton = function (_Component) {
           // ensure we get at least a tick to update UI before RENDER_FRAMES
           // locks up...
           setTimeout(function () {
-            dispatch({ type: 'RENDER_FRAMES' });
+            dispatch(asyncCreateFrames());
+            //dispatch({ type: 'RENDER_FRAMES' });
             _this2.makeGif(props);
           }, 100);
         }
