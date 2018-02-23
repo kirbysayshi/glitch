@@ -149,7 +149,6 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     setTimeout(() => {
       slices.push(createSlice(state.inputCvs, idx, sliceWidth));
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      // console.log('created slice', slices[slices.length-1], idx);
     });
   }
   
@@ -178,14 +177,12 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     setTimeout(() => {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx)); 
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      // console.log('created frame', frames[frames.length-1], idx);
     });
   }
   
   setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
-    console.log('frames done?', frames);
     dispatch(asyncMakeGif(frames));
   });
 }
@@ -399,8 +396,10 @@ class InputPanel extends Component {
         onchange: (e) => {
           fileToImage(e.target.files[0], (err, img) => {
             const cvs = downscaleImageToCanvas(img,
-              window.screen.width * (window.pixelDeviceRatio || 1),
-              window.screen.height * (window.pixelDeviceRatio || 1));
+              //window.screen.width * (window.pixelDeviceRatio || 1),
+              window.screen.width,
+              //window.screen.height * (window.pixelDeviceRatio || 1));
+              window.screen.height);
               dispatch({ type: 'IMAGE_LOAD', payload: cvs });
           });  
         }
@@ -411,7 +410,7 @@ class InputPanel extends Component {
         value: numSlices,
         onChange: (value) => dispatch({
           type: 'SLICE_COUNT_CHANGE',
-          payload: parseInt(value, 10)  
+          payload: Math.min(parseInt(value, 10) || 0, window.screen.width / 
         })
       }),
       
@@ -420,7 +419,7 @@ class InputPanel extends Component {
         value: verticalInc,
         onChange: (value) => dispatch({
           type: 'VERTICAL_INC_CHANGE',
-          payload: parseInt(value, 10)  
+          payload: parseInt(value, 10) || 0
         })
       }),
       
@@ -429,7 +428,7 @@ class InputPanel extends Component {
         value: maxStartOffset,
         onChange: (value) => dispatch({
           type: 'MAX_START_OFFSET_CHANGE',
-          payload: parseInt(value, 10)  
+          payload: parseInt(value, 10) || 0
         })
       }),
       
