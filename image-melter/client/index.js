@@ -39,6 +39,17 @@ function makeCanvas() {
   return { cvs, ctx };
 }
 
+function downscaleImageToCanvas(img, maxWidth, maxHeight) {
+  const { cvs, ctx } = makeCanvas();  
+  const ratio = img.width > img.height
+    ? maxWidth / Math.max(img.width, maxWidth)
+    : maxHeight / Math.max(img.height, maxHeight);
+  cvs.width = img.width * ratio;
+  cvs.height = img.height * ratio;
+  const x
+  ctx.drawImage(
+}
+
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
     ...makeCanvas(),
