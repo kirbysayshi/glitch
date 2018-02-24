@@ -63,16 +63,10 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
 
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
-    ...makeCanvas(),
     idx: sliceIdx,
+    width,
+    height: cvs.height,
   }
-
-  slice.cvs.width = width;
-  slice.cvs.height = cvs.height;
-  slice.ctx.drawImage(cvs,
-    sliceIdx * width, 0, width, cvs.height, 
-    0, 0, width, cvs.height
-  );
   
   return slice;
 }
@@ -87,7 +81,6 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
   // Or just the original image for loop effect?
   // ctx.drawImage(inputCvs, 0, 0);
   
-  // TODO: this should operate on the original canvas + ys, not slices.
   // TODO: add an acceleration to the Ys.
   for (let i = 0; i < slices.length; i++) {
     const slice = slices[i];
@@ -95,17 +88,17 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
     
-    const sx = 0;
+    const sx = slice.idx * slice.width;
     const sy = 0;
-    const swidth = slice.cvs.width;
-    const sheight = slice.cvs.height;
+    const swidth = slice.width;
+    const sheight = slice.height;
     
-    const dx = slice.idx * slice.cvs.width;
+    const dx = slice.idx * slice.width;
     const dy = y < 0 ? 0 : y;
-    const dwidth = slice.cvs.width;
-    const dheight = slice.cvs.height;
+    const dwidth = slice.width;
+    const dheight = slice.height;
     
-    ctx.drawImage(slice.cvs,
+    ctx.drawImage(inputCvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
     );
