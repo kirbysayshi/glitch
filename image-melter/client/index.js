@@ -167,12 +167,21 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
   const frameCount = Math.ceil(maxYTravel / state.verticalInc);
   dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
+  {
+    const status = document.createElement('div');
+    status.innerHTML = `<pre>`
+    document.body.appendChild(status);
+      
+  }
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
     setTimeout(() => {
-      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx)); 
+      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
+      
+      document.body.appendChild(frames[frames.length-1]);
+      
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    });
+    }, 100);
   }
   
   setTimeout(() => {
