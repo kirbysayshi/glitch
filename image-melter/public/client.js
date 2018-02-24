@@ -1258,24 +1258,19 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var desiredSlices = state.numSlices;
     var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
     var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-
-    var _loop = function _loop(i) {
-      var idx = i;
-      setTimeout(function () {
-        slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      });
-    };
-
+    // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
     for (var i = 0; i < actualNumSlices; i++) {
-      _loop(i);
+      var idx = i;
+      // setTimeout(() => {
+      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+      // });
     }
 
     // create initial ys
     var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var i = 1; i < actualNumSlices; i++) {
-      var prev = initialYs[i - 1];
+    for (var _i = 1; _i < actualNumSlices; _i++) {
+      var prev = initialYs[_i - 1];
       var maxInc = Math.floor(state.maxStartOffset / 10.333);
       var amount = maxInc * (doomRand() % 3 - 1);
       var proposed = prev + amount;
@@ -1290,16 +1285,16 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var frameCount = Math.ceil(maxYTravel / state.verticalInc);
     dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
 
-    var _loop2 = function _loop2(_i) {
-      var idx = _i;
+    var _loop = function _loop(_i2) {
+      var idx = _i2;
       setTimeout(function () {
         frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
         dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
       });
     };
 
-    for (var _i = 0; _i <= frameCount; _i++) {
-      _loop2(_i);
+    for (var _i2 = 0; _i2 <= frameCount; _i2++) {
+      _loop(_i2);
     }
 
     setTimeout(function () {
@@ -1315,7 +1310,9 @@ var asyncMakeGif = function asyncMakeGif(frames) {
     var gif = new GIF({
       workerScript: GIF_WORKER_PATH,
       workers: 2,
-      quality: 10
+      quality: 40
+      // TODO: pull this out of the frames? Or pick a color that is opposite of avg.
+      // transparent: 0x000,
     });
 
     frames.forEach(function (frame) {

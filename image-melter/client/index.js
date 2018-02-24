@@ -138,13 +138,13 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   const desiredSlices = state.numSlices;
   const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
   const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
+  // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
   for (let i = 0; i < actualNumSlices; i++) {
     const idx = i;
-    setTimeout(() => {
+    // setTimeout(() => {
       slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    });
+      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+    // });
   }
   
   // create initial ys
@@ -186,7 +186,9 @@ const asyncMakeGif = (frames) => (dispatch, getState) => {
   var gif = new GIF({
     workerScript: GIF_WORKER_PATH,
     workers: 2,
-    quality: 10
+    quality: 40,
+    // TODO: pull this out of the frames? Or pick a color that is opposite of avg.
+    // transparent: 0x000,
   });
 
   frames.forEach(frame => {
