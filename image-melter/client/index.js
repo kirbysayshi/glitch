@@ -178,6 +178,7 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     setTimeout(() => {
       frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
       
+      frames[frames.length-1].style.display = 'block';
       document.body.appendChild(frames[frames.length-1]);
       
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
@@ -269,7 +270,8 @@ function reduceState(action, state=defaultState) {
 
 // BEGIN RENDER RENDER RENDER
 
-const { h, Component, render: PreactRender } = require('preact');
+// const { h, Component, render: PreactRender } = require('preact');
+import { h, Component, render as PreactRender } from 'preact';
 
 const LabeledInput = ({ labelText, value, onChange }) => {
   const readVal = (e) => onChange(e.target.value);
