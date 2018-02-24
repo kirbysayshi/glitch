@@ -1,4 +1,5 @@
-const GIF = require('gif.js');
+// const GIF = require('gif.js');
+import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
 function fileToImage(file, opt_image, cb) {
@@ -169,9 +170,8 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
   {
     const status = document.createElement('div');
-    status.innerHTML = `<pre>`
+    status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
     document.body.appendChild(status);
-      
   }
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
