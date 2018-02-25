@@ -2294,6 +2294,7 @@ function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frame
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
   // ctx.drawImage(inputCvs, 0, 0);
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
 
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < slices.length; i++) {
@@ -2311,9 +2312,6 @@ function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frame
     var dy = y < 0 ? 0 : y;
     var dwidth = slice.width;
     var dheight = slice.height;
-
-    // TODO: // what color? another image?
-    //ctx.clearRect(0, 0, cvs.width, cvs.height);
 
     ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   }
