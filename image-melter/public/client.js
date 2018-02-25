@@ -1218,42 +1218,6 @@ function createSlice(cvs, sliceIdx, width) {
   return slice;
 }
 
-function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frameNum) {
-  // const { cvs, ctx } = makeCanvas();
-  // cvs.height = inputCvs.height;
-  // cvs.width = inputCvs.width;
-
-  var cvs = scratchCvs;
-  var ctx = scratchCvs.getContext('2d');
-  ctx.fillStyle = '#fff';
-  // TODO: should there be a background color?
-  // Or just the original image for loop effect?
-  // ctx.drawImage(inputCvs, 0, 0);
-
-  // TODO: add an acceleration to the Ys.
-  for (var i = 0; i < slices.length; i++) {
-    var slice = slices[i];
-    var initialY = initialYs[i];
-    var y = initialY + verticalInc * frameNum;
-    if (y > inputCvs.height) continue; // this slice is done
-
-    var sx = slice.idx * slice.width;
-    var sy = 0;
-    var swidth = slice.width;
-    var sheight = slice.height;
-
-    var dx = slice.idx * slice.width;
-    var dy = y < 0 ? 0 : y;
-    var dwidth = slice.width;
-    var dheight = slice.height;
-
-    ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
-  }
-
-  // return cvs;
-  return ctx.getImageData(0, 0, cvs.width, cvs.height);
-}
-
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
 var doomRand = function doomRand() {
   return Math.floor(Math.random() * 256);
@@ -1307,35 +1271,33 @@ var asyncCreateFrames = function asyncCreateFrames() {
       initialYs.push(r);
     }
 
-    // create frames
-    var frames = [];
+    {
+      var status = document.createElement('div');
+      status.innerHTML = '<pre>ys: ' + initialYs.join(',') + '</pre>';
+      document.body.appendChild(status);
+    }
     var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
     var frameCount = Math.ceil(maxYTravel / state.verticalInc);
     dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
     {
-      var status = document.createElement('div');
-      status.innerHTML = '<pre>frame count: ' + frameCount + '</pre>';
-      document.body.appendChild(status);
+      var _status = document.createElement('div');
+      _status.innerHTML = '<pre>frame count: ' + frameCount + '</pre>';
+      document.body.appendChild(_status);
     }
-    var scratch = makeCanvas();
-    scratch.cvs.width = state.inputCvs.width;
-    scratch.cvs.height = state.inputCvs.height;
+    //   const scratch = makeCanvas();
+    //   scratch.cvs.width = state.inputCvs.width;
+    //   scratch.cvs.height = state.inputCvs.height;
+    //   for (let i = 0; i <= frameCount; i++) {
+    //     const idx = i;
+    //     setTimeout(() => {
+    //       frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
 
-    var _loop = function _loop(_i2) {
-      var idx = _i2;
-      setTimeout(function () {
-        frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
+    // //       frames[frames.length-1].style.display = 'block';
+    // //       document.body.appendChild(frames[frames.length-1]);
 
-        //       frames[frames.length-1].style.display = 'block';
-        //       document.body.appendChild(frames[frames.length-1]);
-
-        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      }, 100);
-    };
-
-    for (var _i2 = 0; _i2 <= frameCount; _i2++) {
-      _loop(_i2);
-    }
+    //       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+    //     }, 100);
+    //   }
 
     setTimeout(function () {
       // if the event loop works right... when this baby hits 88 miles per hour...
@@ -1457,15 +1419,15 @@ var RenderButton = function (_Component) {
   return RenderButton;
 }(Component);
 
-var ImgHolder = function (_Component2) {
-  inherits(ImgHolder, _Component2);
+var ElHolder = function (_Component2) {
+  inherits(ElHolder, _Component2);
 
-  function ImgHolder() {
-    classCallCheck(this, ImgHolder);
-    return possibleConstructorReturn(this, (ImgHolder.__proto__ || Object.getPrototypeOf(ImgHolder)).apply(this, arguments));
+  function ElHolder() {
+    classCallCheck(this, ElHolder);
+    return possibleConstructorReturn(this, (ElHolder.__proto__ || Object.getPrototypeOf(ElHolder)).apply(this, arguments));
   }
 
-  createClass(ImgHolder, [{
+  createClass(ElHolder, [{
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate() {
       return false;
@@ -1473,12 +1435,12 @@ var ImgHolder = function (_Component2) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (!this.props.img) {
+      if (!this.props.el) {
         this.base.innerHTML = '';
       }
 
-      if (nextProps.img) {
-        this.base.appendChild(nextProps.img);
+      if (nextProps.el) {
+        this.base.appendChild(nextProps.el);
       }
     }
   }, {
@@ -1498,7 +1460,7 @@ var ImgHolder = function (_Component2) {
       return h('div', null, '');
     }
   }]);
-  return ImgHolder;
+  return ElHolder;
 }(Component);
 
 var InputPanel = function (_Component3) {
@@ -1564,7 +1526,7 @@ var InputPanel = function (_Component3) {
 }(Component);
 
 var AppContainer = function AppContainer(props) {
-  return h('div', null, [h(InputPanel, props), h(ImgHolder, { img: props.app.gif })]);
+  return h('div', null, [h(InputPanel, props), h(ElHolder, { el: props.app.inputCvs }), h(ElHolder, { el: props.app.gif })]);
 };
 
 // END RENDER RENDER RENDER

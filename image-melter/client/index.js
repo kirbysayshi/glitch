@@ -108,7 +108,7 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
   }
   
   // return cvs;
-  return ctx.getImageData(0, 0, cvs.width, cvs.height);
+  //return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -166,6 +166,12 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     initialYs.push(r);
   }
   
+  {
+    const status = document.createElement('div');
+    status.innerHTML = `<pre>ys: ${initialYs.join(',')}</pre>`;
+    document.body.appendChild(status);
+  }
+  
   // create frames
   const frames = [];
   const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
@@ -176,20 +182,20 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
     document.body.appendChild(status);
   }
-  const scratch = makeCanvas();
-  scratch.cvs.width = state.inputCvs.width;
-  scratch.cvs.height = state.inputCvs.height;
-  for (let i = 0; i <= frameCount; i++) {
-    const idx = i;
-    setTimeout(() => {
-      frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
+//   const scratch = makeCanvas();
+//   scratch.cvs.width = state.inputCvs.width;
+//   scratch.cvs.height = state.inputCvs.height;
+//   for (let i = 0; i <= frameCount; i++) {
+//     const idx = i;
+//     setTimeout(() => {
+//       frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
       
-//       frames[frames.length-1].style.display = 'block';
-//       document.body.appendChild(frames[frames.length-1]);
+// //       frames[frames.length-1].style.display = 'block';
+// //       document.body.appendChild(frames[frames.length-1]);
       
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    }, 100);
-  }
+//       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+//     }, 100);
+//   }
   
   setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
@@ -329,16 +335,16 @@ class RenderButton extends Component {
   }
 }
 
-class ImgHolder extends Component {
+class ElHolder extends Component {
   shouldComponentUpdate() { return false; }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.img) {
+    if (!this.props.el) {
       this.base.innerHTML = '';  
     }
     
-    if (nextProps.img) {
-      this.base.appendChild(nextProps.img);    
+    if (nextProps.el) {
+      this.base.appendChild(nextProps.el);    
     }
   }
 
@@ -417,7 +423,8 @@ class InputPanel extends Component {
 const AppContainer = (props) => {
   return h('div', null, [
     h(InputPanel, props),
-    h(ImgHolder, { img: props.app.gif })
+    h(ElHolder, { el: props.app.inputCvs }),
+    h(ElHolder, { el: props.app.gif })
   ])
 }
 
