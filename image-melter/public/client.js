@@ -3562,8 +3562,8 @@ function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sli
 
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
-    var initialY = initialYs[i];
-    var y = initialY + verticalInc * frameNum;
+    var _initialY = initialYs[i];
+    var y = _initialY + verticalInc * frameNum;
     if (y > inputCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;

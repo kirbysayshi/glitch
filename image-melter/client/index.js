@@ -98,6 +98,38 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
+function initSliceState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
+  // compute slices
+  const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
+  const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
+  
+  // create initial ys
+  const initialYs = [
+    -doomRand() % maxStartOffset
+  ];
+  for (let i = 1; i < sliceCount; i++) {
+    const prev = initialYs[i - 1];
+    const maxInc = Math.floor(maxStartOffset / 10.333);
+    const amount = maxInc * ((doomRand() % 3) - 1);
+    const proposed = prev + amount;
+    let r = proposed;
+    if (proposed > 0) r = 0;
+    else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    initialYs.push(r);
+  }
+  
+  // create frames
+  const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
+  // TODO: this will become contingent on acceleration...
+  const frameCount = Math.ceil(maxYTravel / verticalInc);
+  
+  return {
+    initialY,
+    width,
+    y: initialY,
+  }
+}
+
 function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {
   const cvs = scratchCvs;
   const ctx = scratchCvs.getContext('2d');
