@@ -100,6 +100,9 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
     const dwidth = slice.width;
     const dheight = slice.height;
     
+    // TODO: // what color? another image?
+    ctx.clearRect(0, 0, dwidth, dheight);
+    
     ctx.drawImage(inputCvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
@@ -107,7 +110,7 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
   }
   
   // return cvs;
-  return cvs;
+  return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -174,12 +177,6 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     initialYs.push(r);
   }
   
-  // {
-  //   const status = document.createElement('div');
-  //   status.innerHTML = `<pre>ys: ${initialYs.join(',')}</pre>`;
-  //   document.body.appendChild(status);
-  // }
-  
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
     workers: 2,
@@ -209,37 +206,25 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   scratch.cvs.height = state.inputCvs.height;
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
-    setTimeout(() => {
-      createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx)
+    // setTimeout(() => {
+      const imgData = createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx)
       // frames.push();
-      gif.addFrame(scratch.ctx, { copy: true, delay: 16 });
+      gif.addFrame(imgData, { delay: 16 });
       
 //       frames[frames.length-1].style.display = 'block';
 //       document.body.appendChild(frames[frames.length-1]);
       
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    }, 100);
+    // }, 100);
   }
   
-  setTimeout(() => {
+  // setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
     // dispatch(asyncMakeGif(frames));
     gif.render();
     
-//     const img = {
-//       width: state.inputCvs.width,
-//       height: state.inputCvs.height,
-//       frames: frames.map(f => ({
-//         data: f.data,
-//         delay: 16
-//       }))
-//     }
-    
-//     writegif(img, (err, buffer) => {
-//       SAFARI_LOG(`rendered? ${err} ${buffer.length}`)  
-//     });
-  });
+  // }, 100)
 }
 
 const asyncMakeGif = (frames) => (dispatch, getState) => {
@@ -481,7 +466,7 @@ function dispatch(action) {
   }
   
   AppState = reduceState(action, curr);
-  console.log('next state', AppState);
+  // console.log('next state', AppState);
   
   if (curr === AppState) return;
   

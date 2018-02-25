@@ -10,7 +10,9 @@ export default {
     format: 'cjs'
   },
   plugins: [
-    resolve(),
+    resolve({
+      browser: true  
+    }),
     
     babel({
       exclude: 'node_modules/**' // only transpile our source code
