@@ -1,6 +1,7 @@
-// const GIF = require('gif.js');
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
+
+import writegif from 'writegif';
 
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
@@ -108,7 +109,7 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
   }
   
   // return cvs;
-  //return ctx.getImageData(0, 0, cvs.width, cvs.height);
+  return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -156,7 +157,7 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     const idx = i;
     // setTimeout(() => {
       slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
     // });
   }
   
@@ -210,6 +211,19 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
     // dispatch(asyncMakeGif(frames));
+    
+    const img = {
+      width: state.inputCvs.width,
+      height: state.inputCvs.height,
+      frames: frames.map(f => ({
+        data: f.data,
+        delay: 16
+      }))
+    }
+    
+    writegif(img, (err, buffer) => {
+      SAFARI_LOG(`rendered? ${err} ${buffer.length}`)  
+    });
   });
 }
 
