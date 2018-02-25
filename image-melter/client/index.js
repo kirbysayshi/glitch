@@ -1,8 +1,6 @@
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
-import writegif from 'writegif';
-
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
@@ -109,7 +107,7 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
   }
   
   // return cvs;
-  return ctx.getImageData(0, 0, cvs.width, cvs.height);
+  return cvs;
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -182,23 +180,39 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   //   document.body.appendChild(status);
   // }
   
+  const gif = new GIF({
+    workerScript: GIF_WORKER_PATH,
+    workers: 2,
+    quality: 40,
+    // TODO: pull this out of the frames? Or pick a color that is opposite of avg.
+    // transparent: 0x000,
+  });
+  
+  gif.on('progress', percent => {
+    dispatch({ type: 'GIF_PROGRESS', payload: percent });
+  });
+
+  gif.on('finished', function(blob) {
+    // window.open(URL.createObjectURL(blob));
+    blobToImage(blob, (err, img) => {
+      dispatch({ type: 'GIF_COMPLETED', payload: img });
+    })
+  });
+  
   // create frames
   const frames = [];
   const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
   const frameCount = Math.ceil(maxYTravel / state.verticalInc);
   dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-  {
-    const status = document.createElement('div');
-    status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
-    document.body.appendChild(status);
-  }
   const scratch = makeCanvas();
   scratch.cvs.width = state.inputCvs.width;
   scratch.cvs.height = state.inputCvs.height;
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
     setTimeout(() => {
-      frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
+      createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx)
+      // frames.push();
+      gif.addFrame(scratch.ctx, { copy: true, delay: 16 });
       
 //       frames[frames.length-1].style.display = 'block';
 //       document.body.appendChild(frames[frames.length-1]);
@@ -211,19 +225,20 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
     // dispatch(asyncMakeGif(frames));
+    gif.render();
     
-    const img = {
-      width: state.inputCvs.width,
-      height: state.inputCvs.height,
-      frames: frames.map(f => ({
-        data: f.data,
-        delay: 16
-      }))
-    }
+//     const img = {
+//       width: state.inputCvs.width,
+//       height: state.inputCvs.height,
+//       frames: frames.map(f => ({
+//         data: f.data,
+//         delay: 16
+//       }))
+//     }
     
-    writegif(img, (err, buffer) => {
-      SAFARI_LOG(`rendered? ${err} ${buffer.length}`)  
-    });
+//     writegif(img, (err, buffer) => {
+//       SAFARI_LOG(`rendered? ${err} ${buffer.length}`)  
+//     });
   });
 }
 
