@@ -98,15 +98,13 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initSliceState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
   // compute slices
   const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
   
   // create initial ys
-  const initialYs = [
-    -doomRand() % maxStartOffset
-  ];
+  const initialYs = [-doomRand() % maxStartOffset];
   for (let i = 1; i < sliceCount; i++) {
     const prev = initialYs[i - 1];
     const maxInc = Math.floor(maxStartOffset / 10.333);
@@ -118,16 +116,64 @@ function initSliceState(inputCvs, requestedSliceCount, maxStartOffset, verticalI
     initialYs.push(r);
   }
   
-  // create frames
   const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
   // TODO: this will become contingent on acceleration...
   const frameCount = Math.ceil(maxYTravel / verticalInc);
   
+  const scratch = makeCanvas();
+  scratch.cvs.width = inputCvs.width;
+  scratch.cvs.height = inputCvs.height;
+  
   return {
-    initialY,
-    width,
-    y: initialY,
+    inputCvs,
+    initialYs,
+    sliceWidth,
+    sliceCount,
+    frameCount,
+    scratch,
   }
+}
+
+function animStateFrame(animState, frameNum) {
+  const {
+    inputCvs,
+    scratch,
+    sliceCount,
+    sliceWidth,
+    initialYs,
+  } = animState;
+  
+  // logic here...
+  scratch.ctx.fillStyle = '#fff';
+  // TODO: should there be a background color?
+  // Or just the original image for loop effect?
+  // scratch.ctx.drawImage(inputCvs, 0, 0);
+  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  
+  // TODO: add an acceleration to the Ys.
+  for (let i = 0; i < sliceCount; i++) {
+    const initialY = initialYs[i];
+    const y = initialY + (verticalInc * frameNum);
+    if (y > inputCvs.height) continue; // this slice is done
+    
+    const sx = i * sliceWidth;
+    const sy = 0;
+    const swidth = sliceWidth;
+    const sheight = inputCvs.height;
+    
+    const dx = i * sliceWidth;
+    const dy = y < 0 ? 0 : y;
+    const dwidth = sliceWidth;
+    const dheight = inputCvs.height;
+    
+    scratch.ctx.drawImage(inputCvs,
+      sx, sy, swidth, sheight,
+      dx, dy, dwidth, dheight
+    );
+  }
+  
+  const imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+  return imgData;
 }
 
 function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {

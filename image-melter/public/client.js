@@ -3562,8 +3562,8 @@ function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sli
 
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
-    var _initialY = initialYs[i];
-    var y = _initialY + verticalInc * frameNum;
+    var initialY = initialYs[i];
+    var y = initialY + verticalInc * frameNum;
     if (y > inputCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;
@@ -3685,8 +3685,8 @@ function reduceState(action) {
 
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
-    var inputCvs = action.payload;
-    return _extends({}, state, { inputCvs: inputCvs });
+    var _inputCvs = action.payload;
+    return _extends({}, state, { inputCvs: _inputCvs });
   }
 
   if (action.type === 'VERTICAL_INC_CHANGE') {
