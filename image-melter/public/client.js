@@ -2234,6 +2234,18 @@ function fileToImage(file, opt_image, cb) {
   img.src = url;
 }
 
+function imageToCanvas(image, opt_cvs, cb) {
+  if (!cb) {
+    cb = opt_cvs;opt_cvs = null;
+  }
+  var cvs = opt_cvs || document.createElement('canvas');
+  var ctx = cvs.getContext('2d');
+  cvs.width = image.width;
+  cvs.height = image.height;
+  ctx.drawImage(image, 0, 0);
+  cb(null, cvs);
+}
+
 function blobToImage(blob, opt_image, cb) {
   if (!cb) {
     cb = opt_image;opt_image = null;
@@ -2245,6 +2257,14 @@ function blobToImage(blob, opt_image, cb) {
     cb(null, img);
   };
   img.src = url;
+}
+
+function fileToArrayBuffer(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    cb(reader.error, reader.result);
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function makeCanvas() {
@@ -2293,7 +2313,7 @@ function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frame
     var dheight = slice.height;
 
     // TODO: // what color? another image?
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    //ctx.clearRect(0, 0, cvs.width, cvs.height);
 
     ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   }
@@ -2585,29 +2605,38 @@ var InputPanel = function (_Component3) {
       return h('form', null, [h('input', {
         type: 'file',
         onchange: function onchange(e) {
-          var exif$$1 = exif.readFromBinaryFile(e.target.files[0]);
-          var orientation = exif$$1.Orientation;
 
           fileToImage(e.target.files[0], function (err, img) {
 
-            // EXIF.getData(img, function () {
-            // const orientation = img.exifdata.Orientation
+            fileToArrayBuffer(e.target.files[0], function (err, ab) {
+              if (err) throw err;
+              var exif$$1 = exif.readFromBinaryFile(ab);
 
-            // 2. Invoke `exifOrient` to orient the image and get back a canvas
-            exifOrient(img, orientation, function (err, cvs) {
+              if (exif$$1) {
+                var orientation = exif$$1.Orientation;
 
-              // 3. Do whatever you want with the canvas, e.g. render it into an image
-              dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                exifOrient(img, orientation, function (err, cvs) {
+                  if (err) throw err;
+                  // 3. Do whatever you want with the canvas, e.g. render it into an image
+                  dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                });
+              } else {
+
+                imageToCanvas(img, function (err, cvs) {
+                  return dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                });
+              }
             });
-            // });
-
-            // const cvs = downscaleImageToCanvas(img,
-            //   window.screen.width * (window.pixelDeviceRatio || 1),
-            //   // 1024,
-            //   window.screen.height * (window.pixelDeviceRatio || 1));
-            //   // 1024);
-            // dispatch({ type: 'IMAGE_LOAD', payload: cvs });
           });
+
+          // function downscale(img) {
+          //   const cvs = downscaleImageToCanvas(img,
+          //     window.screen.width * (window.pixelDeviceRatio || 1),
+          //     // 1024,
+          //     window.screen.height * (window.pixelDeviceRatio || 1));
+          //     // 1024);
+          //   dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+          // }
         }
       }), LabeledInput({
         labelText: 'Vertical Slices',

@@ -112,7 +112,7 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
     const dheight = slice.height;
     
     // TODO: // what color? another image?
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    //ctx.clearRect(0, 0, cvs.width, cvs.height);
     
     ctx.drawImage(inputCvs,
       sx, sy, swidth, sheight,
@@ -411,29 +411,39 @@ class InputPanel extends Component {
       h('input', {
         type: 'file',
         onchange: (e) => {
-          const exif = EXIF.readFromBinaryFile(e.target.files[0]);
-          const orientation = exif.Orientation;
           
           fileToImage(e.target.files[0], (err, img) => {
-            
-            // EXIF.getData(img, function () {
-              // const orientation = img.exifdata.Orientation
-
-              // 2. Invoke `exifOrient` to orient the image and get back a canvas
-              exifOrient(img, orientation, function (err, cvs) {
-
-                // 3. Do whatever you want with the canvas, e.g. render it into an image
-                dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-              })
-            // });
-            
-            // const cvs = downscaleImageToCanvas(img,
-            //   window.screen.width * (window.pixelDeviceRatio || 1),
-            //   // 1024,
-            //   window.screen.height * (window.pixelDeviceRatio || 1));
-            //   // 1024);
-            // dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+          
+            fileToArrayBuffer(e.target.files[0], (err, ab) => {
+              if (err) throw err;
+              const exif = EXIF.readFromBinaryFile(ab);
+              
+              if (exif) {
+                const orientation = exif.Orientation;  
+              
+                exifOrient(img, orientation, function (err, cvs) {
+                  if (err) throw err;
+                  // 3. Do whatever you want with the canvas, e.g. render it into an image
+                  dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                })  
+              } else {
+              
+                imageToCanvas(img, (err, cvs) => dispatch({ type: 'IMAGE_LOAD', payload: cvs }));
+              }
+              
+              
+            })
           });  
+          
+          
+          // function downscale(img) {
+          //   const cvs = downscaleImageToCanvas(img,
+          //     window.screen.width * (window.pixelDeviceRatio || 1),
+          //     // 1024,
+          //     window.screen.height * (window.pixelDeviceRatio || 1));
+          //     // 1024);
+          //   dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+          // }
         }
       }),
       
