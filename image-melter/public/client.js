@@ -1208,6 +1208,52 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
+function createSlice(cvs, sliceIdx, width) {
+  var slice = {
+    idx: sliceIdx,
+    width: width,
+    height: cvs.height
+  };
+
+  return slice;
+}
+
+function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frameNum) {
+  var ctx = scratchCvs.getContext('2d');
+  ctx.fillStyle = '#fff';
+  // TODO: should there be a background color?
+  // Or just the original image for loop effect?
+  // ctx.drawImage(inputCvs, 0, 0);
+
+  // TODO: add an acceleration to the Ys.
+  for (var i = 0; i < slices.length; i++) {
+    var slice = slices[i];
+    var initialY = initialYs[i];
+    var y = initialY + verticalInc * frameNum;
+    if (y > inputCvs.height) continue; // this slice is done
+
+    var sx = slice.idx * slice.width;
+    var sy = 0;
+    var swidth = slice.width;
+    var sheight = slice.height;
+
+    var dx = slice.idx * slice.width;
+    var dy = y < 0 ? 0 : y;
+    var dwidth = slice.width;
+    var dheight = slice.height;
+
+    ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+  }
+
+  // return cvs;
+  //return ctx.getImageData(0, 0, cvs.width, cvs.height);
+}
+
+// https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
+var doomRand = function doomRand() {
+  return Math.floor(Math.random() * 256);
+};
+
 // BEGIN STATE MANAGEMENT
 
 var defaultState = {
@@ -1229,32 +1275,35 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var state = getState();
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
-    var desiredSlices = state.numSlices;
-    var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
-    var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-    // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-    // for (let i = 0; i < actualNumSlices; i++) {
-    //   const idx = i;
-    //   // setTimeout(() => {
-    //     slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-    //     // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    //   // });
-    // }
 
-    // // create initial ys
-    // const initialYs = [
-    //   -doomRand() % state.maxStartOffset
-    // ];
-    // for (let i = 1; i < actualNumSlices; i++) {
-    //   const prev = initialYs[i - 1];
-    //   const maxInc = Math.floor(state.maxStartOffset / 10.333);
-    //   const amount = maxInc * ((doomRand() % 3) - 1);
-    //   const proposed = prev + amount;
-    //   let r = proposed;
-    //   if (proposed > 0) r = 0;
-    //   else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-    //   initialYs.push(r);
-    // }
+    // create slices
+    var slices = [];
+    var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
+    var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
+    // SAFARI_LOG(`desired: ${state.numSlices}`);
+    // SAFARI_LOG(`width: ${state.inputCvs.width}`);
+    // SAFARI_LOG(`sliceWidth: ${sliceWidth}`);
+    // SAFARI_LOG(actualNumSlices);
+    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
+    for (var i = 0; i < actualNumSlices; i++) {
+      var idx = i;
+      // setTimeout(() => {
+      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+      // });
+    }
+
+    // create initial ys
+    var initialYs = [-doomRand() % state.maxStartOffset];
+    for (var _i = 1; _i < actualNumSlices; _i++) {
+      var prev = initialYs[_i - 1];
+      var maxInc = Math.floor(state.maxStartOffset / 10.333);
+      var amount = maxInc * (doomRand() % 3 - 1);
+      var proposed = prev + amount;
+      var r = proposed;
+      if (proposed > 0) r = 0;else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+      initialYs.push(r);
+    }
 
     // {
     //   const status = document.createElement('div');
@@ -1262,30 +1311,37 @@ var asyncCreateFrames = function asyncCreateFrames() {
     //   document.body.appendChild(status);
     // }
 
-    // // create frames
-    // const frames = [];
-    // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
-    // const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    // //dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-    // {
-    //   const status = document.createElement('div');
-    //   status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
-    //   document.body.appendChild(status);
-    // }
-    //   const scratch = makeCanvas();
-    //   scratch.cvs.width = state.inputCvs.width;
-    //   scratch.cvs.height = state.inputCvs.height;
-    //   for (let i = 0; i <= frameCount; i++) {
-    //     const idx = i;
-    //     setTimeout(() => {
-    //       frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
+    // create frames
+    var frames = [];
+    var maxYTravel = -initialYs.reduce(function (a, b) {
+      return Math.min(a, b);
+    }) + state.inputCvs.height;
+    var frameCount = Math.ceil(maxYTravel / state.verticalInc);
+    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
+    {
+      var status = document.createElement('div');
+      status.innerHTML = '<pre>frame count: ' + frameCount + '</pre>';
+      document.body.appendChild(status);
+    }
+    var scratch = makeCanvas();
+    scratch.cvs.width = state.inputCvs.width;
+    scratch.cvs.height = state.inputCvs.height;
 
-    // //       frames[frames.length-1].style.display = 'block';
-    // //       document.body.appendChild(frames[frames.length-1]);
+    var _loop = function _loop(_i2) {
+      var idx = _i2;
+      setTimeout(function () {
+        frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
 
-    //       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    //     }, 100);
-    //   }
+        //       frames[frames.length-1].style.display = 'block';
+        //       document.body.appendChild(frames[frames.length-1]);
+
+        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+      }, 100);
+    };
+
+    for (var _i2 = 0; _i2 <= frameCount; _i2++) {
+      _loop(_i2);
+    }
 
     setTimeout(function () {
       // if the event loop works right... when this baby hits 88 miles per hour...

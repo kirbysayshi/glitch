@@ -145,32 +145,35 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   
   // create slices
   const slices = [];
-  const desiredSlices = state.numSlices;
-  const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
+  const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
   const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-  // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-  // for (let i = 0; i < actualNumSlices; i++) {
-  //   const idx = i;
-  //   // setTimeout(() => {
-  //     slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-  //     // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-  //   // });
-  // }
+  // SAFARI_LOG(`desired: ${state.numSlices}`);
+  // SAFARI_LOG(`width: ${state.inputCvs.width}`);
+  // SAFARI_LOG(`sliceWidth: ${sliceWidth}`);
+  // SAFARI_LOG(actualNumSlices);
+  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
+  for (let i = 0; i < actualNumSlices; i++) {
+    const idx = i;
+    // setTimeout(() => {
+      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+    // });
+  }
   
-  // // create initial ys
-  // const initialYs = [
-  //   -doomRand() % state.maxStartOffset
-  // ];
-  // for (let i = 1; i < actualNumSlices; i++) {
-  //   const prev = initialYs[i - 1];
-  //   const maxInc = Math.floor(state.maxStartOffset / 10.333);
-  //   const amount = maxInc * ((doomRand() % 3) - 1);
-  //   const proposed = prev + amount;
-  //   let r = proposed;
-  //   if (proposed > 0) r = 0;
-  //   else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-  //   initialYs.push(r);
-  // }
+  // create initial ys
+  const initialYs = [
+    -doomRand() % state.maxStartOffset
+  ];
+  for (let i = 1; i < actualNumSlices; i++) {
+    const prev = initialYs[i - 1];
+    const maxInc = Math.floor(state.maxStartOffset / 10.333);
+    const amount = maxInc * ((doomRand() % 3) - 1);
+    const proposed = prev + amount;
+    let r = proposed;
+    if (proposed > 0) r = 0;
+    else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+    initialYs.push(r);
+  }
   
   // {
   //   const status = document.createElement('div');
@@ -178,30 +181,30 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   //   document.body.appendChild(status);
   // }
   
-  // // create frames
-  // const frames = [];
-  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
-  // const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-  // //dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-  // {
-  //   const status = document.createElement('div');
-  //   status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
-  //   document.body.appendChild(status);
-  // }
-//   const scratch = makeCanvas();
-//   scratch.cvs.width = state.inputCvs.width;
-//   scratch.cvs.height = state.inputCvs.height;
-//   for (let i = 0; i <= frameCount; i++) {
-//     const idx = i;
-//     setTimeout(() => {
-//       frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
+  // create frames
+  const frames = [];
+  const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
+  const frameCount = Math.ceil(maxYTravel / state.verticalInc);
+  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
+  {
+    const status = document.createElement('div');
+    status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
+    document.body.appendChild(status);
+  }
+  const scratch = makeCanvas();
+  scratch.cvs.width = state.inputCvs.width;
+  scratch.cvs.height = state.inputCvs.height;
+  for (let i = 0; i <= frameCount; i++) {
+    const idx = i;
+    setTimeout(() => {
+      frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
       
-// //       frames[frames.length-1].style.display = 'block';
-// //       document.body.appendChild(frames[frames.length-1]);
+//       frames[frames.length-1].style.display = 'block';
+//       document.body.appendChild(frames[frames.length-1]);
       
-//       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-//     }, 100);
-//   }
+      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+    }, 100);
+  }
   
   setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
