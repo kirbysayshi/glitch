@@ -72,11 +72,13 @@ function createSlice (cvs, sliceIdx, width) {
   return slice;
 }
 
-function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
-  const { cvs, ctx } = makeCanvas();
-  cvs.height = inputCvs.height;
-  cvs.width = inputCvs.width;
+function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, frameNum) {
+  // const { cvs, ctx } = makeCanvas();
+  // cvs.height = inputCvs.height;
+  // cvs.width = inputCvs.width;
 
+  const cvs = scratchCvs;
+  const ctx = scratchCvs.getContext('2d');
   ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
@@ -105,7 +107,8 @@ function createFrame (inputCvs, initialYs, verticalInc, slices, frameNum) {
     );
   }
   
-  return cvs;
+  // return cvs;
+  return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -116,7 +119,7 @@ const doomRand = () => Math.floor(Math.random() * 256);
 
 const defaultState = {
   inputCvs: null,
-  numSlices: 350,
+  numSlices: 400,
   frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
@@ -173,13 +176,16 @@ const asyncCreateFrames = () => (dispatch, getState) => {
     status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
     document.body.appendChild(status);
   }
+  const scratch = makeCanvas();
+  scratch.cvs.width = state.inputCvs.width;
+  scratch.cvs.height = state.inputCvs.height;
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
     setTimeout(() => {
-      frames.push(createFrame(state.inputCvs, initialYs, state.verticalInc, slices, idx));
+      frames.push(createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx));
       
-      frames[frames.length-1].style.display = 'block';
-      document.body.appendChild(frames[frames.length-1]);
+//       frames[frames.length-1].style.display = 'block';
+//       document.body.appendChild(frames[frames.length-1]);
       
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
     }, 100);
@@ -188,7 +194,7 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
-    dispatch(asyncMakeGif(frames));
+    // dispatch(asyncMakeGif(frames));
   });
 }
 
