@@ -202,6 +202,7 @@ const createFrames = () => (dispatch, getState) => {
   
   // create frames
   const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
+  // TODO: this will become contingent on acceleration...
   const frameCount = Math.ceil(maxYTravel / state.verticalInc);
   dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
   const scratch = makeCanvas();
