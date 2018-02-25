@@ -3579,9 +3579,6 @@ function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sli
 
     ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   }
-
-  // return cvs;
-  return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -3595,7 +3592,6 @@ var defaultState = {
   errors: [],
   inputCvs: null,
   numSlices: 400,
-  frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingFrames: false,
@@ -3606,7 +3602,7 @@ var defaultState = {
   gif: null
 };
 
-var asyncCreateFrames = function asyncCreateFrames() {
+var createFrames = function createFrames() {
   return function (dispatch, getState) {
     var state = getState();
 
@@ -3646,6 +3642,8 @@ var asyncCreateFrames = function asyncCreateFrames() {
         dispatch({ type: 'GIF_COMPLETED', payload: img });
       });
     });
+
+    // create frames
     var maxYTravel = -initialYs.reduce(function (a, b) {
       return Math.min(a, b);
     }) + state.inputCvs.height;
@@ -3662,7 +3660,7 @@ var asyncCreateFrames = function asyncCreateFrames() {
         var imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
         gif$$1.addFrame(imgData, { delay: 16 });
         dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      }, 10);
+      }, 1);
     };
 
     for (var _i = 0; _i <= frameCount; _i++) {
@@ -3673,13 +3671,14 @@ var asyncCreateFrames = function asyncCreateFrames() {
       // if the event loop works right... when this baby hits 88 miles per hour...
       // all the previous tasks will have completed.
       gif$$1.render();
-    }, 10);
+    }, 1);
   };
 };
 
 function reduceState(action) {
   var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultState;
 
+  // Lol middleware
   if (action.error) {
     return _extends({}, state, { errors: [].concat(toConsumableArray(state.errors), [action.error]) });
   }
@@ -3700,10 +3699,6 @@ function reduceState(action) {
 
   if (action.type === 'SLICE_COUNT_CHANGE') {
     return _extends({}, state, { numSlices: action.payload });
-  }
-
-  if (action.type === 'FRAMES_START') {
-    return _extends({}, state, { renderingFrames: true, processingStepsTotal: 0, processingStepsFinished: 0 });
   }
 
   if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
@@ -3776,16 +3771,8 @@ var RenderButton = function (_Component) {
         disabled: renderingGif ? 'disabled' : null,
         onclick: function onclick() {
           if (renderingFrames || renderingGif) return;
-
           dispatch({ type: 'GIF_START' });
-
-          // ensure we get at least a tick to update UI before RENDER_FRAMES
-          // locks up...
-          // setTimeout(() => {
-          dispatch(asyncCreateFrames());
-          //dispatch({ type: 'RENDER_FRAMES' });
-          // this.makeGif(props);
-          // }, 100);
+          dispatch(createFrames());
         }
       });
     }
@@ -3816,17 +3803,6 @@ var ElHolder = function (_Component2) {
       if (nextProps.el) {
         this.base.appendChild(nextProps.el);
       }
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      // now mounted, can freely modify the DOM:
-
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      // component is about to be removed from the DOM, perform any cleanup.
     }
   }, {
     key: 'render',
@@ -3901,9 +3877,7 @@ var InputPanel = function (_Component3) {
 var AppContainer = function AppContainer(props) {
   return h('div', null, [props.app.errors.map(function (err) {
     return h('div', null, err.message);
-  }), h(InputPanel, props),
-  // h(ElHolder, { el: props.app.inputCvs }),
-  h(ElHolder, { el: props.app.gif })]);
+  }), h(InputPanel, props), h('div', { style: { width: '100%' } }, h(ElHolder, { el: props.app.gif }))]);
 };
 
 // END RENDER RENDER RENDER
@@ -3941,5 +3915,3 @@ function render$1() {
 dispatch({ type: '@@BOOT@@' });
 
 render$1();
-
-dispatch({ error: new Error('BLAH!!!!') });

@@ -130,9 +130,6 @@ function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sl
       dx, dy, dwidth, dheight
     );
   }
-  
-  // return cvs;
-  return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
@@ -145,7 +142,6 @@ const defaultState = {
   errors: [],
   inputCvs: null,
   numSlices: 400,
-  frames: [],
   maxStartOffset: 160, // pixels?
   verticalInc: 10,
   renderingFrames: false,
@@ -163,7 +159,7 @@ const SAFARI_LOG = (text) => {
   document.body.appendChild(status);
 }
 
-const asyncCreateFrames = () => (dispatch, getState) => {
+const createFrames = () => (dispatch, getState) => {
   const state = getState();
 
   dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
@@ -207,7 +203,6 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   });
   
   // create frames
-  const frames = [];
   const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
   const frameCount = Math.ceil(maxYTravel / state.verticalInc);
   dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
@@ -221,18 +216,18 @@ const asyncCreateFrames = () => (dispatch, getState) => {
       const imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
       gif.addFrame(imgData, { delay: 16 });
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    }, 10);
+    }, 1);
   }
   
   setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
     gif.render();
-    
-  }, 10)
+  }, 1)
 }
 
 function reduceState(action, state=defaultState) {
+  // Lol middleware
   if (action.error) {
     return { ...state, errors: [ ...state.errors, action.error ] };
   }
@@ -255,10 +250,6 @@ function reduceState(action, state=defaultState) {
     return { ...state, numSlices: action.payload };
   }
 
-  if (action.type === 'FRAMES_START') {
-    return { ...state, renderingFrames: true, processingStepsTotal: 0, processingStepsFinished: 0 }; 
-  }
-  
   if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
     return { ...state, processingStepsTotal: state.processingStepsTotal + action.payload }; 
   }
@@ -324,16 +315,8 @@ class RenderButton extends Component {
       disabled: renderingGif ? 'disabled' : null,
       onclick: () => {
         if (renderingFrames || renderingGif) return;
-
         dispatch({ type: 'GIF_START' });
-
-        // ensure we get at least a tick to update UI before RENDER_FRAMES
-        // locks up...
-        // setTimeout(() => {
-          dispatch(asyncCreateFrames());
-          //dispatch({ type: 'RENDER_FRAMES' });
-          // this.makeGif(props);
-        // }, 100);
+        dispatch(createFrames());
       }
     });
   }
@@ -350,15 +333,6 @@ class ElHolder extends Component {
     if (nextProps.el) {
       this.base.appendChild(nextProps.el);    
     }
-  }
-
-  componentDidMount() {
-    // now mounted, can freely modify the DOM:
-    
-  }
-
-  componentWillUnmount() {
-    // component is about to be removed from the DOM, perform any cleanup.
   }
 
   render() {
@@ -428,8 +402,7 @@ const AppContainer = (props) => {
   return h('div', null, [
     props.app.errors.map(err => h('div', null, err.message)),
     h(InputPanel, props),
-    // h(ElHolder, { el: props.app.inputCvs }),
-    h(ElHolder, { el: props.app.gif })
+    h('div', { style: { width: '100%' } }, h(ElHolder, { el: props.app.gif }))
   ])
 }
 
@@ -466,5 +439,3 @@ function render() {
 dispatch({ type: '@@BOOT@@' });
 
 render();
-  
-  dispatch({ error: new Error('BLAH!!!!') });
