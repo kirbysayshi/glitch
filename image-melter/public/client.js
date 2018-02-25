@@ -3551,14 +3551,58 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {
-  var cvs = scratchCvs;
-  var ctx = scratchCvs.getContext('2d');
-  ctx.fillStyle = '#fff';
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
+  // compute slices
+  var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
+  var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
+
+  // create initial ys
+  var initialYs = [-doomRand() % maxStartOffset];
+  for (var i = 1; i < sliceCount; i++) {
+    var prev = initialYs[i - 1];
+    var maxInc = Math.floor(maxStartOffset / 10.333);
+    var amount = maxInc * (doomRand() % 3 - 1);
+    var proposed = prev + amount;
+    var r = proposed;
+    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    initialYs.push(r);
+  }
+
+  var maxYTravel = -initialYs.reduce(function (a, b) {
+    return Math.min(a, b);
+  }) + inputCvs.height;
+  // TODO: this will become contingent on acceleration...
+  var frameCount = Math.ceil(maxYTravel / verticalInc);
+
+  var scratch = makeCanvas();
+  scratch.cvs.width = inputCvs.width;
+  scratch.cvs.height = inputCvs.height;
+
+  return {
+    inputCvs: inputCvs,
+    initialYs: initialYs,
+    sliceWidth: sliceWidth,
+    sliceCount: sliceCount,
+    frameCount: frameCount,
+    scratch: scratch
+  };
+}
+
+function animStateFrame(animState, verticalInc, frameNum) {
+  var inputCvs = animState.inputCvs,
+      scratch = animState.scratch,
+      sliceCount = animState.sliceCount,
+      sliceWidth = animState.sliceWidth,
+      initialYs = animState.initialYs;
+
+
+  scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  // ctx.drawImage(inputCvs, 0, 0);
-  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  // scratch.ctx.drawImage(inputCvs, 0, 0);
+  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+
+  var slicesRenderedThisFrame = 0;
 
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
@@ -3576,7 +3620,16 @@ function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sli
     var dwidth = sliceWidth;
     var dheight = inputCvs.height;
 
-    ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+    scratch.ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+
+    slicesRenderedThisFrame++;
+  }
+
+  if (slicesRenderedThisFrame === 0) {
+    // we done!
+    return null;
+  } else {
+    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
   }
 }
 
@@ -3607,21 +3660,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
-    // compute slices
-    var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
-    var sliceCount = Math.ceil(state.inputCvs.width / sliceWidth);
-
-    // create initial ys
-    var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var i = 1; i < sliceCount; i++) {
-      var prev = initialYs[i - 1];
-      var maxInc = Math.floor(state.maxStartOffset / 10.333);
-      var amount = maxInc * (doomRand() % 3 - 1);
-      var proposed = prev + amount;
-      var r = proposed;
-      if (proposed > 0) r = 0;else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-      initialYs.push(r);
-    }
+    var animState = initAnimState(state.inputCvs, state.numSlices, state.maxStartOffset, state.verticalInc);
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3643,28 +3682,19 @@ var createFrames = function createFrames() {
     });
 
     // create frames
-    var maxYTravel = -initialYs.reduce(function (a, b) {
-      return Math.min(a, b);
-    }) + state.inputCvs.height;
-    // TODO: this will become contingent on acceleration...
-    var frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-    var scratch = makeCanvas();
-    scratch.cvs.width = state.inputCvs.width;
-    scratch.cvs.height = state.inputCvs.height;
 
-    var _loop = function _loop(_i) {
-      var idx = _i;
+    var _loop = function _loop(i) {
+      var idx = i;
+      dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
       setTimeout(function () {
-        drawFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, sliceCount, sliceWidth, idx);
-        var imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+        var imgData = animStateFrame(animState, state.verticalInc, idx);
         gif$$1.addFrame(imgData, { delay: 16 });
         dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
       }, 1);
     };
 
-    for (var _i = 0; _i <= frameCount; _i++) {
-      _loop(_i);
+    for (var i = 0; i <= animState.frameCount; i++) {
+      _loop(i);
     }
 
     setTimeout(function () {
@@ -3685,8 +3715,8 @@ function reduceState(action) {
 
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
-    var _inputCvs = action.payload;
-    return _extends({}, state, { inputCvs: _inputCvs });
+    var inputCvs = action.payload;
+    return _extends({}, state, { inputCvs: inputCvs });
   }
 
   if (action.type === 'VERTICAL_INC_CHANGE') {

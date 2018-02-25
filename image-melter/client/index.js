@@ -134,7 +134,7 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
   }
 }
 
-function animStateFrame(animState, frameNum) {
+function animStateFrame(animState, verticalInc, frameNum) {
   const {
     inputCvs,
     scratch,
@@ -142,13 +142,14 @@ function animStateFrame(animState, frameNum) {
     sliceWidth,
     initialYs,
   } = animState;
-  
-  // logic here...
+
   scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
   // scratch.ctx.drawImage(inputCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  
+  let slicesRenderedThisFrame = 0;
   
   // TODO: add an acceleration to the Ys.
   for (let i = 0; i < sliceCount; i++) {
@@ -170,41 +171,15 @@ function animStateFrame(animState, frameNum) {
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
     );
+    
+    slicesRenderedThisFrame++;
   }
   
-  const imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
-  return imgData;
-}
-
-function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {
-  const cvs = scratchCvs;
-  const ctx = scratchCvs.getContext('2d');
-  ctx.fillStyle = '#fff';
-  // TODO: should there be a background color?
-  // Or just the original image for loop effect?
-  // ctx.drawImage(inputCvs, 0, 0);
-  ctx.clearRect(0, 0, cvs.width, cvs.height);
-  
-  // TODO: add an acceleration to the Ys.
-  for (let i = 0; i < sliceCount; i++) {
-    const initialY = initialYs[i];
-    const y = initialY + (verticalInc * frameNum);
-    if (y > inputCvs.height) continue; // this slice is done
-    
-    const sx = i * sliceWidth;
-    const sy = 0;
-    const swidth = sliceWidth;
-    const sheight = inputCvs.height;
-    
-    const dx = i * sliceWidth;
-    const dy = y < 0 ? 0 : y;
-    const dwidth = sliceWidth;
-    const dheight = inputCvs.height;
-    
-    ctx.drawImage(inputCvs,
-      sx, sy, swidth, sheight,
-      dx, dy, dwidth, dheight
-    );
+  if (slicesRenderedThisFrame === 0) {
+    // we done!
+    return null;
+  } else {
+    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
   }
 }
 
@@ -240,24 +215,11 @@ const createFrames = () => (dispatch, getState) => {
 
   dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
   
-  // compute slices
-  const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
-  const sliceCount = Math.ceil(state.inputCvs.width / sliceWidth);
-  
-  // create initial ys
-  const initialYs = [
-    -doomRand() % state.maxStartOffset
-  ];
-  for (let i = 1; i < sliceCount; i++) {
-    const prev = initialYs[i - 1];
-    const maxInc = Math.floor(state.maxStartOffset / 10.333);
-    const amount = maxInc * ((doomRand() % 3) - 1);
-    const proposed = prev + amount;
-    let r = proposed;
-    if (proposed > 0) r = 0;
-    else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-    initialYs.push(r);
-  }
+  const animState = initAnimState(
+    state.inputCvs,
+    state.numSlices,
+    state.maxStartOffset,
+    state.verticalInc);
   
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
@@ -279,18 +241,11 @@ const createFrames = () => (dispatch, getState) => {
   });
   
   // create frames
-  const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
-  // TODO: this will become contingent on acceleration...
-  const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-  const scratch = makeCanvas();
-  scratch.cvs.width = state.inputCvs.width;
-  scratch.cvs.height = state.inputCvs.height;
-  for (let i = 0; i <= frameCount; i++) {
+  for (let i = 0; i <= animState.frameCount; i++) {
     const idx = i;
+    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
     setTimeout(() => {
-      drawFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, sliceCount, sliceWidth, idx);
-      const imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+      const imgData = animStateFrame(animState, state.verticalInc, idx);
       gif.addFrame(imgData, { delay: 16 });
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
     }, 1);
