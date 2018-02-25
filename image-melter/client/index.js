@@ -2,7 +2,8 @@ import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
 import exifOrient from 'exif-orient';
-import EXIF from 'exif-js';
+// import EXIF from 'exif-js';
+import { load as ExifReaderLoad } from 'exifreader';
 
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
@@ -439,21 +440,22 @@ class InputPanel extends Component {
           fileToImage(e.target.files[0], (err, img) => {
             fileToArrayBuffer(e.target.files[0], (err, ab) => {
               if (err) return dispatch({ error: err });
-              const exif = EXIF.readFromBinaryFile(ab);
+              // const exif = EXIF.readFromBinaryFile(ab);
               
-              SAFARI_LOG(JSON.stringify(exif));
-              
-              if (exif) {
-                const orientation = exif.Orientation;  
+              try {
+                const tags = ExifReaderLoad(ab);
+                const orientation = tags.Orientation;
 
-                exifOrient(img, orientation, function (err, cvs) {
+                exifOrient(img, orientation.value, function (err, cvs) {
+                  SAFARI_LOG(`orientation: ${JSON.stringify(orientation)}`);
                   if (err) return dispatch({ error: err });
                   const downscaled = downscaleCanvasToCanvas(cvs,
                     window.screen.width * (window.pixelDeviceRatio || 1),
                     window.screen.height * (window.pixelDeviceRatio || 1))
                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
                 }); 
-              } else {
+              } catch (err) {
+                // likely no exif tags found.
                 imageToCanvas(img, (err, cvs) => {
                   if (err) return dispatch({ error: err });
                   const downscaled = downscaleCanvasToCanvas(cvs,
@@ -462,9 +464,8 @@ class InputPanel extends Component {
                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled })
                 });
               }
-
-
-            })    
+              
+            })
           });  
           
           // downscaleCanvasToCanvas
