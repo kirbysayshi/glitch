@@ -2219,6 +2219,16 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 var GIF_WORKER_PATH = 'gif.worker.js';
 
 function fileToImage(file, opt_image, cb) {
@@ -2271,6 +2281,26 @@ function makeCanvas() {
   var cvs = document.createElement('canvas');
   var ctx = cvs.getContext('2d');
   return { cvs: cvs, ctx: ctx };
+}
+
+function downscaleCanvasToCanvas(inputCvs, maxWidth, maxHeight) {
+  var _makeCanvas2 = makeCanvas(),
+      cvs = _makeCanvas2.cvs,
+      ctx = _makeCanvas2.ctx;
+
+  var ratio = inputCvs.width > inputCvs.height ? maxWidth / Math.max(inputCvs.width, maxWidth) : maxHeight / Math.max(inputCvs.height, maxHeight);
+  cvs.width = inputCvs.width * ratio;
+  cvs.height = inputCvs.height * ratio;
+  var sx = 0;
+  var sy = 0;
+  var swidth = inputCvs.width;
+  var sheight = inputCvs.height;
+  var dx = 0;
+  var dy = 0;
+  var dwidth = cvs.width;
+  var dheight = cvs.height;
+  ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+  return cvs;
 }
 
 function createSlice(cvs, sliceIdx, width) {
@@ -2328,6 +2358,7 @@ var doomRand = function doomRand() {
 // BEGIN STATE MANAGEMENT
 
 var defaultState = {
+  errors: [],
   inputCvs: null,
   numSlices: 400,
   frames: [],
@@ -2339,6 +2370,12 @@ var defaultState = {
   renderingGif: false,
   gifPercent: 0,
   gif: null
+};
+
+var SAFARI_LOG = function SAFARI_LOG(text) {
+  var status = document.createElement('div');
+  status.innerHTML = '<pre>' + text + '</pre>';
+  document.body.appendChild(status);
 };
 
 var asyncCreateFrames = function asyncCreateFrames() {
@@ -2428,6 +2465,10 @@ var asyncCreateFrames = function asyncCreateFrames() {
 
 function reduceState(action) {
   var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultState;
+
+  if (action.error) {
+    return _extends({}, state, { errors: [].concat(toConsumableArray(state.errors), [action.error]) });
+  }
 
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
@@ -2603,29 +2644,30 @@ var InputPanel = function (_Component3) {
       return h('form', null, [h('input', {
         type: 'file',
         onchange: function onchange(e) {
-
           fileToImage(e.target.files[0], function (err, img) {
-
             fileToArrayBuffer(e.target.files[0], function (err, ab) {
-              if (err) throw err;
+              if (err) SAFARI_LOG(err);
               var exif$$1 = exif.readFromBinaryFile(ab);
 
               if (exif$$1) {
                 var orientation = exif$$1.Orientation;
 
                 exifOrient(img, orientation, function (err, cvs) {
-                  if (err) throw err;
-                  // 3. Do whatever you want with the canvas, e.g. render it into an image
-                  dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                  if (err) SAFARI_LOG(err);
+                  var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
+                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
                 });
               } else {
-
                 imageToCanvas(img, function (err, cvs) {
-                  return dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+                  var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
+                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
                 });
               }
             });
           });
+
+          // downscaleCanvasToCanvas
+
 
           // function downscale(img) {
           //   const cvs = downscaleImageToCanvas(img,

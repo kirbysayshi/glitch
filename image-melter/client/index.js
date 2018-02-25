@@ -72,6 +72,28 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
+function downscaleCanvasToCanvas(inputCvs, maxWidth, maxHeight) {
+  const { cvs, ctx } = makeCanvas();  
+  const ratio = inputCvs.width > inputCvs.height
+    ? maxWidth / Math.max(inputCvs.width, maxWidth)
+    : maxHeight / Math.max(inputCvs.height, maxHeight);
+  cvs.width = inputCvs.width * ratio;
+  cvs.height = inputCvs.height * ratio;
+  const sx = 0;
+  const sy = 0;
+  const swidth = inputCvs.width;
+  const sheight = inputCvs.height;
+  const dx = 0;
+  const dy = 0;
+  const dwidth = cvs.width;
+  const dheight = cvs.height;
+  ctx.drawImage(inputCvs,
+    sx, sy, swidth, sheight,
+    dx, dy, dwidth, dheight
+  );
+  return cvs;
+}
+
 function createSlice (cvs, sliceIdx, width) {
   const slice = {
     idx: sliceIdx,
@@ -129,6 +151,7 @@ const doomRand = () => Math.floor(Math.random() * 256);
 // BEGIN STATE MANAGEMENT
 
 const defaultState = {
+  errors: [],
   inputCvs: null,
   numSlices: 400,
   frames: [],
@@ -265,6 +288,10 @@ const asyncMakeGif = (frames) => (dispatch, getState) => {
 
 
 function reduceState(action, state=defaultState) {
+  if (action.error) {
+    return { ...state, errors: [ ...state.errors, action.error ] };
+  }
+  
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
     const inputCvs = action.payload;
@@ -409,29 +436,35 @@ class InputPanel extends Component {
       h('input', {
         type: 'file',
         onchange: (e) => {
-          
           fileToImage(e.target.files[0], (err, img) => {
-          
             fileToArrayBuffer(e.target.files[0], (err, ab) => {
-              if (err) throw err;
+              if (err) SAFARI_LOG(err);
               const exif = EXIF.readFromBinaryFile(ab);
-              
+
               if (exif) {
                 const orientation = exif.Orientation;  
-              
+
                 exifOrient(img, orientation, function (err, cvs) {
-                  if (err) throw err;
-                  // 3. Do whatever you want with the canvas, e.g. render it into an image
-                  dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-                })  
+                  if (err) SAFARI_LOG(err);
+                  const downscaled = downscaleCanvasToCanvas(cvs,
+                    window.screen.width * (window.pixelDeviceRatio || 1),
+                    window.screen.height * (window.pixelDeviceRatio || 1))
+                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
+                }); 
               } else {
-              
-                imageToCanvas(img, (err, cvs) => dispatch({ type: 'IMAGE_LOAD', payload: cvs }));
+                imageToCanvas(img, (err, cvs) => {
+                  const downscaled = downscaleCanvasToCanvas(cvs,
+                    window.screen.width * (window.pixelDeviceRatio || 1),
+                    window.screen.height * (window.pixelDeviceRatio || 1));
+                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled })
+                });
               }
-              
-              
-            })
+
+
+            })    
           });  
+          
+          // downscaleCanvasToCanvas
           
           
           // function downscale(img) {
@@ -479,6 +512,7 @@ class InputPanel extends Component {
 
 const AppContainer = (props) => {
   return h('div', null, [
+    h('div', props.app.errors.map(err => h('div',
     h(InputPanel, props),
     h(ElHolder, { el: props.app.inputCvs }),
     h(ElHolder, { el: props.app.gif })
