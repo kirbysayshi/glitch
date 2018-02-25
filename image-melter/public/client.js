@@ -3500,6 +3500,31 @@ function fileToArrayBuffer(file, cb) {
   reader.readAsArrayBuffer(file);
 }
 
+function fileToRotatedCanvas(file, cb) {
+  fileToImage(file, function (err, img) {
+    // Only the first 128 bytes can contain exif data.
+    var headerBytes = file.slice(0, 128 * 1024);
+    fileToArrayBuffer(headerBytes, function (err, ab) {
+      if (err) return cb(err);
+
+      try {
+        var tags = load(ab);
+        var orientation = tags.Orientation;
+        exifOrient(img, orientation.value, function (err, cvs) {
+          if (err) return cb(err);
+          return cb(null, cvs);
+        });
+      } catch (err) {
+        // likely no exif tags found.
+        imageToCanvas(img, function (err, cvs) {
+          if (err) return cb(err);
+          return cb(null, cvs);
+        });
+      }
+    });
+  });
+}
+
 function makeCanvas() {
   var cvs = document.createElement('canvas');
   var ctx = cvs.getContext('2d');
@@ -3593,12 +3618,6 @@ var defaultState = {
   renderingGif: false,
   gifPercent: 0,
   gif: null
-};
-
-var SAFARI_LOG = function SAFARI_LOG(text) {
-  var status = document.createElement('div');
-  status.innerHTML = '<pre>' + text + '</pre>';
-  document.body.appendChild(status);
 };
 
 var asyncCreateFrames = function asyncCreateFrames() {
@@ -3867,34 +3886,44 @@ var InputPanel = function (_Component3) {
       return h('form', null, [h('input', {
         type: 'file',
         onchange: function onchange(e) {
-          fileToImage(e.target.files[0], function (err, img) {
-            fileToArrayBuffer(e.target.files[0], function (err, ab) {
-              if (err) return dispatch({ error: err });
-              // const exif = EXIF.readFromBinaryFile(ab);
-
-              try {
-                var tags = load(ab);
-                var orientation = tags.Orientation;
-
-                exifOrient(img, orientation.value, function (err, cvs) {
-                  SAFARI_LOG('orientation: ' + JSON.stringify(orientation));
-                  if (err) return dispatch({ error: err });
-                  var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
-                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
-                });
-              } catch (err) {
-                // likely no exif tags found.
-                imageToCanvas(img, function (err, cvs) {
-                  if (err) return dispatch({ error: err });
-                  var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
-                  dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
-                });
-              }
-            });
+          var file = e.target.files[0];
+          fileToRotatedCanvas(file, function (err, cvs) {
+            if (err) return dispatch({ error: err });
+            var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
+            dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
           });
+          //           fileToImage(file, (err, img) => {
 
-          // downscaleCanvasToCanvas
+          //             // Only the first 128 bytes can contain exif data.
+          //             const headerBytes = file.slice(0, 128 * 1024);
+          //             fileToArrayBuffer(headerBytes, (err, ab) => {
+          //               if (err) return dispatch({ error: err });
 
+          //               try {
+          //                 const tags = ExifReaderLoad(ab);
+          //                 const orientation = tags.Orientation;
+
+          //                 exifOrient(img, orientation.value, function (err, cvs) {
+          //                   SAFARI_LOG(`orientation: ${JSON.stringify(orientation)}`);
+          //                   if (err) return dispatch({ error: err });
+          //                   const downscaled = downscaleCanvasToCanvas(cvs,
+          //                     window.screen.width * (window.pixelDeviceRatio || 1),
+          //                     window.screen.height * (window.pixelDeviceRatio || 1))
+          //                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
+          //                 }); 
+          //               } catch (err) {
+          //                 // likely no exif tags found.
+          //                 imageToCanvas(img, (err, cvs) => {
+          //                   if (err) return dispatch({ error: err });
+          //                   const downscaled = downscaleCanvasToCanvas(cvs,
+          //                     window.screen.width * (window.pixelDeviceRatio || 1),
+          //                     window.screen.height * (window.pixelDeviceRatio || 1));
+          //                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled })
+          //                 });
+          //               }
+
+          //             })
+          //           });  
 
           // function downscale(img) {
           //   const cvs = downscaleImageToCanvas(img,
@@ -3941,7 +3970,9 @@ var InputPanel = function (_Component3) {
 var AppContainer = function AppContainer(props) {
   return h('div', null, [props.app.errors.map(function (err) {
     return h('div', null, err.message);
-  }), h(InputPanel, props), h(ElHolder, { el: props.app.inputCvs }), h(ElHolder, { el: props.app.gif })]);
+  }), h(InputPanel, props),
+  // h(ElHolder, { el: props.app.inputCvs }),
+  h(ElHolder, { el: props.app.gif })]);
 };
 
 // END RENDER RENDER RENDER
