@@ -2,7 +2,6 @@ import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
 import exifOrient from 'exif-orient';
-// import EXIF from 'exif-js';
 import { load as ExifReaderLoad } from 'exifreader';
 
 function fileToImage(file, opt_image, cb) {
@@ -110,7 +109,6 @@ function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sl
   
   // TODO: add an acceleration to the Ys.
   for (let i = 0; i < sliceCount; i++) {
-    // const slice = slices[i];
     const initialY = initialYs[i];
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
@@ -267,6 +265,8 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'GIF_COMPLETED') {
+    // TODO: remove this once styling is more coherent
+    action.payload.style.width = '100%';
     return { ...state, renderingGif: false, gif: action.payload };
   }
   
@@ -277,7 +277,6 @@ function reduceState(action, state=defaultState) {
 
 // BEGIN RENDER RENDER RENDER
 
-// const { h, Component, render: PreactRender } = require('preact');
 import { h, Component, render as PreactRender } from 'preact';
 
 const LabeledInput = ({ labelText, value, onChange }) => {
@@ -402,7 +401,7 @@ const AppContainer = (props) => {
   return h('div', null, [
     props.app.errors.map(err => h('div', null, err.message)),
     h(InputPanel, props),
-    h('div', { style: { width: '100%' } }, h(ElHolder, { el: props.app.gif }))
+    h(ElHolder, { el: props.app.gif }),
   ])
 }
 

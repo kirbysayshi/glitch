@@ -3562,7 +3562,6 @@ function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sli
 
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
-    // const slice = slices[i];
     var initialY = initialYs[i];
     var y = initialY + verticalInc * frameNum;
     if (y > inputCvs.height) continue; // this slice is done
@@ -3718,6 +3717,8 @@ function reduceState(action) {
   }
 
   if (action.type === 'GIF_COMPLETED') {
+    // TODO: remove this once styling is more coherent
+    action.payload.style.width = '100%';
     return _extends({}, state, { renderingGif: false, gif: action.payload });
   }
 
@@ -3877,7 +3878,7 @@ var InputPanel = function (_Component3) {
 var AppContainer = function AppContainer(props) {
   return h('div', null, [props.app.errors.map(function (err) {
     return h('div', null, err.message);
-  }), h(InputPanel, props), h('div', { style: { width: '100%' } }, h(ElHolder, { el: props.app.gif }))]);
+  }), h(InputPanel, props), h(ElHolder, { el: props.app.gif })]);
 };
 
 // END RENDER RENDER RENDER
