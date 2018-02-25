@@ -1208,21 +1208,6 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function createSlice(cvs, sliceIdx, width) {
-  var slice = {
-    idx: sliceIdx,
-    width: width,
-    height: cvs.height
-  };
-
-  return slice;
-}
-
-// https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
-var doomRand = function doomRand() {
-  return Math.floor(Math.random() * 256);
-};
-
 // BEGIN STATE MANAGEMENT
 
 var defaultState = {
@@ -1244,46 +1229,49 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var state = getState();
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
-
-    // create slices
-    var slices = [];
     var desiredSlices = state.numSlices;
     var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
     var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
     // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-    for (var i = 0; i < actualNumSlices; i++) {
-      var idx = i;
-      // setTimeout(() => {
-      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      // });
-    }
+    // for (let i = 0; i < actualNumSlices; i++) {
+    //   const idx = i;
+    //   // setTimeout(() => {
+    //     slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+    //     // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+    //   // });
+    // }
 
-    // create initial ys
-    var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var _i = 1; _i < actualNumSlices; _i++) {
-      var prev = initialYs[_i - 1];
-      var maxInc = Math.floor(state.maxStartOffset / 10.333);
-      var amount = maxInc * (doomRand() % 3 - 1);
-      var proposed = prev + amount;
-      var r = proposed;
-      if (proposed > 0) r = 0;else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-      initialYs.push(r);
-    }
+    // // create initial ys
+    // const initialYs = [
+    //   -doomRand() % state.maxStartOffset
+    // ];
+    // for (let i = 1; i < actualNumSlices; i++) {
+    //   const prev = initialYs[i - 1];
+    //   const maxInc = Math.floor(state.maxStartOffset / 10.333);
+    //   const amount = maxInc * ((doomRand() % 3) - 1);
+    //   const proposed = prev + amount;
+    //   let r = proposed;
+    //   if (proposed > 0) r = 0;
+    //   else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+    //   initialYs.push(r);
+    // }
 
-    {
-      var status = document.createElement('div');
-      status.innerHTML = '<pre>ys: ' + initialYs.join(',') + '</pre>';
-      document.body.appendChild(status);
-    }
-    var maxYTravel = -Math.min.apply(Math, initialYs) + state.inputCvs.height;
-    var frameCount = Math.ceil(maxYTravel / state.verticalInc);
-    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-    {
-      var _status = document.createElement('div');
-      _status.innerHTML = '<pre>frame count: ' + frameCount + '</pre>';
-      document.body.appendChild(_status);
-    }
+    // {
+    //   const status = document.createElement('div');
+    //   status.innerHTML = `<pre>ys: ${initialYs.join(',')}</pre>`;
+    //   document.body.appendChild(status);
+    // }
+
+    // // create frames
+    // const frames = [];
+    // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
+    // const frameCount = Math.ceil(maxYTravel / state.verticalInc);
+    // //dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
+    // {
+    //   const status = document.createElement('div');
+    //   status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
+    //   document.body.appendChild(status);
+    // }
     //   const scratch = makeCanvas();
     //   scratch.cvs.width = state.inputCvs.width;
     //   scratch.cvs.height = state.inputCvs.height;

@@ -132,6 +132,12 @@ const defaultState = {
 };
 
 
+const SAFARI_LOG = (text) => {
+  const status = document.createElement('div');
+  status.innerHTML = `<pre>${text}</pre>`;
+  document.body.appendChild(status);
+}
+
 const asyncCreateFrames = () => (dispatch, getState) => {
   const state = getState();
 
@@ -143,45 +149,45 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices);
   const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
   // dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-  for (let i = 0; i < actualNumSlices; i++) {
-    const idx = i;
-    // setTimeout(() => {
-      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    // });
-  }
+  // for (let i = 0; i < actualNumSlices; i++) {
+  //   const idx = i;
+  //   // setTimeout(() => {
+  //     slices.push(createSlice(state.inputCvs, idx, sliceWidth));
+  //     // dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+  //   // });
+  // }
   
-  // create initial ys
-  const initialYs = [
-    -doomRand() % state.maxStartOffset
-  ];
-  for (let i = 1; i < actualNumSlices; i++) {
-    const prev = initialYs[i - 1];
-    const maxInc = Math.floor(state.maxStartOffset / 10.333);
-    const amount = maxInc * ((doomRand() % 3) - 1);
-    const proposed = prev + amount;
-    let r = proposed;
-    if (proposed > 0) r = 0;
-    else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
-    initialYs.push(r);
-  }
+  // // create initial ys
+  // const initialYs = [
+  //   -doomRand() % state.maxStartOffset
+  // ];
+  // for (let i = 1; i < actualNumSlices; i++) {
+  //   const prev = initialYs[i - 1];
+  //   const maxInc = Math.floor(state.maxStartOffset / 10.333);
+  //   const amount = maxInc * ((doomRand() % 3) - 1);
+  //   const proposed = prev + amount;
+  //   let r = proposed;
+  //   if (proposed > 0) r = 0;
+  //   else if (proposed < -state.maxStartOffset) r = -state.maxStartOffset + 1;
+  //   initialYs.push(r);
+  // }
   
-  {
-    const status = document.createElement('div');
-    status.innerHTML = `<pre>ys: ${initialYs.join(',')}</pre>`;
-    document.body.appendChild(status);
-  }
+  // {
+  //   const status = document.createElement('div');
+  //   status.innerHTML = `<pre>ys: ${initialYs.join(',')}</pre>`;
+  //   document.body.appendChild(status);
+  // }
   
-  // create frames
-  const frames = [];
-  const maxYTravel = -Math.min(...initialYs) + state.inputCvs.height;
-  const frameCount = Math.ceil(maxYTravel / state.verticalInc);
-  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
-  {
-    const status = document.createElement('div');
-    status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
-    document.body.appendChild(status);
-  }
+  // // create frames
+  // const frames = [];
+  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + state.inputCvs.height;
+  // const frameCount = Math.ceil(maxYTravel / state.verticalInc);
+  // //dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: frameCount });
+  // {
+  //   const status = document.createElement('div');
+  //   status.innerHTML = `<pre>frame count: ${frameCount}</pre>`;
+  //   document.body.appendChild(status);
+  // }
 //   const scratch = makeCanvas();
 //   scratch.cvs.width = state.inputCvs.width;
 //   scratch.cvs.height = state.inputCvs.height;
