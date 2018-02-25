@@ -2646,19 +2646,22 @@ var InputPanel = function (_Component3) {
         onchange: function onchange(e) {
           fileToImage(e.target.files[0], function (err, img) {
             fileToArrayBuffer(e.target.files[0], function (err, ab) {
-              if (err) SAFARI_LOG(err);
+              if (err) return dispatch({ error: err });
               var exif$$1 = exif.readFromBinaryFile(ab);
+
+              SAFARI_LOG(JSON.stringify(exif$$1));
 
               if (exif$$1) {
                 var orientation = exif$$1.Orientation;
 
                 exifOrient(img, orientation, function (err, cvs) {
-                  if (err) SAFARI_LOG(err);
+                  if (err) return dispatch({ error: err });
                   var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
                 });
               } else {
                 imageToCanvas(img, function (err, cvs) {
+                  if (err) return dispatch({ error: err });
                   var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
                 });
@@ -2712,7 +2715,9 @@ var InputPanel = function (_Component3) {
 }(Component);
 
 var AppContainer = function AppContainer(props) {
-  return h('div', null, [h(InputPanel, props), h(ElHolder, { el: props.app.inputCvs }), h(ElHolder, { el: props.app.gif })]);
+  return h('div', null, [props.app.errors.map(function (err) {
+    return h('div', null, err.message);
+  }), h(InputPanel, props), h(ElHolder, { el: props.app.inputCvs }), h(ElHolder, { el: props.app.gif })]);
 };
 
 // END RENDER RENDER RENDER
@@ -2750,3 +2755,5 @@ function render$1() {
 dispatch({ type: '@@BOOT@@' });
 
 render$1();
+
+dispatch({ error: new Error('BLAH!!!!') });

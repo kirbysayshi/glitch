@@ -438,14 +438,16 @@ class InputPanel extends Component {
         onchange: (e) => {
           fileToImage(e.target.files[0], (err, img) => {
             fileToArrayBuffer(e.target.files[0], (err, ab) => {
-              if (err) SAFARI_LOG(err);
+              if (err) return dispatch({ error: err });
               const exif = EXIF.readFromBinaryFile(ab);
-
+              
+              SAFARI_LOG(JSON.stringify(exif));
+              
               if (exif) {
                 const orientation = exif.Orientation;  
 
                 exifOrient(img, orientation, function (err, cvs) {
-                  if (err) SAFARI_LOG(err);
+                  if (err) return dispatch({ error: err });
                   const downscaled = downscaleCanvasToCanvas(cvs,
                     window.screen.width * (window.pixelDeviceRatio || 1),
                     window.screen.height * (window.pixelDeviceRatio || 1))
@@ -453,6 +455,7 @@ class InputPanel extends Component {
                 }); 
               } else {
                 imageToCanvas(img, (err, cvs) => {
+                  if (err) return dispatch({ error: err });
                   const downscaled = downscaleCanvasToCanvas(cvs,
                     window.screen.width * (window.pixelDeviceRatio || 1),
                     window.screen.height * (window.pixelDeviceRatio || 1));
@@ -512,7 +515,7 @@ class InputPanel extends Component {
 
 const AppContainer = (props) => {
   return h('div', null, [
-    h('div', props.app.errors.map(err => h('div',
+    props.app.errors.map(err => h('div', null, err.message)),
     h(InputPanel, props),
     h(ElHolder, { el: props.app.inputCvs }),
     h(ElHolder, { el: props.app.gif })
@@ -552,3 +555,5 @@ function render() {
 dispatch({ type: '@@BOOT@@' });
 
 render();
+  
+  dispatch({ error: new Error('BLAH!!!!') });
