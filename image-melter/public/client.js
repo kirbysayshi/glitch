@@ -2585,18 +2585,21 @@ var InputPanel = function (_Component3) {
       return h('form', null, [h('input', {
         type: 'file',
         onchange: function onchange(e) {
+          var exif$$1 = exif.readFromBinaryFile(e.target.files[0]);
+          var orientation = exif$$1.Orientation;
+
           fileToImage(e.target.files[0], function (err, img) {
 
-            exif.getData(img, function () {
-              var orientation = img.exifdata.Orientation;
+            // EXIF.getData(img, function () {
+            // const orientation = img.exifdata.Orientation
 
-              // 2. Invoke `exifOrient` to orient the image and get back a canvas
-              exifOrient(img, orientation, function (err, cvs) {
+            // 2. Invoke `exifOrient` to orient the image and get back a canvas
+            exifOrient(img, orientation, function (err, cvs) {
 
-                // 3. Do whatever you want with the canvas, e.g. render it into an image
-                dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-              });
+              // 3. Do whatever you want with the canvas, e.g. render it into an image
+              dispatch({ type: 'IMAGE_LOAD', payload: cvs });
             });
+            // });
 
             // const cvs = downscaleImageToCanvas(img,
             //   window.screen.width * (window.pixelDeviceRatio || 1),

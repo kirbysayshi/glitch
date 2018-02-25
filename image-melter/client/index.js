@@ -36,6 +36,14 @@ function blobToImage(blob, opt_image, cb) {
   img.src = url;
 }
 
+function fileToArrayBuffer(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    cb(reader.error, reader.result);
+  }
+  reader.readAsArrayBuffer(file);
+}
+
 function makeCanvas() {
   const cvs = document.createElement('canvas');
   const ctx = cvs.getContext('2d');
@@ -403,10 +411,13 @@ class InputPanel extends Component {
       h('input', {
         type: 'file',
         onchange: (e) => {
+          const exif = EXIF.readFromBinaryFile(e.target.files[0]);
+          const orientation = exif.Orientation;
+          
           fileToImage(e.target.files[0], (err, img) => {
             
-            EXIF.getData(img, function () {
-              const orientation = img.exifdata.Orientation
+            // EXIF.getData(img, function () {
+              // const orientation = img.exifdata.Orientation
 
               // 2. Invoke `exifOrient` to orient the image and get back a canvas
               exifOrient(img, orientation, function (err, cvs) {
@@ -414,7 +425,7 @@ class InputPanel extends Component {
                 // 3. Do whatever you want with the canvas, e.g. render it into an image
                 dispatch({ type: 'IMAGE_LOAD', payload: cvs });
               })
-            });
+            // });
             
             // const cvs = downscaleImageToCanvas(img,
             //   window.screen.width * (window.pixelDeviceRatio || 1),
