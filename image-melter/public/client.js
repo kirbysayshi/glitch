@@ -3531,41 +3531,27 @@ function makeCanvas() {
   return { cvs: cvs, ctx: ctx };
 }
 
-function downscaleCanvasToCanvas(inputCvs, maxWidth, maxHeight) {
-  var _makeCanvas2 = makeCanvas(),
-      cvs = _makeCanvas2.cvs,
-      ctx = _makeCanvas2.ctx;
+function downscaleToCanvas(img, maxWidth, maxHeight) {
+  var _makeCanvas = makeCanvas(),
+      cvs = _makeCanvas.cvs,
+      ctx = _makeCanvas.ctx;
 
-  var ratio = inputCvs.width > inputCvs.height ? maxWidth / Math.max(inputCvs.width, maxWidth) : maxHeight / Math.max(inputCvs.height, maxHeight);
-  cvs.width = inputCvs.width * ratio;
-  cvs.height = inputCvs.height * ratio;
+  var ratio = img.width > img.height ? maxWidth / Math.max(img.width, maxWidth) : maxHeight / Math.max(img.height, maxHeight);
+  cvs.width = img.width * ratio;
+  cvs.height = img.height * ratio;
   var sx = 0;
   var sy = 0;
-  var swidth = inputCvs.width;
-  var sheight = inputCvs.height;
+  var swidth = img.width;
+  var sheight = img.height;
   var dx = 0;
   var dy = 0;
   var dwidth = cvs.width;
   var dheight = cvs.height;
-  ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+  ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   return cvs;
 }
 
-function createSlice(cvs, sliceIdx, width) {
-  var slice = {
-    idx: sliceIdx,
-    width: width,
-    height: cvs.height
-  };
-
-  return slice;
-}
-
-function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frameNum) {
-  // const { cvs, ctx } = makeCanvas();
-  // cvs.height = inputCvs.height;
-  // cvs.width = inputCvs.width;
-
+function drawFrame(inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {
   var cvs = scratchCvs;
   var ctx = scratchCvs.getContext('2d');
   ctx.fillStyle = '#fff';
@@ -3575,21 +3561,21 @@ function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frame
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 
   // TODO: add an acceleration to the Ys.
-  for (var i = 0; i < slices.length; i++) {
-    var slice = slices[i];
+  for (var i = 0; i < sliceCount; i++) {
+    // const slice = slices[i];
     var initialY = initialYs[i];
     var y = initialY + verticalInc * frameNum;
     if (y > inputCvs.height) continue; // this slice is done
 
-    var sx = slice.idx * slice.width;
+    var sx = i * sliceWidth;
     var sy = 0;
-    var swidth = slice.width;
-    var sheight = slice.height;
+    var swidth = sliceWidth;
+    var sheight = inputCvs.height;
 
-    var dx = slice.idx * slice.width;
+    var dx = i * sliceWidth;
     var dy = y < 0 ? 0 : y;
-    var dwidth = slice.width;
-    var dheight = slice.height;
+    var dwidth = sliceWidth;
+    var dheight = inputCvs.height;
 
     ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   }
@@ -3626,27 +3612,14 @@ var asyncCreateFrames = function asyncCreateFrames() {
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
-    // create slices
-    var slices = [];
+    // compute slices
     var sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
-    var actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-    // SAFARI_LOG(`desired: ${state.numSlices}`);
-    // SAFARI_LOG(`width: ${state.inputCvs.width}`);
-    // SAFARI_LOG(`sliceWidth: ${sliceWidth}`);
-    // SAFARI_LOG(actualNumSlices);
-    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-    for (var i = 0; i < actualNumSlices; i++) {
-      var idx = i;
-      // setTimeout(() => {
-      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      // });
-    }
+    var sliceCount = Math.ceil(state.inputCvs.width / sliceWidth);
 
     // create initial ys
     var initialYs = [-doomRand() % state.maxStartOffset];
-    for (var _i = 1; _i < actualNumSlices; _i++) {
-      var prev = initialYs[_i - 1];
+    for (var i = 1; i < sliceCount; i++) {
+      var prev = initialYs[i - 1];
       var maxInc = Math.floor(state.maxStartOffset / 10.333);
       var amount = maxInc * (doomRand() % 3 - 1);
       var proposed = prev + amount;
@@ -3681,27 +3654,26 @@ var asyncCreateFrames = function asyncCreateFrames() {
     var scratch = makeCanvas();
     scratch.cvs.width = state.inputCvs.width;
     scratch.cvs.height = state.inputCvs.height;
-    for (var _i2 = 0; _i2 <= frameCount; _i2++) {
-      var _idx = _i2;
-      // setTimeout(() => {
-      var imgData = createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, _idx);
-      // frames.push();
-      gif$$1.addFrame(imgData, { delay: 16 });
 
-      //       frames[frames.length-1].style.display = 'block';
-      //       document.body.appendChild(frames[frames.length-1]);
+    var _loop = function _loop(_i) {
+      var idx = _i;
+      setTimeout(function () {
+        drawFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, sliceCount, sliceWidth, idx);
+        var imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+        gif$$1.addFrame(imgData, { delay: 16 });
+        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+      }, 10);
+    };
 
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      // }, 100);
+    for (var _i = 0; _i <= frameCount; _i++) {
+      _loop(_i);
     }
 
-    // setTimeout(() => {
-    // if the event loop works right... when this baby hits 88 miles per hour...
-    // all the previous tasks will have completed.
-    // dispatch(asyncMakeGif(frames));
-    gif$$1.render();
-
-    // }, 100)
+    setTimeout(function () {
+      // if the event loop works right... when this baby hits 88 miles per hour...
+      // all the previous tasks will have completed.
+      gif$$1.render();
+    }, 10);
   };
 };
 
@@ -3809,11 +3781,11 @@ var RenderButton = function (_Component) {
 
           // ensure we get at least a tick to update UI before RENDER_FRAMES
           // locks up...
-          setTimeout(function () {
-            dispatch(asyncCreateFrames());
-            //dispatch({ type: 'RENDER_FRAMES' });
-            // this.makeGif(props);
-          }, 100);
+          // setTimeout(() => {
+          dispatch(asyncCreateFrames());
+          //dispatch({ type: 'RENDER_FRAMES' });
+          // this.makeGif(props);
+          // }, 100);
         }
       });
     }
@@ -3889,50 +3861,9 @@ var InputPanel = function (_Component3) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
-            var downscaled = downscaleCanvasToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
+            var downscaled = downscaleToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
             dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
           });
-          //           fileToImage(file, (err, img) => {
-
-          //             // Only the first 128 bytes can contain exif data.
-          //             const headerBytes = file.slice(0, 128 * 1024);
-          //             fileToArrayBuffer(headerBytes, (err, ab) => {
-          //               if (err) return dispatch({ error: err });
-
-          //               try {
-          //                 const tags = ExifReaderLoad(ab);
-          //                 const orientation = tags.Orientation;
-
-          //                 exifOrient(img, orientation.value, function (err, cvs) {
-          //                   SAFARI_LOG(`orientation: ${JSON.stringify(orientation)}`);
-          //                   if (err) return dispatch({ error: err });
-          //                   const downscaled = downscaleCanvasToCanvas(cvs,
-          //                     window.screen.width * (window.pixelDeviceRatio || 1),
-          //                     window.screen.height * (window.pixelDeviceRatio || 1))
-          //                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
-          //                 }); 
-          //               } catch (err) {
-          //                 // likely no exif tags found.
-          //                 imageToCanvas(img, (err, cvs) => {
-          //                   if (err) return dispatch({ error: err });
-          //                   const downscaled = downscaleCanvasToCanvas(cvs,
-          //                     window.screen.width * (window.pixelDeviceRatio || 1),
-          //                     window.screen.height * (window.pixelDeviceRatio || 1));
-          //                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled })
-          //                 });
-          //               }
-
-          //             })
-          //           });  
-
-          // function downscale(img) {
-          //   const cvs = downscaleImageToCanvas(img,
-          //     window.screen.width * (window.pixelDeviceRatio || 1),
-          //     // 1024,
-          //     window.screen.height * (window.pixelDeviceRatio || 1));
-          //     // 1024);
-          //   dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-          // }
         }
       }), LabeledInput({
         labelText: 'Vertical Slices',

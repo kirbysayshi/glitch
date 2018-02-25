@@ -77,7 +77,7 @@ function makeCanvas() {
   return { cvs, ctx };
 }
 
-function downscaleImageToCanvas(img, maxWidth, maxHeight) {
+function downscaleToCanvas(img, maxWidth, maxHeight) {
   const { cvs, ctx } = makeCanvas();  
   const ratio = img.width > img.height
     ? maxWidth / Math.max(img.width, maxWidth)
@@ -99,43 +99,7 @@ function downscaleImageToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function downscaleCanvasToCanvas(inputCvs, maxWidth, maxHeight) {
-  const { cvs, ctx } = makeCanvas();  
-  const ratio = inputCvs.width > inputCvs.height
-    ? maxWidth / Math.max(inputCvs.width, maxWidth)
-    : maxHeight / Math.max(inputCvs.height, maxHeight);
-  cvs.width = inputCvs.width * ratio;
-  cvs.height = inputCvs.height * ratio;
-  const sx = 0;
-  const sy = 0;
-  const swidth = inputCvs.width;
-  const sheight = inputCvs.height;
-  const dx = 0;
-  const dy = 0;
-  const dwidth = cvs.width;
-  const dheight = cvs.height;
-  ctx.drawImage(inputCvs,
-    sx, sy, swidth, sheight,
-    dx, dy, dwidth, dheight
-  );
-  return cvs;
-}
-
-function createSlice (cvs, sliceIdx, width) {
-  const slice = {
-    idx: sliceIdx,
-    width,
-    height: cvs.height,
-  }
-  
-  return slice;
-}
-
-function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, frameNum) {
-  // const { cvs, ctx } = makeCanvas();
-  // cvs.height = inputCvs.height;
-  // cvs.width = inputCvs.width;
-
+function drawFrame (inputCvs, scratchCvs, initialYs, verticalInc, sliceCount, sliceWidth, frameNum) {
   const cvs = scratchCvs;
   const ctx = scratchCvs.getContext('2d');
   ctx.fillStyle = '#fff';
@@ -145,21 +109,21 @@ function createFrame (inputCvs, scratchCvs, initialYs, verticalInc, slices, fram
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   
   // TODO: add an acceleration to the Ys.
-  for (let i = 0; i < slices.length; i++) {
-    const slice = slices[i];
+  for (let i = 0; i < sliceCount; i++) {
+    // const slice = slices[i];
     const initialY = initialYs[i];
     const y = initialY + (verticalInc * frameNum);
     if (y > inputCvs.height) continue; // this slice is done
     
-    const sx = slice.idx * slice.width;
+    const sx = i * sliceWidth;
     const sy = 0;
-    const swidth = slice.width;
-    const sheight = slice.height;
+    const swidth = sliceWidth;
+    const sheight = inputCvs.height;
     
-    const dx = slice.idx * slice.width;
+    const dx = i * sliceWidth;
     const dy = y < 0 ? 0 : y;
-    const dwidth = slice.width;
-    const dheight = slice.height;
+    const dwidth = sliceWidth;
+    const dheight = inputCvs.height;
     
     ctx.drawImage(inputCvs,
       sx, sy, swidth, sheight,
@@ -204,28 +168,15 @@ const asyncCreateFrames = () => (dispatch, getState) => {
 
   dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
   
-  // create slices
-  const slices = [];
+  // compute slices
   const sliceWidth = Math.floor(state.inputCvs.width / state.numSlices) || 1;
-  const actualNumSlices = Math.ceil(state.inputCvs.width / sliceWidth);
-  // SAFARI_LOG(`desired: ${state.numSlices}`);
-  // SAFARI_LOG(`width: ${state.inputCvs.width}`);
-  // SAFARI_LOG(`sliceWidth: ${sliceWidth}`);
-  // SAFARI_LOG(actualNumSlices);
-  dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: actualNumSlices });
-  for (let i = 0; i < actualNumSlices; i++) {
-    const idx = i;
-    // setTimeout(() => {
-      slices.push(createSlice(state.inputCvs, idx, sliceWidth));
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    // });
-  }
+  const sliceCount = Math.ceil(state.inputCvs.width / sliceWidth);
   
   // create initial ys
   const initialYs = [
     -doomRand() % state.maxStartOffset
   ];
-  for (let i = 1; i < actualNumSlices; i++) {
+  for (let i = 1; i < sliceCount; i++) {
     const prev = initialYs[i - 1];
     const maxInc = Math.floor(state.maxStartOffset / 10.333);
     const amount = maxInc * ((doomRand() % 3) - 1);
@@ -265,54 +216,21 @@ const asyncCreateFrames = () => (dispatch, getState) => {
   scratch.cvs.height = state.inputCvs.height;
   for (let i = 0; i <= frameCount; i++) {
     const idx = i;
-    // setTimeout(() => {
-      const imgData = createFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, slices, idx)
-      // frames.push();
+    setTimeout(() => {
+      drawFrame(state.inputCvs, scratch.cvs, initialYs, state.verticalInc, sliceCount, sliceWidth, idx);
+      const imgData = scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
       gif.addFrame(imgData, { delay: 16 });
-      
-//       frames[frames.length-1].style.display = 'block';
-//       document.body.appendChild(frames[frames.length-1]);
-      
       dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    // }, 100);
+    }, 10);
   }
   
-  // setTimeout(() => {
+  setTimeout(() => {
     // if the event loop works right... when this baby hits 88 miles per hour...
     // all the previous tasks will have completed.
-    // dispatch(asyncMakeGif(frames));
     gif.render();
     
-  // }, 100)
+  }, 10)
 }
-
-const asyncMakeGif = (frames) => (dispatch, getState) => {
-  var gif = new GIF({
-    workerScript: GIF_WORKER_PATH,
-    workers: 2,
-    quality: 40,
-    // TODO: pull this out of the frames? Or pick a color that is opposite of avg.
-    // transparent: 0x000,
-  });
-
-  frames.forEach(frame => {
-    gif.addFrame(frame, { delay: 16 });
-  });
-
-  gif.on('progress', percent => {
-    dispatch({ type: 'GIF_PROGRESS', payload: percent });
-  });
-
-  gif.on('finished', function(blob) {
-    // window.open(URL.createObjectURL(blob));
-    blobToImage(blob, (err, img) => {
-      dispatch({ type: 'GIF_COMPLETED', payload: img });
-    })
-  });
-
-  gif.render();
-}
-
 
 function reduceState(action, state=defaultState) {
   if (action.error) {
@@ -411,11 +329,11 @@ class RenderButton extends Component {
 
         // ensure we get at least a tick to update UI before RENDER_FRAMES
         // locks up...
-        setTimeout(() => {
+        // setTimeout(() => {
           dispatch(asyncCreateFrames());
           //dispatch({ type: 'RENDER_FRAMES' });
           // this.makeGif(props);
-        }, 100);
+        // }, 100);
       }
     });
   }
@@ -466,52 +384,11 @@ class InputPanel extends Component {
           const file = e.target.files[0];
           fileToRotatedCanvas(file, (err, cvs) => {
             if (err) return dispatch({ error: err });
-            const downscaled = downscaleCanvasToCanvas(cvs,
+            const downscaled = downscaleToCanvas(cvs,
               window.screen.width * (window.pixelDeviceRatio || 1),
               window.screen.height * (window.pixelDeviceRatio || 1))
             dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
           });
-//           fileToImage(file, (err, img) => {
-            
-//             // Only the first 128 bytes can contain exif data.
-//             const headerBytes = file.slice(0, 128 * 1024);
-//             fileToArrayBuffer(headerBytes, (err, ab) => {
-//               if (err) return dispatch({ error: err });
-              
-//               try {
-//                 const tags = ExifReaderLoad(ab);
-//                 const orientation = tags.Orientation;
-
-//                 exifOrient(img, orientation.value, function (err, cvs) {
-//                   SAFARI_LOG(`orientation: ${JSON.stringify(orientation)}`);
-//                   if (err) return dispatch({ error: err });
-//                   const downscaled = downscaleCanvasToCanvas(cvs,
-//                     window.screen.width * (window.pixelDeviceRatio || 1),
-//                     window.screen.height * (window.pixelDeviceRatio || 1))
-//                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
-//                 }); 
-//               } catch (err) {
-//                 // likely no exif tags found.
-//                 imageToCanvas(img, (err, cvs) => {
-//                   if (err) return dispatch({ error: err });
-//                   const downscaled = downscaleCanvasToCanvas(cvs,
-//                     window.screen.width * (window.pixelDeviceRatio || 1),
-//                     window.screen.height * (window.pixelDeviceRatio || 1));
-//                   dispatch({ type: 'IMAGE_LOAD', payload: downscaled })
-//                 });
-//               }
-              
-//             })
-//           });  
-
-          // function downscale(img) {
-          //   const cvs = downscaleImageToCanvas(img,
-          //     window.screen.width * (window.pixelDeviceRatio || 1),
-          //     // 1024,
-          //     window.screen.height * (window.pixelDeviceRatio || 1));
-          //     // 1024);
-          //   dispatch({ type: 'IMAGE_LOAD', payload: cvs });
-          // }
         }
       }),
       
