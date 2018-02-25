@@ -1153,7 +1153,7 @@ function createFrame(inputCvs, scratchCvs, initialYs, verticalInc, slices, frame
     var dheight = slice.height;
 
     // TODO: // what color? another image?
-    ctx.clearRect(0, 0, dwidth, dheight);
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
 
     ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   }
