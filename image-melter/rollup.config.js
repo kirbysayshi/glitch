@@ -15,6 +15,8 @@ export default {
     babel({
       exclude: 'node_modules/**' // only transpile our source code
     }),
-    commonjs(),
+    commonjs({
+      include: 'node_modules/**'
+    }),
   ]
 };

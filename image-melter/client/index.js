@@ -9,7 +9,7 @@ function fileToImage(file, opt_image, cb) {
   var url = URL.createObjectURL(file);
   img.onload = function() {
     URL.revokeObjectURL(url);
-    cb(null, img);
+    cb(null, img); 
   }
   img.src = url;
 }
