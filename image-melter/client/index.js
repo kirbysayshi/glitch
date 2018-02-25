@@ -1,6 +1,9 @@
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
+import exifOrient from 'exif-orient';
+import EXIF from 'exif-js';
+
 function fileToImage(file, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
@@ -401,12 +404,24 @@ class InputPanel extends Component {
         type: 'file',
         onchange: (e) => {
           fileToImage(e.target.files[0], (err, img) => {
-            const cvs = downscaleImageToCanvas(img,
-              window.screen.width * (window.pixelDeviceRatio || 1),
-              // 1024,
-              window.screen.height * (window.pixelDeviceRatio || 1));
-              // 1024);
-              dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+            
+            EXIF.getData(img, function () {
+              const orientation = img.exifdata.Orientation
+
+              // 2. Invoke `exifOrient` to orient the image and get back a canvas
+              exifOrient(img, orientation, function (err, cvs) {
+
+                // 3. Do whatever you want with the canvas, e.g. render it into an image
+                dispatch({ type: 'IMAGE_LOAD', payload: cvs });
+              })
+            });
+            
+            // const cvs = downscaleImageToCanvas(img,
+            //   window.screen.width * (window.pixelDeviceRatio || 1),
+            //   // 1024,
+            //   window.screen.height * (window.pixelDeviceRatio || 1));
+            //   // 1024);
+            // dispatch({ type: 'IMAGE_LOAD', payload: cvs });
           });  
         }
       }),
