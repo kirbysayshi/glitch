@@ -3665,7 +3665,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
-    var animState = initAnimState(state.inputCvs, state.numSlices, state.maxStartOffset, state.acceleration);
+    var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3726,6 +3726,7 @@ function reduceState(action) {
   }
 
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
+    // TODO: doom used 16. 480 / 16 == 30... 
     return _extends({}, state, { maxStartOffset: action.payload });
   }
 
@@ -3881,7 +3882,7 @@ var InputPanel = function (_Component3) {
         onChange: function onChange(value) {
           return dispatch({
             type: 'SLICE_COUNT_CHANGE',
-            payload: parseInt(value, 10) || 0
+            payload: value
           });
         }
       }), LabeledInput({
@@ -3890,7 +3891,7 @@ var InputPanel = function (_Component3) {
         onChange: function onChange(value) {
           return dispatch({
             type: 'ACCELERATION_CHANGE',
-            payload: parseFloat(value, 10) || 0
+            payload: value
           });
         }
       }), LabeledInput({
@@ -3899,7 +3900,7 @@ var InputPanel = function (_Component3) {
         onChange: function onChange(value) {
           return dispatch({
             type: 'MAX_START_OFFSET_CHANGE',
-            payload: parseInt(value, 10) || 0
+            payload: value
           });
         }
       }), h(RenderButton, props)]);

@@ -224,9 +224,9 @@ const createFrames = () => (dispatch, getState) => {
   
   const animState = initAnimState(
     state.inputCvs,
-    state.numSlices,
-    state.maxStartOffset,
-    state.acceleration);
+    parseInt(state.numSlices, 10),
+    parseInt(state.maxStartOffset, 10),
+    parseFloat(state.acceleration, 10));
   
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
@@ -284,6 +284,7 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
+    // TODO: doom used 16. 480 / 16 == 30... 
     return { ...state, maxStartOffset: action.payload };
   }
   
@@ -413,7 +414,7 @@ class InputPanel extends Component {
         value: numSlices,
         onChange: (value) => dispatch({
           type: 'SLICE_COUNT_CHANGE',
-          payload: parseInt(value, 10) || 0,
+          payload: value,
         })
       }),
       
@@ -422,7 +423,7 @@ class InputPanel extends Component {
         value: acceleration,
         onChange: (value) => dispatch({
           type: 'ACCELERATION_CHANGE',
-          payload: parseFloat(value, 10) || 0
+          payload: value,
         })
       }),
       
@@ -431,7 +432,7 @@ class InputPanel extends Component {
         value: maxStartOffset,
         onChange: (value) => dispatch({
           type: 'MAX_START_OFFSET_CHANGE',
-          payload: parseInt(value, 10) || 0
+          payload: value,
         })
       }),
       
