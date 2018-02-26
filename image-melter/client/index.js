@@ -98,7 +98,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc, acceleration=0.1) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration) {
   // compute slices
   const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -130,7 +130,7 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
   }
 }
 
-function animStateFrame(animState, verticalInc, frameNum) {
+function animStateFrame(animState, frameNum) {
   const {
     inputCvs,
     scratch,
@@ -152,7 +152,7 @@ function animStateFrame(animState, verticalInc, frameNum) {
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
     let pos = initialY;
-    let vel = verticalInc;
+    let vel = 0;
     let j = frameNum;
     while(j--) {
       pos = pos + vel;
@@ -200,7 +200,7 @@ const defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  verticalInc: 1,
+  // verticalInc: 1,
   acceleration: 0.1,
   renderingFrames: false,
   processingStepsTotal: 0,
@@ -226,7 +226,7 @@ const createFrames = () => (dispatch, getState) => {
     state.inputCvs,
     state.numSlices,
     state.maxStartOffset,
-    state.verticalInc);
+    state.acceleration);
   
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
@@ -252,7 +252,7 @@ const createFrames = () => (dispatch, getState) => {
     dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
     setTimeout(() => {
       // TODO: would be great to have an Option<ImageData> here...
-      const imgData = animStateFrame(animState, state.verticalInc, idx);
+      const imgData = animStateFrame(animState, idx);
       if (!imgData) {
         // animation is done!  
         gif.render();
@@ -277,10 +277,6 @@ function reduceState(action, state=defaultState) {
     // TODO: use inputCvs.width to set a good initial slice count
     const inputCvs = action.payload;
     return { ...state, inputCvs, };
-  }
-  
-  if (action.type === 'VERTICAL_INC_CHANGE') {
-    return { ...state, verticalInc: action.payload };
   }
     
   if (action.type === 'ACCELERATION_CHANGE') {
@@ -392,7 +388,7 @@ class InputPanel extends Component {
       dispatch,
       app: {
         numSlices,
-        verticalInc,
+        acceleration,
         maxStartOffset,
         gif,
       },
@@ -422,11 +418,11 @@ class InputPanel extends Component {
       }),
       
       LabeledInput({
-        labelText: 'Vertical Increment',
-        value: verticalInc,
+        labelText: 'Acceleration',
+        value: acceleration,
         onChange: (value) => dispatch({
-          type: 'VERTICAL_INC_CHANGE',
-          payload: parseInt(value, 10) || 0
+          type: 'ACCELERATION_CHANGE',
+          payload: parseFloat(value, 10) || 0
         })
       }),
       

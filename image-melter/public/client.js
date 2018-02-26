@@ -3551,9 +3551,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
-  var acceleration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.1;
-
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration) {
   // compute slices
   var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -3584,7 +3582,7 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
   };
 }
 
-function animStateFrame(animState, verticalInc, frameNum) {
+function animStateFrame(animState, frameNum) {
   var inputCvs = animState.inputCvs,
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
@@ -3605,7 +3603,7 @@ function animStateFrame(animState, verticalInc, frameNum) {
   for (var i = 0; i < sliceCount; i++) {
     var initialY = initialYs[i];
     var pos = initialY;
-    var vel = verticalInc;
+    var vel = 0;
     var j = frameNum;
     while (j--) {
       pos = pos + vel;
@@ -3651,7 +3649,8 @@ var defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  verticalInc: 1,
+  // verticalInc: 1,
+  acceleration: 0.1,
   renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
@@ -3666,7 +3665,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
-    var animState = initAnimState(state.inputCvs, state.numSlices, state.maxStartOffset, state.verticalInc);
+    var animState = initAnimState(state.inputCvs, state.numSlices, state.maxStartOffset, state.acceleration);
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3692,7 +3691,7 @@ var createFrames = function createFrames() {
       dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
       setTimeout(function () {
         // TODO: would be great to have an Option<ImageData> here...
-        var imgData = animStateFrame(animState, state.verticalInc, idx);
+        var imgData = animStateFrame(animState, idx);
         if (!imgData) {
           // animation is done!  
           gif$$1.render();
@@ -3722,8 +3721,8 @@ function reduceState(action) {
     return _extends({}, state, { inputCvs: inputCvs });
   }
 
-  if (action.type === 'VERTICAL_INC_CHANGE') {
-    return _extends({}, state, { verticalInc: action.payload });
+  if (action.type === 'ACCELERATION_CHANGE') {
+    return _extends({}, state, { acceleration: action.payload });
   }
 
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
@@ -3862,7 +3861,7 @@ var InputPanel = function (_Component3) {
       var dispatch = props.dispatch,
           _props$app2 = props.app,
           numSlices = _props$app2.numSlices,
-          verticalInc = _props$app2.verticalInc,
+          acceleration = _props$app2.acceleration,
           maxStartOffset = _props$app2.maxStartOffset,
           gif$$1 = _props$app2.gif;
 
@@ -3886,12 +3885,12 @@ var InputPanel = function (_Component3) {
           });
         }
       }), LabeledInput({
-        labelText: 'Vertical Increment',
-        value: verticalInc,
+        labelText: 'Acceleration',
+        value: acceleration,
         onChange: function onChange(value) {
           return dispatch({
-            type: 'VERTICAL_INC_CHANGE',
-            payload: parseInt(value, 10) || 0
+            type: 'ACCELERATION_CHANGE',
+            payload: parseFloat(value, 10) || 0
           });
         }
       }), LabeledInput({
