@@ -3681,6 +3681,7 @@ var createFrames = function createFrames() {
       });
     });
 
+    // This is a function to allow it to "loop" until finished
     var nextFrame = function nextFrame(idx) {
       dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
       setTimeout(function () {

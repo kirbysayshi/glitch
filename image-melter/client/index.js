@@ -238,9 +238,9 @@ const createFrames = () => (dispatch, getState) => {
     blobToImage(blob, (err, img) => {
       dispatch({ type: 'GIF_COMPLETED', payload: img });
     })
-  });
+  }); 
   
-  
+  // This is a function to allow it to "loop" until finished
   const nextFrame = (idx) => {
     dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
     setTimeout(() => {
