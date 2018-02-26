@@ -240,22 +240,24 @@ const createFrames = () => (dispatch, getState) => {
     })
   });
   
-  // create frames
-  for (let i = 0; i <= animState.frameCount; i++) {
-    const idx = i;
+  
+  const nextFrame = (idx) => {
     dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
     setTimeout(() => {
+      // TODO: would be great to have an Option<ImageData> here...
       const imgData = animStateFrame(animState, state.verticalInc, idx);
-      gif.addFrame(imgData, { delay: 16 });
-      dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-    }, 1);
+      if (!imgData) {
+        // animation is done!  
+        gif.render();
+      } else {
+        gif.addFrame(imgData, { delay: 16 });
+        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+        nextFrame(idx + 1);
+      }
+    })
   }
   
-  setTimeout(() => {
-    // if the event loop works right... when this baby hits 88 miles per hour...
-    // all the previous tasks will have completed.
-    gif.render();
-  }, 1)
+  nextFrame(0);
 }
 
 function reduceState(action, state=defaultState) {

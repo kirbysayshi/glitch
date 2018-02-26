@@ -3681,27 +3681,23 @@ var createFrames = function createFrames() {
       });
     });
 
-    // create frames
-
-    var _loop = function _loop(i) {
-      var idx = i;
+    var nextFrame = function nextFrame(idx) {
       dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
       setTimeout(function () {
+        // TODO: would be great to have an Option<ImageData> here...
         var imgData = animStateFrame(animState, state.verticalInc, idx);
-        gif$$1.addFrame(imgData, { delay: 16 });
-        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
-      }, 1);
+        if (!imgData) {
+          // animation is done!  
+          gif$$1.render();
+        } else {
+          gif$$1.addFrame(imgData, { delay: 16 });
+          dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+          nextFrame(idx + 1);
+        }
+      });
     };
 
-    for (var i = 0; i <= animState.frameCount; i++) {
-      _loop(i);
-    }
-
-    setTimeout(function () {
-      // if the event loop works right... when this baby hits 88 miles per hour...
-      // all the previous tasks will have completed.
-      gif$$1.render();
-    }, 1);
+    nextFrame(0);
   };
 };
 
