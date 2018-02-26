@@ -3552,6 +3552,8 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
 }
 
 function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
+  var acceleration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 2;
+
   // compute slices
   var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -3568,11 +3570,9 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs.push(r);
   }
 
-  var maxYTravel = -initialYs.reduce(function (a, b) {
-    return Math.min(a, b);
-  }) + inputCvs.height;
-  // TODO: this will become contingent on acceleration...
-  var frameCount = Math.ceil(maxYTravel / verticalInc);
+  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
+  // // TODO: this will become contingent on acceleration...
+  // const frameCount = Math.ceil(maxYTravel / verticalInc);
 
   var scratch = makeCanvas();
   scratch.cvs.width = inputCvs.width;
@@ -3583,7 +3583,8 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs: initialYs,
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
-    frameCount: frameCount,
+    acceleration: acceleration,
+    // frameCount,
     scratch: scratch
   };
 }
@@ -3593,7 +3594,8 @@ function animStateFrame(animState, verticalInc, frameNum) {
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
-      initialYs = animState.initialYs;
+      initialYs = animState.initialYs,
+      acceleration = animState.acceleration;
 
 
   scratch.ctx.fillStyle = '#fff';
@@ -3607,7 +3609,7 @@ function animStateFrame(animState, verticalInc, frameNum) {
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
     var initialY = initialYs[i];
-    var y = initialY + verticalInc * frameNum;
+    var y = initialY + verticalInc * frameNum * acceleration;
     if (y > inputCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;

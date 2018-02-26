@@ -98,7 +98,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc, acceleration=2) {
   // compute slices
   const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -116,9 +116,9 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs.push(r);
   }
   
-  const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
-  // TODO: this will become contingent on acceleration...
-  const frameCount = Math.ceil(maxYTravel / verticalInc);
+  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
+  // // TODO: this will become contingent on acceleration...
+  // const frameCount = Math.ceil(maxYTravel / verticalInc);
   
   const scratch = makeCanvas();
   scratch.cvs.width = inputCvs.width;
@@ -129,7 +129,8 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs,
     sliceWidth,
     sliceCount,
-    frameCount,
+    acceleration,
+    // frameCount,
     scratch,
   }
 }
@@ -141,6 +142,7 @@ function animStateFrame(animState, verticalInc, frameNum) {
     sliceCount,
     sliceWidth,
     initialYs,
+    acceleration,
   } = animState;
 
   scratch.ctx.fillStyle = '#fff';
@@ -154,7 +156,7 @@ function animStateFrame(animState, verticalInc, frameNum) {
   // TODO: add an acceleration to the Ys.
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
-    const y = initialY + (verticalInc * frameNum);
+    const y = initialY + (verticalInc * frameNum * acceleration);
     if (y > inputCvs.height) continue; // this slice is done
     
     const sx = i * sliceWidth;
