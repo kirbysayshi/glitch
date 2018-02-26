@@ -98,7 +98,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc, acceleration=2) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc, acceleration=0.1) {
   // compute slices
   const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -116,10 +116,6 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs.push(r);
   }
   
-  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
-  // // TODO: this will become contingent on acceleration...
-  // const frameCount = Math.ceil(maxYTravel / verticalInc);
-  
   const scratch = makeCanvas();
   scratch.cvs.width = inputCvs.width;
   scratch.cvs.height = inputCvs.height;
@@ -130,7 +126,6 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     sliceWidth,
     sliceCount,
     acceleration,
-    // frameCount,
     scratch,
   }
 }
@@ -156,7 +151,16 @@ function animStateFrame(animState, verticalInc, frameNum) {
   // TODO: add an acceleration to the Ys.
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
-    const y = initialY + (verticalInc * frameNum * acceleration);
+    let pos = initialY;
+    let vel = verticalInc;
+    let j = frameNum;
+    while(j--) {
+      pos = pos + vel;
+      vel = vel + acceleration;
+      // y += verticalInc * acceleration;
+    }
+    const y = pos;
+    // const y = initialY + (verticalInc * frameNum * acceleration);
     if (y > inputCvs.height) continue; // this slice is done
     
     const sx = i * sliceWidth;
@@ -196,7 +200,8 @@ const defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  verticalInc: 10,
+  verticalInc: 1,
+  acceleration: 0.1,
   renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
@@ -276,6 +281,10 @@ function reduceState(action, state=defaultState) {
   
   if (action.type === 'VERTICAL_INC_CHANGE') {
     return { ...state, verticalInc: action.payload };
+  }
+    
+  if (action.type === 'ACCELERATION_CHANGE') {
+    return { ...state, acceleration: action.payload };
   }
   
   if (action.type === 'MAX_START_OFFSET_CHANGE') {

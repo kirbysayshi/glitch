@@ -3552,7 +3552,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
 }
 
 function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalInc) {
-  var acceleration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 2;
+  var acceleration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.1;
 
   // compute slices
   var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
@@ -3570,10 +3570,6 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     initialYs.push(r);
   }
 
-  // const maxYTravel = -initialYs.reduce((a, b) => Math.min(a, b)) + inputCvs.height;
-  // // TODO: this will become contingent on acceleration...
-  // const frameCount = Math.ceil(maxYTravel / verticalInc);
-
   var scratch = makeCanvas();
   scratch.cvs.width = inputCvs.width;
   scratch.cvs.height = inputCvs.height;
@@ -3584,7 +3580,6 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, verticalIn
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
     acceleration: acceleration,
-    // frameCount,
     scratch: scratch
   };
 }
@@ -3609,7 +3604,16 @@ function animStateFrame(animState, verticalInc, frameNum) {
   // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
     var initialY = initialYs[i];
-    var y = initialY + verticalInc * frameNum * acceleration;
+    var pos = initialY;
+    var vel = verticalInc;
+    var j = frameNum;
+    while (j--) {
+      pos = pos + vel;
+      vel = vel + acceleration;
+      // y += verticalInc * acceleration;
+    }
+    var y = pos;
+    // const y = initialY + (verticalInc * frameNum * acceleration);
     if (y > inputCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;
@@ -3647,7 +3651,7 @@ var defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  verticalInc: 10,
+  verticalInc: 1,
   renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
