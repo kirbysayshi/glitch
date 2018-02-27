@@ -3650,7 +3650,6 @@ var defaultState = {
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
   acceleration: 0.1,
-  renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
   rendering: false,
@@ -3662,7 +3661,8 @@ var createFrames = function createFrames() {
   return function (dispatch, getState) {
     var state = getState();
 
-    dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
+    dispatch({ type: 'GIF_START' });
+    // dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
     var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
@@ -3746,7 +3746,13 @@ function reduceState(action) {
   }
 
   if (action.type === 'GIF_START') {
-    return _extends({}, state, { rendering: true, gifPercent: 0, gif: null });
+    return _extends({}, state, {
+      rendering: true,
+      gifPercent: 0,
+      gif: null,
+      processingStepsTotal: 0,
+      processingStepsFinished: 0
+    });
   }
 
   if (action.type === 'GIF_PROGRESS') {
@@ -3762,10 +3768,19 @@ function reduceState(action) {
   return state;
 }
 
-var LabeledInput = function LabeledInput(_ref) {
-  var labelText = _ref.labelText,
-      value = _ref.value,
-      onChange = _ref.onChange;
+var computePercentComplete = function computePercentComplete(_ref) {
+  var processingStepsFinished = _ref.processingStepsFinished,
+      processingStepsTotal = _ref.processingStepsTotal,
+      gifPercent = _ref.gifPercent;
+
+  var framePercent = processingStepsFinished / (processingStepsTotal || 1);
+  return (gifPercent * 100 + framePercent * 100) / 2;
+};
+
+var LabeledInput = function LabeledInput(_ref2) {
+  var labelText = _ref2.labelText,
+      value = _ref2.value,
+      onChange = _ref2.onChange;
 
   var readVal = function readVal(e) {
     return onChange(e.target.value);
@@ -3791,17 +3806,10 @@ var RenderButton = function (_Component) {
     key: 'render',
     value: function render$$1(props) {
       var dispatch = props.dispatch,
-          _props$app = props.app,
-          rendering = _props$app.rendering,
-          gifPercent = _props$app.gifPercent,
-          renderingFrames = _props$app.renderingFrames,
-          processingStepsTotal = _props$app.processingStepsTotal,
-          processingStepsFinished = _props$app.processingStepsFinished;
+          rendering = props.app.rendering;
 
 
-      var framePercent = processingStepsFinished / (processingStepsTotal || 1);
-      var percent = ((gifPercent * 100 + framePercent * 100) / 2).toFixed(2);
-
+      var percent = computePercentComplete(props.app).toFixed(2);
       var value = rendering === true ? 'RENDERING ' + percent + '%' : "Render";
 
       return h('input', {
@@ -3809,8 +3817,7 @@ var RenderButton = function (_Component) {
         value: value,
         disabled: rendering ? 'disabled' : null,
         onclick: function onclick() {
-          if (renderingFrames || rendering) return;
-          dispatch({ type: 'GIF_START' });
+          if (rendering) return;
           dispatch(createFrames());
         }
       });
@@ -3864,12 +3871,12 @@ var InputPanel = function (_Component3) {
     key: 'render',
     value: function render$$1(props) {
       var dispatch = props.dispatch,
-          _props$app2 = props.app,
-          numSlices = _props$app2.numSlices,
-          acceleration = _props$app2.acceleration,
-          initialVelocity = _props$app2.initialVelocity,
-          maxStartOffset = _props$app2.maxStartOffset,
-          gif$$1 = _props$app2.gif;
+          _props$app = props.app,
+          numSlices = _props$app.numSlices,
+          acceleration = _props$app.acceleration,
+          initialVelocity = _props$app.initialVelocity,
+          maxStartOffset = _props$app.maxStartOffset,
+          gif$$1 = _props$app.gif;
 
       return h('form', null, [h('input', {
         type: 'file',

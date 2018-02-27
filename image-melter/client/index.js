@@ -163,7 +163,6 @@ const defaultState = {
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
   acceleration: 0.1,
-  renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
   rendering: false,
@@ -181,7 +180,8 @@ const SAFARI_LOG = (text) => {
 const createFrames = () => (dispatch, getState) => {
   const state = getState();
 
-  dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
+  dispatch({ type: 'GIF_START' });
+  // dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
   
   const animState = initAnimState(
     state.inputCvs,
@@ -267,7 +267,14 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'GIF_START') {
-    return { ...state, rendering: true, gifPercent: 0, gif: null };
+    return {
+      ...state,
+      rendering: true,
+      gifPercent: 0,
+      gif: null,
+      processingStepsTotal: 0,
+      processingStepsFinished: 0,
+    };
   }
   
   if (action.type === 'GIF_PROGRESS') {
@@ -283,6 +290,15 @@ function reduceState(action, state=defaultState) {
   return state;
 }
 
+const computePercentComplete = ({
+  processingStepsFinished,
+  processingStepsTotal,
+  gifPercent
+}) => {
+  const framePercent = processingStepsFinished / (processingStepsTotal || 1);
+  return ((gifPercent * 100 + framePercent * 100) / 2);
+}
+  
 // END STATE MANAGEMENT
 
 // BEGIN RENDER RENDER RENDER
@@ -306,21 +322,12 @@ const LabeledInput = ({ labelText, value, onChange }) => {
 class RenderButton extends Component {
   
   render (props) {
-    
     const {
       dispatch,
-      app: {
-        rendering,
-        gifPercent,
-        renderingFrames,
-        processingStepsTotal,
-        processingStepsFinished
-      }
+      app: { rendering }
     } = props;
     
-    const framePercent = processingStepsFinished / (processingStepsTotal || 1);
-    const percent = ((gifPercent * 100 + framePercent * 100) / 2).toFixed(2);
-    
+    const percent = computePercentComplete(props.app).toFixed(2);
     const value = rendering === true
       ? `RENDERING ${percent}%`
       : "Render";
@@ -330,8 +337,7 @@ class RenderButton extends Component {
       value,
       disabled: rendering ? 'disabled' : null,
       onclick: () => {
-        if (renderingFrames || rendering) return;
-        dispatch({ type: 'GIF_START' });
+        if (rendering) return;
         dispatch(createFrames());
       }
     });
