@@ -27,7 +27,8 @@
     "rollup-plugin-commonjs": "^8.3.0",
     "rollup-plugin-node-resolve": "^3.0.3",
     "exif-orient": "^0.0.5",
-    "exifreader": "^2.1.2"
+    "exifreader": "^2.1.2",
+    "image-juggler": "^1.0.0"
   },
   "engines": {
     "node": "8.x"

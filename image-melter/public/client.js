@@ -2397,6 +2397,51 @@ function hasXmpData(xmpDataOffset) {
     return xmpDataOffset !== undefined;
 }
 
+function imageToCanvas(image, opt_cvs, cb) {
+  if (!cb) { cb = opt_cvs; opt_cvs = null; }
+  var cvs = opt_cvs || document.createElement('canvas');
+  var ctx = cvs.getContext('2d');
+  cvs.width = image.width;
+  cvs.height = image.height;
+  ctx.drawImage(image, 0, 0);
+  cb(null, cvs);
+}
+
+function fileToArrayBuffer(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    cb(reader.error, reader.result);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function fileToImage(file, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(file);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
+function blobToImage(blob, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(blob);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
+var imageToCanvas_1 = imageToCanvas;
+var fileToArrayBuffer_1 = fileToArrayBuffer;
+var fileToImage_1 = fileToImage;
+var blobToImage_1 = blobToImage;
+
 /** Virtual DOM Node */
 function VNode() {}
 
@@ -3454,57 +3499,11 @@ var toConsumableArray = function (arr) {
 
 var GIF_WORKER_PATH = 'gif.worker.js';
 
-function fileToImage(file, opt_image, cb) {
-  if (!cb) {
-    cb = opt_image;opt_image = null;
-  }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(file);
-  img.onload = function () {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
-}
-
-function imageToCanvas(image, opt_cvs, cb) {
-  if (!cb) {
-    cb = opt_cvs;opt_cvs = null;
-  }
-  var cvs = opt_cvs || document.createElement('canvas');
-  var ctx = cvs.getContext('2d');
-  cvs.width = image.width;
-  cvs.height = image.height;
-  ctx.drawImage(image, 0, 0);
-  cb(null, cvs);
-}
-
-function blobToImage(blob, opt_image, cb) {
-  if (!cb) {
-    cb = opt_image;opt_image = null;
-  }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(blob);
-  img.onload = function () {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
-}
-
-function fileToArrayBuffer(file, cb) {
-  var reader = new FileReader();
-  reader.onload = function () {
-    cb(reader.error, reader.result);
-  };
-  reader.readAsArrayBuffer(file);
-}
-
 function fileToRotatedCanvas(file, cb) {
-  fileToImage(file, function (err, img) {
+  fileToImage_1(file, function (err, img) {
     // Only the first 128 bytes can contain exif data.
     var headerBytes = file.slice(0, 128 * 1024);
-    fileToArrayBuffer(headerBytes, function (err, ab) {
+    fileToArrayBuffer_1(headerBytes, function (err, ab) {
       if (err) return cb(err);
 
       try {
@@ -3516,7 +3515,7 @@ function fileToRotatedCanvas(file, cb) {
         });
       } catch (err) {
         // likely no exif tags found.
-        imageToCanvas(img, function (err, cvs) {
+        imageToCanvas_1(img, function (err, cvs) {
           if (err) return cb(err);
           return cb(null, cvs);
         });
@@ -3681,7 +3680,7 @@ var createFrames = function createFrames() {
 
     gif$$1.on('finished', function (blob) {
       // window.open(URL.createObjectURL(blob));
-      blobToImage(blob, function (err, img) {
+      blobToImage_1(blob, function (err, img) {
         dispatch({ type: 'GIF_COMPLETED', payload: img });
       });
     });
@@ -3769,6 +3768,7 @@ var LabeledInput = function LabeledInput(_ref) {
   };
   return h('label', null, [labelText, h('input', {
     type: 'text',
+    inputmode: 'numeric',
     value: value,
     onchange: readVal,
     onkeyup: readVal

@@ -4,45 +4,7 @@ const GIF_WORKER_PATH = 'gif.worker.js';
 import exifOrient from 'exif-orient';
 import { load as ExifReaderLoad } from 'exifreader';
 
-function fileToImage(file, opt_image, cb) {
-  if (!cb) { cb = opt_image; opt_image = null; }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(file);
-  img.onload = function() {
-    URL.revokeObjectURL(url);
-    cb(null, img); 
-  }
-  img.src = url;
-}
-
-function imageToCanvas(image, opt_cvs, cb) {
-  if (!cb) { cb = opt_cvs; opt_cvs = null; }
-  var cvs = opt_cvs || document.createElement('canvas');
-  var ctx = cvs.getContext('2d');
-  cvs.width = image.width;
-  cvs.height = image.height;
-  ctx.drawImage(image, 0, 0);
-  cb(null, cvs);
-}
-
-function blobToImage(blob, opt_image, cb) {
-  if (!cb) { cb = opt_image; opt_image = null; }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(blob);
-  img.onload = function() {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  }
-  img.src = url;
-}
-
-function fileToArrayBuffer(file, cb) {
-  var reader = new FileReader();
-  reader.onload = function() {
-    cb(reader.error, reader.result);
-  }
-  reader.readAsArrayBuffer(file);
-}
+import { fileToImage, imageToCanvas, blobToImage, fileToArrayBuffer, } from 'image-juggler';
 
 function fileToRotatedCanvas(file, cb) {
   fileToImage(file, (err, img) => {
@@ -329,6 +291,7 @@ const LabeledInput = ({ labelText, value, onChange }) => {
     labelText,
     h('input', {
       type: 'text',
+      inputmode: 'numeric',
       value,
       onchange: readVal,
       onkeyup: readVal,
