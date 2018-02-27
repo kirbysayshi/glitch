@@ -3714,7 +3714,6 @@ function reduceState(action) {
   }
 
   if (action.type === 'IMAGE_LOAD') {
-    // TODO: use inputCvs.width to set a good initial slice count
     var inputCvs = action.payload;
     return _extends({}, state, {
       inputCvs: inputCvs,
@@ -3722,6 +3721,7 @@ function reduceState(action) {
       // But we've got different ratios than doom.
       maxStartOffset: inputCvs.height / (12.5 / 2),
       numSlices: inputCvs.width,
+      // doom had 200 height : 1 velocity
       initialVelocity: inputCvs.height / 200
     });
   }
