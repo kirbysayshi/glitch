@@ -3653,7 +3653,7 @@ var defaultState = {
   renderingFrames: false,
   processingStepsTotal: 0,
   processingStepsFinished: 0,
-  renderingGif: false,
+  rendering: false,
   gifPercent: 0,
   gif: null
 };
@@ -3685,7 +3685,7 @@ var createFrames = function createFrames() {
       });
     });
 
-    // This is a function to allow it to "loop" until finished
+    // Allow it to "loop" until finished
     var nextFrame = function nextFrame(idx) {
       dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
       setTimeout(function () {
@@ -3746,7 +3746,7 @@ function reduceState(action) {
   }
 
   if (action.type === 'GIF_START') {
-    return _extends({}, state, { renderingGif: true, gifPercent: 0, gif: null });
+    return _extends({}, state, { rendering: true, gifPercent: 0, gif: null });
   }
 
   if (action.type === 'GIF_PROGRESS') {
@@ -3756,7 +3756,7 @@ function reduceState(action) {
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
     action.payload.style.width = '100%';
-    return _extends({}, state, { renderingGif: false, gif: action.payload });
+    return _extends({}, state, { rendering: false, gif: action.payload });
   }
 
   return state;
@@ -3792,7 +3792,7 @@ var RenderButton = function (_Component) {
     value: function render$$1(props) {
       var dispatch = props.dispatch,
           _props$app = props.app,
-          renderingGif = _props$app.renderingGif,
+          rendering = _props$app.rendering,
           gifPercent = _props$app.gifPercent,
           renderingFrames = _props$app.renderingFrames,
           processingStepsTotal = _props$app.processingStepsTotal,
@@ -3802,14 +3802,14 @@ var RenderButton = function (_Component) {
       var framePercent = processingStepsFinished / (processingStepsTotal || 1);
       var percent = ((gifPercent * 100 + framePercent * 100) / 2).toFixed(2);
 
-      var value = renderingGif === true ? 'RENDERING ' + percent + '%' : "Render";
+      var value = rendering === true ? 'RENDERING ' + percent + '%' : "Render";
 
       return h('input', {
         type: 'button',
         value: value,
-        disabled: renderingGif ? 'disabled' : null,
+        disabled: rendering ? 'disabled' : null,
         onclick: function onclick() {
-          if (renderingFrames || renderingGif) return;
+          if (renderingFrames || rendering) return;
           dispatch({ type: 'GIF_START' });
           dispatch(createFrames());
         }
@@ -3946,7 +3946,6 @@ function dispatch(action) {
   }
 
   AppState = reduceState(action, curr);
-  // console.log('next state', AppState);
 
   if (curr === AppState) return;
 
