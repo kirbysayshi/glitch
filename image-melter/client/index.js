@@ -31,6 +31,12 @@ function fileToRotatedCanvas(file, cb) {
   })
 }
 
+const SAFARI_LOG = (text) => {
+  const status = document.createElement('div');
+  status.innerHTML = `<pre>${text}</pre>`;
+  document.body.appendChild(status);
+}
+
 function makeCanvas() {
   const cvs = document.createElement('canvas');
   const ctx = cvs.getContext('2d');
@@ -163,25 +169,17 @@ const defaultState = {
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
   acceleration: 0.1,
-  processingStepsTotal: 0,
-  processingStepsFinished: 0,
+  totalStages: 0,
+  finishedStages: 0,
   rendering: false,
   gifPercent: 0,
   gif: null,
 };
 
-
-const SAFARI_LOG = (text) => {
-  const status = document.createElement('div');
-  status.innerHTML = `<pre>${text}</pre>`;
-  document.body.appendChild(status);
-}
-
 const createFrames = () => (dispatch, getState) => {
   const state = getState();
 
   dispatch({ type: 'GIF_START' });
-  // dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
   
   const animState = initAnimState(
     state.inputCvs,
@@ -211,7 +209,7 @@ const createFrames = () => (dispatch, getState) => {
   
   // Allow it to "loop" until finished
   const nextFrame = (idx) => {
-    dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
+    dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
     setTimeout(() => {
       // TODO: would be great to have an Option<ImageData> here...
       const imgData = animStateFrame(animState, idx);
@@ -220,7 +218,7 @@ const createFrames = () => (dispatch, getState) => {
         gif.render();
       } else {
         gif.addFrame(imgData, { delay: 16 });
-        dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+        dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
         nextFrame(idx + 1);
       }
     })
@@ -238,7 +236,15 @@ function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
     const inputCvs = action.payload;
-    return { ...state, inputCvs, };
+    return {
+      ...state,
+      inputCvs,
+      // doom used 16. ~200 / 16 == 12.5... 
+      // But we've got different ratios than doom.
+      maxStartOffset: inputCvs.height / (12.5 / 2),
+      numSlices: inputCvs.width,
+      initialVelocity: inputCvs.height / 200
+    };
   }
     
   if (action.type === 'ACCELERATION_CHANGE') {
@@ -250,7 +256,6 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
-    // TODO: doom used 16. 480 / 16 == 30... 
     return { ...state, maxStartOffset: action.payload };
   }
   
@@ -258,12 +263,12 @@ function reduceState(action, state=defaultState) {
     return { ...state, numSlices: action.payload };
   }
 
-  if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
-    return { ...state, processingStepsTotal: state.processingStepsTotal + action.payload }; 
+  if (action.type === 'INC_TOTAL_STAGES') {
+    return { ...state, totalStages: state.totalStages + action.payload }; 
   }
   
-  if (action.type === 'INC_FINISHED_PROCESSING_STEPS') {
-    return { ...state, processingStepsFinished: state.processingStepsFinished + action.payload }; 
+  if (action.type === 'INC_FINISHED_STAGES') {
+    return { ...state, finishedStages: state.finishedStages + action.payload }; 
   }
   
   if (action.type === 'GIF_START') {
@@ -272,8 +277,8 @@ function reduceState(action, state=defaultState) {
       rendering: true,
       gifPercent: 0,
       gif: null,
-      processingStepsTotal: 0,
-      processingStepsFinished: 0,
+      totalStages: 0,
+      finishedStages: 0,
     };
   }
   
@@ -291,11 +296,11 @@ function reduceState(action, state=defaultState) {
 }
 
 const computePercentComplete = ({
-  processingStepsFinished,
-  processingStepsTotal,
+  finishedStages,
+  totalStages,
   gifPercent
 }) => {
-  const framePercent = processingStepsFinished / (processingStepsTotal || 1);
+  const framePercent = finishedStages / (totalStages || 1);
   return ((gifPercent * 100 + framePercent * 100) / 2);
 }
   

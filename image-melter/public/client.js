@@ -3650,8 +3650,8 @@ var defaultState = {
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
   acceleration: 0.1,
-  processingStepsTotal: 0,
-  processingStepsFinished: 0,
+  totalStages: 0,
+  finishedStages: 0,
   rendering: false,
   gifPercent: 0,
   gif: null
@@ -3662,7 +3662,6 @@ var createFrames = function createFrames() {
     var state = getState();
 
     dispatch({ type: 'GIF_START' });
-    // dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
     var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
@@ -3687,7 +3686,7 @@ var createFrames = function createFrames() {
 
     // Allow it to "loop" until finished
     var nextFrame = function nextFrame(idx) {
-      dispatch({ type: 'INC_TOTAL_PROCESSING_STEPS', payload: 1 });
+      dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
       setTimeout(function () {
         // TODO: would be great to have an Option<ImageData> here...
         var imgData = animStateFrame(animState, idx);
@@ -3696,7 +3695,7 @@ var createFrames = function createFrames() {
           gif$$1.render();
         } else {
           gif$$1.addFrame(imgData, { delay: 16 });
-          dispatch({ type: 'INC_FINISHED_PROCESSING_STEPS', payload: 1 });
+          dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
           nextFrame(idx + 1);
         }
       });
@@ -3717,7 +3716,14 @@ function reduceState(action) {
   if (action.type === 'IMAGE_LOAD') {
     // TODO: use inputCvs.width to set a good initial slice count
     var inputCvs = action.payload;
-    return _extends({}, state, { inputCvs: inputCvs });
+    return _extends({}, state, {
+      inputCvs: inputCvs,
+      // doom used 16. ~200 / 16 == 12.5... 
+      // But we've got different ratios than doom.
+      maxStartOffset: inputCvs.height / (12.5 / 2),
+      numSlices: inputCvs.width,
+      initialVelocity: inputCvs.height / 200
+    });
   }
 
   if (action.type === 'ACCELERATION_CHANGE') {
@@ -3729,7 +3735,6 @@ function reduceState(action) {
   }
 
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
-    // TODO: doom used 16. 480 / 16 == 30... 
     return _extends({}, state, { maxStartOffset: action.payload });
   }
 
@@ -3737,12 +3742,12 @@ function reduceState(action) {
     return _extends({}, state, { numSlices: action.payload });
   }
 
-  if (action.type === 'INC_TOTAL_PROCESSING_STEPS') {
-    return _extends({}, state, { processingStepsTotal: state.processingStepsTotal + action.payload });
+  if (action.type === 'INC_TOTAL_STAGES') {
+    return _extends({}, state, { totalStages: state.totalStages + action.payload });
   }
 
-  if (action.type === 'INC_FINISHED_PROCESSING_STEPS') {
-    return _extends({}, state, { processingStepsFinished: state.processingStepsFinished + action.payload });
+  if (action.type === 'INC_FINISHED_STAGES') {
+    return _extends({}, state, { finishedStages: state.finishedStages + action.payload });
   }
 
   if (action.type === 'GIF_START') {
@@ -3750,8 +3755,8 @@ function reduceState(action) {
       rendering: true,
       gifPercent: 0,
       gif: null,
-      processingStepsTotal: 0,
-      processingStepsFinished: 0
+      totalStages: 0,
+      finishedStages: 0
     });
   }
 
@@ -3769,11 +3774,11 @@ function reduceState(action) {
 }
 
 var computePercentComplete = function computePercentComplete(_ref) {
-  var processingStepsFinished = _ref.processingStepsFinished,
-      processingStepsTotal = _ref.processingStepsTotal,
+  var finishedStages = _ref.finishedStages,
+      totalStages = _ref.totalStages,
       gifPercent = _ref.gifPercent;
 
-  var framePercent = processingStepsFinished / (processingStepsTotal || 1);
+  var framePercent = finishedStages / (totalStages || 1);
   return (gifPercent * 100 + framePercent * 100) / 2;
 };
 
