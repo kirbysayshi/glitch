@@ -27,7 +27,6 @@ function fileToRotatedCanvas(file, cb) {
           return cb(null, cvs);
         });
       }
-
     }) 
   })
 }
@@ -60,7 +59,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   // compute slices
   const sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -88,6 +87,7 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, accelerati
     sliceWidth,
     sliceCount,
     acceleration,
+    initialVelocity,
     scratch,
   }
 }
@@ -100,6 +100,7 @@ function animStateFrame(animState, frameNum) {
     sliceWidth,
     initialYs,
     acceleration,
+    initialVelocity,
   } = animState;
 
   scratch.ctx.fillStyle = '#fff';
@@ -114,15 +115,13 @@ function animStateFrame(animState, frameNum) {
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
     let pos = initialY;
-    let vel = 0;
+    let vel = initialVelocity;
     let j = frameNum;
     while(j--) {
       pos = pos + vel;
       vel = vel + acceleration;
-      // y += verticalInc * acceleration;
     }
     const y = pos;
-    // const y = initialY + (verticalInc * frameNum * acceleration);
     if (y > inputCvs.height) continue; // this slice is done
     
     const sx = i * sliceWidth;
@@ -162,7 +161,7 @@ const defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  // verticalInc: 1,
+  initialVelocity: 1,
   acceleration: 0.1,
   renderingFrames: false,
   processingStepsTotal: 0,
@@ -188,7 +187,8 @@ const createFrames = () => (dispatch, getState) => {
     state.inputCvs,
     parseInt(state.numSlices, 10),
     parseInt(state.maxStartOffset, 10),
-    parseFloat(state.acceleration, 10));
+    parseFloat(state.acceleration, 10),
+    parseFloat(state.initialVelocity, 10));
   
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
@@ -243,6 +243,10 @@ function reduceState(action, state=defaultState) {
     
   if (action.type === 'ACCELERATION_CHANGE') {
     return { ...state, acceleration: action.payload };
+  }
+    
+  if (action.type === 'INITIAL_VELOCITY_CHANGE') {
+    return { ...state, initialVelocity: action.payload };
   }
   
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
@@ -353,6 +357,7 @@ class InputPanel extends Component {
       app: {
         numSlices,
         acceleration,
+        initialVelocity,
         maxStartOffset,
         gif,
       },
@@ -377,6 +382,15 @@ class InputPanel extends Component {
         value: numSlices,
         onChange: (value) => dispatch({
           type: 'SLICE_COUNT_CHANGE',
+          payload: value,
+        })
+      }),
+      
+      LabeledInput({
+        labelText: 'Initial Velocity',
+        value: initialVelocity,
+        onChange: (value) => dispatch({
+          type: 'INITIAL_VELOCITY_CHANGE',
           payload: value,
         })
       }),

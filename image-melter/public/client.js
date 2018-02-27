@@ -3550,7 +3550,7 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration) {
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   // compute slices
   var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
   var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
@@ -3577,6 +3577,7 @@ function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, accelerati
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
     acceleration: acceleration,
+    initialVelocity: initialVelocity,
     scratch: scratch
   };
 }
@@ -3587,7 +3588,8 @@ function animStateFrame(animState, frameNum) {
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
       initialYs = animState.initialYs,
-      acceleration = animState.acceleration;
+      acceleration = animState.acceleration,
+      initialVelocity = animState.initialVelocity;
 
 
   scratch.ctx.fillStyle = '#fff';
@@ -3602,15 +3604,13 @@ function animStateFrame(animState, frameNum) {
   for (var i = 0; i < sliceCount; i++) {
     var initialY = initialYs[i];
     var pos = initialY;
-    var vel = 0;
+    var vel = initialVelocity;
     var j = frameNum;
     while (j--) {
       pos = pos + vel;
       vel = vel + acceleration;
-      // y += verticalInc * acceleration;
     }
     var y = pos;
-    // const y = initialY + (verticalInc * frameNum * acceleration);
     if (y > inputCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;
@@ -3648,7 +3648,7 @@ var defaultState = {
   inputCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
-  // verticalInc: 1,
+  initialVelocity: 1,
   acceleration: 0.1,
   renderingFrames: false,
   processingStepsTotal: 0,
@@ -3664,7 +3664,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'SET_TOTAL_PROCESSING_STEPS', payload: 0 });
 
-    var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10));
+    var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3722,6 +3722,10 @@ function reduceState(action) {
 
   if (action.type === 'ACCELERATION_CHANGE') {
     return _extends({}, state, { acceleration: action.payload });
+  }
+
+  if (action.type === 'INITIAL_VELOCITY_CHANGE') {
+    return _extends({}, state, { initialVelocity: action.payload });
   }
 
   if (action.type === 'MAX_START_OFFSET_CHANGE') {
@@ -3863,6 +3867,7 @@ var InputPanel = function (_Component3) {
           _props$app2 = props.app,
           numSlices = _props$app2.numSlices,
           acceleration = _props$app2.acceleration,
+          initialVelocity = _props$app2.initialVelocity,
           maxStartOffset = _props$app2.maxStartOffset,
           gif$$1 = _props$app2.gif;
 
@@ -3882,6 +3887,15 @@ var InputPanel = function (_Component3) {
         onChange: function onChange(value) {
           return dispatch({
             type: 'SLICE_COUNT_CHANGE',
+            payload: value
+          });
+        }
+      }), LabeledInput({
+        labelText: 'Initial Velocity',
+        value: initialVelocity,
+        onChange: function onChange(value) {
+          return dispatch({
+            type: 'INITIAL_VELOCITY_CHANGE',
             payload: value
           });
         }
