@@ -39,6 +39,7 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
     acceleration,
     initialVelocity,
     scratch,
+    bgIdx: 0,
   }
 }
 
@@ -56,7 +57,6 @@ export function animStateFrame(animState, frameNum) {
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   
   let slicesRenderedThisFrame = 0;
-  let cvsIdx = 0;
   
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
@@ -89,6 +89,7 @@ export function animStateFrame(animState, frameNum) {
   }
   
   if (slicesRenderedThisFrame === 0) {
+    animState.bgIdx = (animState.bgIdx) + 1 % animState.cvses.length;
     // we done!
     return null;
   } else {

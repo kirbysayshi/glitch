@@ -2648,7 +2648,8 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
     sliceCount: sliceCount,
     acceleration: acceleration,
     initialVelocity: initialVelocity,
-    scratch: scratch
+    scratch: scratch,
+    bgIdx: 0
   };
 }
 
@@ -2697,6 +2698,7 @@ function animStateFrame(animState, frameNum) {
   }
 
   if (slicesRenderedThisFrame === 0) {
+    animState.bgIdx = animState.bgIdx + 1 % animState.cvses.length;
     // we done!
     return null;
   } else {
