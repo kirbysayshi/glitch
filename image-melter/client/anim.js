@@ -1,10 +1,10 @@
 import { doomRand } from './doom';
 import { makeCanvas, } from './utils';
 
-export function initAnimState([backCvs, foreCvs], requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+export function initAnimState([bgCvs, fgCvs], requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   // compute slices
-  const sliceWidth = Math.floor(foreCvs.width / requestedSliceCount) || 1;
-  const sliceCount = Math.ceil(foreCvs.width / sliceWidth);
+  const sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
+  const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
   
   // create initial ys
   const initialYs = [-doomRand() % maxStartOffset];
@@ -20,12 +20,12 @@ export function initAnimState([backCvs, foreCvs], requestedSliceCount, maxStartO
   }
   
   const scratch = makeCanvas();
-  scratch.cvs.width = foreCvs.width;
-  scratch.cvs.height = foreCvs.height;
+  scratch.cvs.width = fgCvs.width;
+  scratch.cvs.height = fgCvs.height;
   
   return {
-    backCvs,
-    foreCvs,
+    bgCvs,
+    fgCvs,
     initialYs,
     sliceWidth,
     sliceCount,
@@ -37,7 +37,7 @@ export function initAnimState([backCvs, foreCvs], requestedSliceCount, maxStartO
 
 export function animStateFrame(animState, frameNum) {
   const {
-    foreCvs,
+    fgCvs,
     scratch,
     sliceCount,
     sliceWidth,
@@ -49,7 +49,7 @@ export function animStateFrame(animState, frameNum) {
   scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(foreCvs, 0, 0);
+  // scratch.ctx.drawImage(fgCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   
   let slicesRenderedThisFrame = 0;
@@ -65,19 +65,19 @@ export function animStateFrame(animState, frameNum) {
       vel = vel + acceleration;
     }
     const y = pos;
-    if (y > foreCvs.height) continue; // this slice is done
+    if (y > fgCvs.height) continue; // this slice is done
     
     const sx = i * sliceWidth;
     const sy = 0;
     const swidth = sliceWidth;
-    const sheight = foreCvs.height;
+    const sheight = fgCvs.height;
     
     const dx = i * sliceWidth;
     const dy = y < 0 ? 0 : y;
     const dwidth = sliceWidth;
-    const dheight = foreCvs.height;
+    const dheight = fgCvs.height;
     
-    scratch.ctx.drawImage(foreCvs,
+    scratch.ctx.drawImage(fgCvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
     );

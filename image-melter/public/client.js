@@ -2610,12 +2610,12 @@ var toConsumableArray = function (arr) {
 
 function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   var _ref2 = slicedToArray(_ref, 2),
-      backCvs = _ref2[0],
-      foreCvs = _ref2[1];
+      bgCvs = _ref2[0],
+      fgCvs = _ref2[1];
 
   // compute slices
-  var sliceWidth = Math.floor(foreCvs.width / requestedSliceCount) || 1;
-  var sliceCount = Math.ceil(foreCvs.width / sliceWidth);
+  var sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
+  var sliceCount = Math.ceil(fgCvs.width / sliceWidth);
 
   // create initial ys
   var initialYs = [-doomRand() % maxStartOffset];
@@ -2630,12 +2630,12 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
   }
 
   var scratch = makeCanvas();
-  scratch.cvs.width = foreCvs.width;
-  scratch.cvs.height = foreCvs.height;
+  scratch.cvs.width = fgCvs.width;
+  scratch.cvs.height = fgCvs.height;
 
   return {
-    backCvs: backCvs,
-    foreCvs: foreCvs,
+    bgCvs: bgCvs,
+    fgCvs: fgCvs,
     initialYs: initialYs,
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
@@ -2646,7 +2646,7 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
 }
 
 function animStateFrame(animState, frameNum) {
-  var foreCvs = animState.foreCvs,
+  var fgCvs = animState.fgCvs,
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
@@ -2658,7 +2658,7 @@ function animStateFrame(animState, frameNum) {
   scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(foreCvs, 0, 0);
+  // scratch.ctx.drawImage(fgCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
 
   var slicesRenderedThisFrame = 0;
@@ -2674,19 +2674,19 @@ function animStateFrame(animState, frameNum) {
       vel = vel + acceleration;
     }
     var y = pos;
-    if (y > foreCvs.height) continue; // this slice is done
+    if (y > fgCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;
     var sy = 0;
     var swidth = sliceWidth;
-    var sheight = foreCvs.height;
+    var sheight = fgCvs.height;
 
     var dx = i * sliceWidth;
     var dy = y < 0 ? 0 : y;
     var dwidth = sliceWidth;
-    var dheight = foreCvs.height;
+    var dheight = fgCvs.height;
 
-    scratch.ctx.drawImage(foreCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+    scratch.ctx.drawImage(fgCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
 
     slicesRenderedThisFrame++;
   }
@@ -3688,7 +3688,8 @@ var GIF_WORKER_PATH = 'gif.worker.js';
 
 var defaultState = {
   errors: [],
-  inputCvs: null,
+  bgCvs: null,
+  fgCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
@@ -3706,7 +3707,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'GIF_START' });
 
-    var animState = initAnimState([null, state.inputCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
+    var animState = initAnimState([null, state.fgCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3757,15 +3758,23 @@ function reduceState(action) {
   }
 
   if (action.type === 'IMAGE_LOAD') {
-    var inputCvs = action.payload;
+    var _action$payload = action.payload,
+        cvs = _action$payload.cvs,
+        layer = _action$payload.layer;
+
+    var downscaled = downscaleToCanvas(cvs, Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)), Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+
     return _extends({}, state, {
-      inputCvs: inputCvs,
+      fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
+      bgCvs: layer === 'background' ? downscaled : state.bgCvs,
+
+      // TODO: put these somewhere else??
       // doom used 16. ~200 / 16 == 12.5... 
       // But we've got different ratios than doom.
-      maxStartOffset: inputCvs.height / (12.5 / 2),
-      numSlices: inputCvs.width,
+      maxStartOffset: downscaled.height / (12.5 / 2),
+      numSlices: downscaled.width,
       // doom had 200 height : 1 velocity
-      initialVelocity: inputCvs.height / 200
+      initialVelocity: downscaled.height / 200
     });
   }
 
@@ -3932,8 +3941,7 @@ var InputPanel = function (_Component3) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
-            var downscaled = downscaleToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
-            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: downscaled, layer: 'background' } });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
           });
         }
       })]), h('label', null, ['Foreground Image', h('input', {
@@ -3942,7 +3950,7 @@ var InputPanel = function (_Component3) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
-            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'foreground' } });
           });
         }
       })]), LabeledInput({

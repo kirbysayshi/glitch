@@ -12,7 +12,8 @@ import { initAnimState, animStateFrame, } from './anim';
 
 const defaultState = {
   errors: [],
-  inputCvs: null,
+  bgCvs: null,
+  fgCvs: null,
   numSlices: 400,
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
@@ -30,7 +31,7 @@ const createFrames = () => (dispatch, getState) => {
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(
-    [null, state.inputCvs],
+    [null, state.fgCvs],
     parseInt(state.numSlices, 10),
     parseInt(state.maxStartOffset, 10),
     parseFloat(state.acceleration, 10),
@@ -82,16 +83,23 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'IMAGE_LOAD') {
-    const inputCvs = action.payload.cvs;
+    const { cvs, layer } = action.payload;
+    const downscaled = downscaleToCanvas(cvs,
+      Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
+      Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+    
     return {
       ...state,
-      inputCvs,
+      fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
+      bgCvs: layer === 'background' ? downscaled : state.bgCvs,
+
+      // TODO: put these somewhere else??
       // doom used 16. ~200 / 16 == 12.5... 
       // But we've got different ratios than doom.
-      maxStartOffset: inputCvs.height / (12.5 / 2),
-      numSlices: inputCvs.width,
+      maxStartOffset: downscaled.height / (12.5 / 2),
+      numSlices: downscaled.width,
       // doom had 200 height : 1 velocity
-      initialVelocity: inputCvs.height / 200,
+      initialVelocity: downscaled.height / 200,
     };
   }
     
@@ -237,10 +245,7 @@ class InputPanel extends Component {
             const file = e.target.files[0];
             fileToRotatedCanvas(file, (err, cvs) => {
               if (err) return dispatch({ error: err });
-              const downscaled = downscaleToCanvas(cvs,
-                window.screen.width * (window.pixelDeviceRatio || 1),
-                window.screen.height * (window.pixelDeviceRatio || 1))
-              dispatch({ type: 'IMAGE_LOAD', payload: { cvs: downscaled, layer: 'background', }});
+              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
             });
           }
         })
@@ -255,7 +260,7 @@ class InputPanel extends Component {
             const file = e.target.files[0];
             fileToRotatedCanvas(file, (err, cvs) => {
               if (err) return dispatch({ error: err });
-              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
+              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'foreground', }});
             });
           }
         })
