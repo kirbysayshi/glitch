@@ -16,6 +16,53 @@ var gif = createCommonjsModule(function (module, exports) {
 
 });
 
+function imageToCanvas(image, opt_cvs, cb) {
+  if (!cb) { cb = opt_cvs; opt_cvs = null; }
+  var cvs = opt_cvs || document.createElement('canvas');
+  var ctx = cvs.getContext('2d');
+  cvs.width = image.width;
+  cvs.height = image.height;
+  ctx.drawImage(image, 0, 0);
+  cb(null, cvs);
+}
+
+function fileToArrayBuffer(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    cb(reader.error, reader.result);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function fileToImage(file, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(file);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
+function blobToImage(blob, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(blob);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
+var imageToCanvas_1 = imageToCanvas;
+var fileToArrayBuffer_1 = fileToArrayBuffer;
+var fileToImage_1 = fileToImage;
+var blobToImage_1 = blobToImage;
+
+// https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
+
 var exifOrient = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
   if (typeof undefined === 'function' && undefined.amd) {
@@ -2397,50 +2444,142 @@ function hasXmpData(xmpDataOffset) {
     return xmpDataOffset !== undefined;
 }
 
-function imageToCanvas(image, opt_cvs, cb) {
-  if (!cb) { cb = opt_cvs; opt_cvs = null; }
-  var cvs = opt_cvs || document.createElement('canvas');
+function fileToRotatedCanvas(file, cb) {
+  fileToImage_1(file, function (err, img) {
+    // Only the first 128 bytes can contain exif data.
+    var headerBytes = file.slice(0, 128 * 1024);
+    fileToArrayBuffer_1(headerBytes, function (err, ab) {
+      if (err) return cb(err);
+
+      try {
+        var tags = load(ab);
+        var orientation = tags.Orientation;
+        exifOrient(img, orientation.value, function (err, cvs) {
+          if (err) return cb(err);
+          return cb(null, cvs);
+        });
+      } catch (err) {
+        // likely no exif tags found.
+        imageToCanvas_1(img, function (err, cvs) {
+          if (err) return cb(err);
+          return cb(null, cvs);
+        });
+      }
+    });
+  });
+}
+
+function makeCanvas$1() {
+  var cvs = document.createElement('canvas');
   var ctx = cvs.getContext('2d');
-  cvs.width = image.width;
-  cvs.height = image.height;
-  ctx.drawImage(image, 0, 0);
-  cb(null, cvs);
+  return { cvs: cvs, ctx: ctx };
 }
 
-function fileToArrayBuffer(file, cb) {
-  var reader = new FileReader();
-  reader.onload = function() {
-    cb(reader.error, reader.result);
+function downscaleToCanvas(img, maxWidth, maxHeight) {
+  var _makeCanvas = makeCanvas$1(),
+      cvs = _makeCanvas.cvs,
+      ctx = _makeCanvas.ctx;
+
+  var ratio = img.width > img.height ? maxWidth / Math.max(img.width, maxWidth) : maxHeight / Math.max(img.height, maxHeight);
+  cvs.width = img.width * ratio;
+  cvs.height = img.height * ratio;
+  var sx = 0;
+  var sy = 0;
+  var swidth = img.width;
+  var sheight = img.height;
+  var dx = 0;
+  var dy = 0;
+  var dwidth = cvs.width;
+  var dheight = cvs.height;
+  ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+  return cvs;
+}
+
+function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+  // compute slices
+  var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
+  var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
+
+  // create initial ys
+  var initialYs = [-doomRand() % maxStartOffset];
+  for (var i = 1; i < sliceCount; i++) {
+    var prev = initialYs[i - 1];
+    var maxInc = Math.floor(maxStartOffset / 10.333);
+    var amount = maxInc * (doomRand() % 3 - 1);
+    var proposed = prev + amount;
+    var r = proposed;
+    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    initialYs.push(r);
+  }
+
+  var scratch = makeCanvas();
+  scratch.cvs.width = inputCvs.width;
+  scratch.cvs.height = inputCvs.height;
+
+  return {
+    inputCvs: inputCvs,
+    initialYs: initialYs,
+    sliceWidth: sliceWidth,
+    sliceCount: sliceCount,
+    acceleration: acceleration,
+    initialVelocity: initialVelocity,
+    scratch: scratch
   };
-  reader.readAsArrayBuffer(file);
 }
 
-function fileToImage(file, opt_image, cb) {
-  if (!cb) { cb = opt_image; opt_image = null; }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(file);
-  img.onload = function() {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
-}
+function animStateFrame(animState, frameNum) {
+  var inputCvs = animState.inputCvs,
+      scratch = animState.scratch,
+      sliceCount = animState.sliceCount,
+      sliceWidth = animState.sliceWidth,
+      initialYs = animState.initialYs,
+      acceleration = animState.acceleration,
+      initialVelocity = animState.initialVelocity;
 
-function blobToImage(blob, opt_image, cb) {
-  if (!cb) { cb = opt_image; opt_image = null; }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(blob);
-  img.onload = function() {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
-}
 
-var imageToCanvas_1 = imageToCanvas;
-var fileToArrayBuffer_1 = fileToArrayBuffer;
-var fileToImage_1 = fileToImage;
-var blobToImage_1 = blobToImage;
+  scratch.ctx.fillStyle = '#fff';
+  // TODO: should there be a background color?
+  // Or just the original image for loop effect?
+  // scratch.ctx.drawImage(inputCvs, 0, 0);
+  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+
+  var slicesRenderedThisFrame = 0;
+
+  // TODO: add an acceleration to the Ys.
+  for (var i = 0; i < sliceCount; i++) {
+    var initialY = initialYs[i];
+    var pos = initialY;
+    var vel = initialVelocity;
+    var j = frameNum;
+    while (j--) {
+      pos = pos + vel;
+      vel = vel + acceleration;
+    }
+    var y = pos;
+    if (y > inputCvs.height) continue; // this slice is done
+
+    var sx = i * sliceWidth;
+    var sy = 0;
+    var swidth = sliceWidth;
+    var sheight = inputCvs.height;
+
+    var dx = i * sliceWidth;
+    var dy = y < 0 ? 0 : y;
+    var dwidth = sliceWidth;
+    var dheight = inputCvs.height;
+
+    scratch.ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+
+    slicesRenderedThisFrame++;
+  }
+
+  if (slicesRenderedThisFrame === 0) {
+    // we done!
+    return null;
+  } else {
+    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+  }
+}
 
 /** Virtual DOM Node */
 function VNode() {}
@@ -3498,148 +3637,6 @@ var toConsumableArray = function (arr) {
 };
 
 var GIF_WORKER_PATH = 'gif.worker.js';
-
-function fileToRotatedCanvas(file, cb) {
-  fileToImage_1(file, function (err, img) {
-    // Only the first 128 bytes can contain exif data.
-    var headerBytes = file.slice(0, 128 * 1024);
-    fileToArrayBuffer_1(headerBytes, function (err, ab) {
-      if (err) return cb(err);
-
-      try {
-        var tags = load(ab);
-        var orientation = tags.Orientation;
-        exifOrient(img, orientation.value, function (err, cvs) {
-          if (err) return cb(err);
-          return cb(null, cvs);
-        });
-      } catch (err) {
-        // likely no exif tags found.
-        imageToCanvas_1(img, function (err, cvs) {
-          if (err) return cb(err);
-          return cb(null, cvs);
-        });
-      }
-    });
-  });
-}
-
-function makeCanvas() {
-  var cvs = document.createElement('canvas');
-  var ctx = cvs.getContext('2d');
-  return { cvs: cvs, ctx: ctx };
-}
-
-function downscaleToCanvas(img, maxWidth, maxHeight) {
-  var _makeCanvas = makeCanvas(),
-      cvs = _makeCanvas.cvs,
-      ctx = _makeCanvas.ctx;
-
-  var ratio = img.width > img.height ? maxWidth / Math.max(img.width, maxWidth) : maxHeight / Math.max(img.height, maxHeight);
-  cvs.width = img.width * ratio;
-  cvs.height = img.height * ratio;
-  var sx = 0;
-  var sy = 0;
-  var swidth = img.width;
-  var sheight = img.height;
-  var dx = 0;
-  var dy = 0;
-  var dwidth = cvs.width;
-  var dheight = cvs.height;
-  ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
-  return cvs;
-}
-
-function initAnimState(inputCvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
-  // compute slices
-  var sliceWidth = Math.floor(inputCvs.width / requestedSliceCount) || 1;
-  var sliceCount = Math.ceil(inputCvs.width / sliceWidth);
-
-  // create initial ys
-  var initialYs = [-doomRand() % maxStartOffset];
-  for (var i = 1; i < sliceCount; i++) {
-    var prev = initialYs[i - 1];
-    var maxInc = Math.floor(maxStartOffset / 10.333);
-    var amount = maxInc * (doomRand() % 3 - 1);
-    var proposed = prev + amount;
-    var r = proposed;
-    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
-    initialYs.push(r);
-  }
-
-  var scratch = makeCanvas();
-  scratch.cvs.width = inputCvs.width;
-  scratch.cvs.height = inputCvs.height;
-
-  return {
-    inputCvs: inputCvs,
-    initialYs: initialYs,
-    sliceWidth: sliceWidth,
-    sliceCount: sliceCount,
-    acceleration: acceleration,
-    initialVelocity: initialVelocity,
-    scratch: scratch
-  };
-}
-
-function animStateFrame(animState, frameNum) {
-  var inputCvs = animState.inputCvs,
-      scratch = animState.scratch,
-      sliceCount = animState.sliceCount,
-      sliceWidth = animState.sliceWidth,
-      initialYs = animState.initialYs,
-      acceleration = animState.acceleration,
-      initialVelocity = animState.initialVelocity;
-
-
-  scratch.ctx.fillStyle = '#fff';
-  // TODO: should there be a background color?
-  // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(inputCvs, 0, 0);
-  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
-
-  var slicesRenderedThisFrame = 0;
-
-  // TODO: add an acceleration to the Ys.
-  for (var i = 0; i < sliceCount; i++) {
-    var initialY = initialYs[i];
-    var pos = initialY;
-    var vel = initialVelocity;
-    var j = frameNum;
-    while (j--) {
-      pos = pos + vel;
-      vel = vel + acceleration;
-    }
-    var y = pos;
-    if (y > inputCvs.height) continue; // this slice is done
-
-    var sx = i * sliceWidth;
-    var sy = 0;
-    var swidth = sliceWidth;
-    var sheight = inputCvs.height;
-
-    var dx = i * sliceWidth;
-    var dy = y < 0 ? 0 : y;
-    var dwidth = sliceWidth;
-    var dheight = inputCvs.height;
-
-    scratch.ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
-
-    slicesRenderedThisFrame++;
-  }
-
-  if (slicesRenderedThisFrame === 0) {
-    // we done!
-    return null;
-  } else {
-    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
-  }
-}
-
-// https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
-var doomRand = function doomRand() {
-  return Math.floor(Math.random() * 256);
-};
 
 // BEGIN STATE MANAGEMENT
 
