@@ -62,6 +62,9 @@ var fileToImage_1 = fileToImage;
 var blobToImage_1 = blobToImage;
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
+var doomRand = function doomRand() {
+  return Math.floor(Math.random() * 256);
+};
 
 var exifOrient = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -2606,14 +2609,27 @@ var toConsumableArray = function (arr) {
 };
 
 function makeInitialYs(maxStartOffset, sliceCount) {
+  var ys = [-doomRand() % maxStartOffset];
+  for (var i = 1; i < sliceCount; i++) {
+    var prev = ys[i - 1];
+    var maxInc = Math.floor(maxStartOffset / 10.333);
+    var amount = maxInc * (doomRand() % 3 - 1);
+    var proposed = prev + amount;
+    var r = proposed;
+    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    ys.push(r);
+  }
+  return ys;
 }
 
-function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
-  var _ref2 = slicedToArray(_ref, 2),
-      bgCvs = _ref2[0],
-      fgCvs = _ref2[1];
+function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+  var _cvses = slicedToArray(cvses, 2),
+      bgCvs = _cvses[0],
+      fgCvs = _cvses[1];
 
   // compute slices
+
+
   var sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
   var sliceCount = Math.ceil(fgCvs.width / sliceWidth);
 
@@ -2626,10 +2642,8 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
   scratch.cvs.height = fgCvs.height;
 
   return {
-    bgCvs: bgCvs,
-    fgCvs: fgCvs,
-    fgYs: fgYs,
-    bgYs: bgYs,
+    cvses: cvses,
+    ys: [bgYs, fgYs],
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
     acceleration: acceleration,
@@ -2639,14 +2653,17 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
 }
 
 function animStateFrame(animState, frameNum) {
-  var fgCvs = animState.fgCvs,
+  var _animState$cvses = slicedToArray(animState.cvses, 2),
+      bgCvs = _animState$cvses[0],
+      fgCvs = _animState$cvses[1],
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
-      initialYs = animState.initialYs,
+      _animState$ys = slicedToArray(animState.ys, 2),
+      bgYs = _animState$ys[0],
+      initialYs = _animState$ys[1],
       acceleration = animState.acceleration,
       initialVelocity = animState.initialVelocity;
-
 
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
 

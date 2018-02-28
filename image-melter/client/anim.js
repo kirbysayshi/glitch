@@ -13,9 +13,12 @@ function makeInitialYs(maxStartOffset, sliceCount) {
     else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
     ys.push(r);
   }
+  return ys;
 }
 
-export function initAnimState(cvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+export function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+  const [bgCvs, fgCvs] = cvses;
+
   // compute slices
   const sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
   const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
@@ -29,10 +32,8 @@ export function initAnimState(cvs, requestedSliceCount, maxStartOffset, accelera
   scratch.cvs.height = fgCvs.height;
   
   return {
-    bgCvs,
-    fgCvs,
-    fgYs,
-    bgYs,
+    cvses,
+    ys: [bgYs, fgYs],
     sliceWidth,
     sliceCount,
     acceleration,
@@ -43,11 +44,11 @@ export function initAnimState(cvs, requestedSliceCount, maxStartOffset, accelera
 
 export function animStateFrame(animState, frameNum) {
   const {
-    fgCvs,
+    cvses: [bgCvs, fgCvs],
     scratch,
     sliceCount,
     sliceWidth,
-    initialYs,
+    ys: [bgYs, initialYs],
     acceleration,
     initialVelocity,
   } = animState;
@@ -55,7 +56,7 @@ export function animStateFrame(animState, frameNum) {
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   
   let slicesRenderedThisFrame = 0;
-  let cycleCount = 0;
+  let cvsIdx = 0;
   
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
