@@ -2654,24 +2654,27 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
 }
 
 function animStateFrame(animState, frameNum) {
-  var _animState$cvses = slicedToArray(animState.cvses, 2),
-      bgCvs = _animState$cvses[0],
-      fgCvs = _animState$cvses[1],
+  var cvses = animState.cvses,
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
-      _animState$ys = slicedToArray(animState.ys, 2),
-      bgYs = _animState$ys[0],
-      initialYs = _animState$ys[1],
       acceleration = animState.acceleration,
-      initialVelocity = animState.initialVelocity;
+      initialVelocity = animState.initialVelocity,
+      bgIdx = animState.bgIdx;
 
-  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  // TODO: put frameNum into animState
+  // TODO: how to generically scale the bg/fg consistently?
 
   var slicesRenderedThisFrame = 0;
+  var bgCvs = cvses[bgIdx];
+  var fgCvs = cvses[(bgIdx + 1) % cvses.length];
+  var ys = animState.ys[bgIdx];
+
+  // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height, 0, 0, scratch.cvs.width, scratch.cvs.height);
 
   for (var i = 0; i < sliceCount; i++) {
-    var initialY = initialYs[i];
+    var initialY = ys[i];
     var pos = initialY;
     var vel = initialVelocity;
     var j = frameNum;
@@ -2698,7 +2701,7 @@ function animStateFrame(animState, frameNum) {
   }
 
   if (slicesRenderedThisFrame === 0) {
-    animState.bgIdx = animState.bgIdx + 1 % animState.cvses.length;
+    animState.bgIdx = (animState.bgIdx + 1) % animState.cvses.length;
     // we done!
     return null;
   } else {
@@ -3736,17 +3739,25 @@ var createFrames = function createFrames() {
     });
 
     // Allow it to "loop" until finished
+    var nullOnce = false;
     var nextFrame = function nextFrame(idx) {
       dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
       setTimeout(function () {
+
         // TODO: would be great to have an Option<ImageData> here...
         var imgData = animStateFrame(animState, idx);
+        dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
+
         if (!imgData) {
-          // animation is done!  
-          gif$$1.render();
+          if (nullOnce) {
+            // animation is done!  
+            gif$$1.render();
+          } else {
+            nullOnce = true;
+            nextFrame(0);
+          }
         } else {
           gif$$1.addFrame(imgData, { delay: 16 });
-          dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
           nextFrame(idx + 1);
         }
       });

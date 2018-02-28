@@ -45,21 +45,29 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
 
 export function animStateFrame(animState, frameNum) {
   const {
-    cvses: [bgCvs, fgCvs],
+    cvses,
     scratch,
     sliceCount,
     sliceWidth,
-    ys: [bgYs, initialYs],
     acceleration,
     initialVelocity,
+    bgIdx
   } = animState;
-
-  scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  
+  // TODO: put frameNum into animState
+  // TODO: how to generically scale the bg/fg consistently?
   
   let slicesRenderedThisFrame = 0;
+  let bgCvs = cvses[bgIdx];
+  let fgCvs = cvses[(bgIdx + 1) % cvses.length];
+  let ys = animState.ys[bgIdx];
   
+  // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
+  scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height,
+    0, 0, scratch.cvs.width, scratch.cvs.height);
+                        
   for (let i = 0; i < sliceCount; i++) {
-    const initialY = initialYs[i];
+    const initialY = ys[i];
     let pos = initialY;
     let vel = initialVelocity;
     let j = frameNum;
@@ -89,7 +97,7 @@ export function animStateFrame(animState, frameNum) {
   }
   
   if (slicesRenderedThisFrame === 0) {
-    animState.bgIdx = (animState.bgIdx) + 1 % animState.cvses.length;
+    animState.bgIdx = (animState.bgIdx + 1) % animState.cvses.length;
     // we done!
     return null;
   } else {

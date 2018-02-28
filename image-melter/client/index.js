@@ -57,17 +57,25 @@ const createFrames = () => (dispatch, getState) => {
   }); 
   
   // Allow it to "loop" until finished
+  let nullOnce = false;
   const nextFrame = (idx) => {
     dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
     setTimeout(() => {
+      
       // TODO: would be great to have an Option<ImageData> here...
       const imgData = animStateFrame(animState, idx);
+      dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
+      
       if (!imgData) {
-        // animation is done!  
-        gif.render();
+        if (nullOnce) {
+          // animation is done!  
+          gif.render();
+        } else {
+          nullOnce = true; 
+          nextFrame(0);
+        }  
       } else {
-        gif.addFrame(imgData, { delay: 16 });
-        dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
+        gif.addFrame(imgData, { delay: 16 });  
         nextFrame(idx + 1);
       }
     })
