@@ -1,23 +1,28 @@
 import { doomRand } from './doom';
 import { makeCanvas, } from './utils';
 
-export function initAnimState([bgCvs, fgCvs], requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
-  // compute slices
-  const sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
-  const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
-  
-  // create initial ys
-  const initialYs = [-doomRand() % maxStartOffset];
+function makeInitialYs(maxStartOffset, sliceCount) {
+  const ys = [-doomRand() % maxStartOffset];
   for (let i = 1; i < sliceCount; i++) {
-    const prev = initialYs[i - 1];
+    const prev = ys[i - 1];
     const maxInc = Math.floor(maxStartOffset / 10.333);
     const amount = maxInc * ((doomRand() % 3) - 1);
     const proposed = prev + amount;
     let r = proposed;
     if (proposed > 0) r = 0;
     else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
-    initialYs.push(r);
+    ys.push(r);
   }
+}
+
+export function initAnimState(cvs, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
+  // compute slices
+  const sliceWidth = Math.floor(fgCvs.width / requestedSliceCount) || 1;
+  const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
+  
+  // create initial ys
+  const fgYs = makeInitialYs(maxStartOffset, sliceCount);
+  const bgYs = makeInitialYs(maxStartOffset, sliceCount);
   
   const scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;
@@ -26,7 +31,8 @@ export function initAnimState([bgCvs, fgCvs], requestedSliceCount, maxStartOffse
   return {
     bgCvs,
     fgCvs,
-    initialYs,
+    fgYs,
+    bgYs,
     sliceWidth,
     sliceCount,
     acceleration,
@@ -46,15 +52,11 @@ export function animStateFrame(animState, frameNum) {
     initialVelocity,
   } = animState;
 
-  scratch.ctx.fillStyle = '#fff';
-  // TODO: should there be a background color?
-  // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(fgCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   
   let slicesRenderedThisFrame = 0;
+  let cycleCount = 0;
   
-  // TODO: add an acceleration to the Ys.
   for (let i = 0; i < sliceCount; i++) {
     const initialY = initialYs[i];
     let pos = initialY;

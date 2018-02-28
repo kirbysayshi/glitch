@@ -31,7 +31,7 @@ const createFrames = () => (dispatch, getState) => {
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(
-    [null, state.fgCvs],
+    [state.bgCvs, state.fgCvs],
     parseInt(state.numSlices, 10),
     parseInt(state.maxStartOffset, 10),
     parseFloat(state.acceleration, 10),
@@ -88,18 +88,27 @@ function reduceState(action, state=defaultState) {
       Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
       Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
     
+    // doom used 16. ~200 / 16 == 12.5... 
+    // But we've got different ratios than doom.
+    const maxStartOffset = layer === 'foreground'
+      ? downscaled.height / (12.5 / 2)
+      : state.maxStartOffset;
+    const numSlices = layer === 'foreground'
+      ? downscaled.width
+      : state.numSlices;
+    // doom had 200 height : 1 velocity
+    const initialVelocity = layer === 'foreground'
+      ? downscaled.height / 200
+      : state.initialVelocity;
+    
     return {
       ...state,
       fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
       bgCvs: layer === 'background' ? downscaled : state.bgCvs,
 
-      // TODO: put these somewhere else??
-      // doom used 16. ~200 / 16 == 12.5... 
-      // But we've got different ratios than doom.
-      maxStartOffset: downscaled.height / (12.5 / 2),
-      numSlices: downscaled.width,
-      // doom had 200 height : 1 velocity
-      initialVelocity: downscaled.height / 200,
+      maxStartOffset,
+      numSlices,
+      initialVelocity,
     };
   }
     

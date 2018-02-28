@@ -62,9 +62,6 @@ var fileToImage_1 = fileToImage;
 var blobToImage_1 = blobToImage;
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
-var doomRand = function doomRand() {
-  return Math.floor(Math.random() * 256);
-};
 
 var exifOrient = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -2608,6 +2605,9 @@ var toConsumableArray = function (arr) {
   }
 };
 
+function makeInitialYs(maxStartOffset, sliceCount) {
+}
+
 function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   var _ref2 = slicedToArray(_ref, 2),
       bgCvs = _ref2[0],
@@ -2618,16 +2618,8 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
   var sliceCount = Math.ceil(fgCvs.width / sliceWidth);
 
   // create initial ys
-  var initialYs = [-doomRand() % maxStartOffset];
-  for (var i = 1; i < sliceCount; i++) {
-    var prev = initialYs[i - 1];
-    var maxInc = Math.floor(maxStartOffset / 10.333);
-    var amount = maxInc * (doomRand() % 3 - 1);
-    var proposed = prev + amount;
-    var r = proposed;
-    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
-    initialYs.push(r);
-  }
+  var fgYs = makeInitialYs(maxStartOffset, sliceCount);
+  var bgYs = makeInitialYs(maxStartOffset, sliceCount);
 
   var scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;
@@ -2636,7 +2628,8 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
   return {
     bgCvs: bgCvs,
     fgCvs: fgCvs,
-    initialYs: initialYs,
+    fgYs: fgYs,
+    bgYs: bgYs,
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
     acceleration: acceleration,
@@ -2655,15 +2648,10 @@ function animStateFrame(animState, frameNum) {
       initialVelocity = animState.initialVelocity;
 
 
-  scratch.ctx.fillStyle = '#fff';
-  // TODO: should there be a background color?
-  // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(fgCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
 
   var slicesRenderedThisFrame = 0;
 
-  // TODO: add an acceleration to the Ys.
   for (var i = 0; i < sliceCount; i++) {
     var initialY = initialYs[i];
     var pos = initialY;
@@ -3707,7 +3695,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'GIF_START' });
 
-    var animState = initAnimState([null, state.fgCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
+    var animState = initAnimState([state.bgCvs, state.fgCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3764,17 +3752,20 @@ function reduceState(action) {
 
     var downscaled = downscaleToCanvas(cvs, Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)), Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
 
+    // doom used 16. ~200 / 16 == 12.5... 
+    // But we've got different ratios than doom.
+    var maxStartOffset = layer === 'foreground' ? downscaled.height / (12.5 / 2) : state.maxStartOffset;
+    var numSlices = layer === 'foreground' ? downscaled.width : state.numSlices;
+    // doom had 200 height : 1 velocity
+    var initialVelocity = layer === 'foreground' ? downscaled.height / 200 : state.initialVelocity;
+
     return _extends({}, state, {
       fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
       bgCvs: layer === 'background' ? downscaled : state.bgCvs,
 
-      // TODO: put these somewhere else??
-      // doom used 16. ~200 / 16 == 12.5... 
-      // But we've got different ratios than doom.
-      maxStartOffset: downscaled.height / (12.5 / 2),
-      numSlices: downscaled.width,
-      // doom had 200 height : 1 velocity
-      initialVelocity: downscaled.height / 200
+      maxStartOffset: maxStartOffset,
+      numSlices: numSlices,
+      initialVelocity: initialVelocity
     });
   }
 
