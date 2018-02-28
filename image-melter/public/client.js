@@ -2646,7 +2646,7 @@ function initAnimState(_ref, requestedSliceCount, maxStartOffset, acceleration, 
 }
 
 function animStateFrame(animState, frameNum) {
-  var inputCvs = animState.inputCvs,
+  var foreCvs = animState.foreCvs,
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
@@ -2658,7 +2658,7 @@ function animStateFrame(animState, frameNum) {
   scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(inputCvs, 0, 0);
+  // scratch.ctx.drawImage(foreCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
 
   var slicesRenderedThisFrame = 0;
@@ -2674,19 +2674,19 @@ function animStateFrame(animState, frameNum) {
       vel = vel + acceleration;
     }
     var y = pos;
-    if (y > inputCvs.height) continue; // this slice is done
+    if (y > foreCvs.height) continue; // this slice is done
 
     var sx = i * sliceWidth;
     var sy = 0;
     var swidth = sliceWidth;
-    var sheight = inputCvs.height;
+    var sheight = foreCvs.height;
 
     var dx = i * sliceWidth;
     var dy = y < 0 ? 0 : y;
     var dwidth = sliceWidth;
-    var dheight = inputCvs.height;
+    var dheight = foreCvs.height;
 
-    scratch.ctx.drawImage(inputCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+    scratch.ctx.drawImage(foreCvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
 
     slicesRenderedThisFrame++;
   }
@@ -3706,7 +3706,7 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'GIF_START' });
 
-    var animState = initAnimState(state.inputCvs, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
+    var animState = initAnimState([null, state.inputCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3926,17 +3926,26 @@ var InputPanel = function (_Component3) {
           maxStartOffset = _props$app.maxStartOffset,
           gif$$1 = _props$app.gif;
 
-      return h('form', null, [h('input', {
+      return h('form', null, [h('label', null, ['Background Image', h('input', {
         type: 'file',
         onchange: function onchange(e) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
             var downscaled = downscaleToCanvas(cvs, window.screen.width * (window.pixelDeviceRatio || 1), window.screen.height * (window.pixelDeviceRatio || 1));
-            dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: downscaled, layer: 'background' } });
           });
         }
-      }), LabeledInput({
+      })]), h('label', null, ['Foreground Image', h('input', {
+        type: 'file',
+        onchange: function onchange(e) {
+          var file = e.target.files[0];
+          fileToRotatedCanvas(file, function (err, cvs) {
+            if (err) return dispatch({ error: err });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
+          });
+        }
+      })]), LabeledInput({
         labelText: 'Vertical Slices',
         value: numSlices,
         onChange: function onChange(value) {

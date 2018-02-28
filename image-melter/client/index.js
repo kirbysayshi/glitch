@@ -8,9 +8,6 @@ import { fileToRotatedCanvas } from './orient-cvs';
 import { makeCanvas, downscaleToCanvas } from './utils';
 import { initAnimState, animStateFrame, } from './anim';
 
-
-
-
 // BEGIN STATE MANAGEMENT
 
 const defaultState = {
@@ -33,7 +30,7 @@ const createFrames = () => (dispatch, getState) => {
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(
-    state.inputCvs,
+    [null, state.inputCvs],
     parseInt(state.numSlices, 10),
     parseInt(state.maxStartOffset, 10),
     parseFloat(state.acceleration, 10),
@@ -85,7 +82,7 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'IMAGE_LOAD') {
-    const inputCvs = action.payload;
+    const inputCvs = action.payload.cvs;
     return {
       ...state,
       inputCvs,
@@ -231,19 +228,38 @@ class InputPanel extends Component {
       },
     } = props;
     return h('form', null, [
-      h('input', {
-        type: 'file',
-        onchange: (e) => {
-          const file = e.target.files[0];
-          fileToRotatedCanvas(file, (err, cvs) => {
-            if (err) return dispatch({ error: err });
-            const downscaled = downscaleToCanvas(cvs,
-              window.screen.width * (window.pixelDeviceRatio || 1),
-              window.screen.height * (window.pixelDeviceRatio || 1))
-            dispatch({ type: 'IMAGE_LOAD', payload: downscaled });
-          });
-        }
-      }),
+      
+      h('label', null, [
+        'Background Image',
+        h('input', {
+          type: 'file',
+          onchange: (e) => {
+            const file = e.target.files[0];
+            fileToRotatedCanvas(file, (err, cvs) => {
+              if (err) return dispatch({ error: err });
+              const downscaled = downscaleToCanvas(cvs,
+                window.screen.width * (window.pixelDeviceRatio || 1),
+                window.screen.height * (window.pixelDeviceRatio || 1))
+              dispatch({ type: 'IMAGE_LOAD', payload: { cvs: downscaled, layer: 'background', }});
+            });
+          }
+        })
+        
+      ]),
+      
+      h('label', null, [
+        'Foreground Image',
+        h('input', {
+          type: 'file',
+          onchange: (e) => {
+            const file = e.target.files[0];
+            fileToRotatedCanvas(file, (err, cvs) => {
+              if (err) return dispatch({ error: err });
+              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
+            });
+          }
+        })
+      ]),
       
       LabeledInput({
         labelText: 'Vertical Slices',

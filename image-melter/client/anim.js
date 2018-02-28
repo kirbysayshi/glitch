@@ -37,7 +37,7 @@ export function initAnimState([backCvs, foreCvs], requestedSliceCount, maxStartO
 
 export function animStateFrame(animState, frameNum) {
   const {
-    foreCv,
+    foreCvs,
     scratch,
     sliceCount,
     sliceWidth,
@@ -49,7 +49,7 @@ export function animStateFrame(animState, frameNum) {
   scratch.ctx.fillStyle = '#fff';
   // TODO: should there be a background color?
   // Or just the original image for loop effect?
-  // scratch.ctx.drawImage(foreCv, 0, 0);
+  // scratch.ctx.drawImage(foreCvs, 0, 0);
   scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   
   let slicesRenderedThisFrame = 0;
