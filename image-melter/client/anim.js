@@ -29,7 +29,7 @@ const normalizeCvses = (cvses) => {
     }
   }, { ratio: 0, cvs: null });
   
-  cvses.map(cvs => {
+  return cvses.map(cvs => {
     if (cvs === mostSquare.cvs) return cvs;
   
     const heightRatio = cvs.height / mostSquare.height;
@@ -40,16 +40,25 @@ const normalizeCvses = (cvses) => {
     const scaled = makeCanvas();
     scaled.cvs.width = mostSquare.cvs.width;
     scaled.cvs.height = mostSquare.cvs.height;
-    const sx = smallest === widthRatio ? 0 : ((cvs.width / widthRatio) / 2) - (mostSquare.cvs.width / 2);
-    const sy = (cvs.height / 2 / 2);
+    
+    cvs.translate(cvs.width / 2, cvs.height / 2);
+    cvs.scale(smallest, smallest);
+    cvs.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    
+    const sx = 0;
+    const sy = 0;
     const swidth = mostSquare.cvs.width;
     const sheight = mostSquare.cvs.height;
     
-    const dx = i * sliceWidth;
-    const dy = y < 0 ? 0 : y;
-    const dwidth = sliceWidth;
-    const dheight = fgCvs.height;
-    scaled.drawImage();
+    const dx = 0;
+    const dy = 0;
+    const dwidth = scaled.cvs.width;
+    const dheight = scaled.cvs.height;
+    scaled.drawImage(cvs,
+      sx, sy, swidth, sheight,
+      dx, dy, dwidth, dheight
+    );
+    return scaled;
   });
 }
 
@@ -67,6 +76,11 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   const scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;
   scratch.cvs.height = fgCvs.height;
+  
+  normalizeCvses(cvses).forEach(cvs => {
+    cvs.style.display = 'block';
+    document.body.appendChild(cvs);  
+  });
   
   return {
     cvses,

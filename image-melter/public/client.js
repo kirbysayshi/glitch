@@ -2610,8 +2610,8 @@ var toConsumableArray = function (arr) {
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
-  for (var _i = 1; _i < sliceCount; _i++) {
-    var prev = ys[_i - 1];
+  for (var i = 1; i < sliceCount; i++) {
+    var prev = ys[i - 1];
     var maxInc = Math.floor(maxStartOffset / 10.333);
     var amount = maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
@@ -2621,6 +2621,49 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   }
   return ys;
 }
+
+var normalizeCvses = function normalizeCvses(cvses) {
+  // find the canvas with the ratio closest to 1
+  var mostSquare = cvses.reduce(function (prev, cvs, idx) {
+    var top = Math.min(cvs.width, cvs.height);
+    var bottom = Math.max(cvs.width, cvs.height);
+    var ratio = top / bottom;
+    if (ratio > prev.ratio) {
+      return { ratio: ratio, cvs: cvs };
+    } else {
+      return prev;
+    }
+  }, { ratio: 0, cvs: null });
+
+  return cvses.map(function (cvs) {
+    if (cvs === mostSquare.cvs) return cvs;
+
+    var heightRatio = cvs.height / mostSquare.height;
+    var widthRatio = cvs.width / mostSquare.width;
+
+    var smallest = Math.min(heightRatio, widthRatio);
+
+    var scaled = makeCanvas();
+    scaled.cvs.width = mostSquare.cvs.width;
+    scaled.cvs.height = mostSquare.cvs.height;
+
+    cvs.translate(cvs.width / 2, cvs.height / 2);
+    cvs.scale(smallest, smallest);
+    cvs.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+
+    var sx = 0;
+    var sy = 0;
+    var swidth = mostSquare.cvs.width;
+    var sheight = mostSquare.cvs.height;
+
+    var dx = 0;
+    var dy = 0;
+    var dwidth = scaled.cvs.width;
+    var dheight = scaled.cvs.height;
+    scaled.drawImage(cvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+    return scaled;
+  });
+};
 
 function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   var _cvses = slicedToArray(cvses, 2),
@@ -2640,6 +2683,11 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
   var scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;
   scratch.cvs.height = fgCvs.height;
+
+  normalizeCvses(cvses).forEach(function (cvs) {
+    cvs.style.display = 'block';
+    document.body.appendChild(cvs);
+  });
 
   return {
     cvses: cvses,
@@ -2676,8 +2724,8 @@ function animStateFrame(animState) {
   // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height, 0, 0, scratch.cvs.width, scratch.cvs.height);
 
-  for (var _i2 = 0; _i2 < sliceCount; _i2++) {
-    var initialY = ys[_i2];
+  for (var i = 0; i < sliceCount; i++) {
+    var initialY = ys[i];
     var pos = initialY;
     var vel = initialVelocity;
     var j = frameNum;
@@ -2685,16 +2733,16 @@ function animStateFrame(animState) {
       pos = pos + vel;
       vel = vel + acceleration;
     }
-    var _y = pos;
-    if (_y > fgCvs.height) continue; // this slice is done
+    var y = pos;
+    if (y > fgCvs.height) continue; // this slice is done
 
-    var sx = _i2 * sliceWidth;
+    var sx = i * sliceWidth;
     var sy = 0;
     var swidth = sliceWidth;
     var sheight = fgCvs.height;
 
-    var dx = _i2 * sliceWidth;
-    var dy = _y < 0 ? 0 : _y;
+    var dx = i * sliceWidth;
+    var dy = y < 0 ? 0 : y;
     var dwidth = sliceWidth;
     var dheight = fgCvs.height;
 
