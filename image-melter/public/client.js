@@ -2610,8 +2610,8 @@ var toConsumableArray = function (arr) {
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
-  for (var i = 1; i < sliceCount; i++) {
-    var prev = ys[i - 1];
+  for (var _i = 1; _i < sliceCount; _i++) {
+    var prev = ys[_i - 1];
     var maxInc = Math.floor(maxStartOffset / 10.333);
     var amount = maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
@@ -2676,8 +2676,8 @@ function animStateFrame(animState) {
   // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height, 0, 0, scratch.cvs.width, scratch.cvs.height);
 
-  for (var i = 0; i < sliceCount; i++) {
-    var initialY = ys[i];
+  for (var _i2 = 0; _i2 < sliceCount; _i2++) {
+    var initialY = ys[_i2];
     var pos = initialY;
     var vel = initialVelocity;
     var j = frameNum;
@@ -2685,16 +2685,16 @@ function animStateFrame(animState) {
       pos = pos + vel;
       vel = vel + acceleration;
     }
-    var y = pos;
-    if (y > fgCvs.height) continue; // this slice is done
+    var _y = pos;
+    if (_y > fgCvs.height) continue; // this slice is done
 
-    var sx = i * sliceWidth;
+    var sx = _i2 * sliceWidth;
     var sy = 0;
     var swidth = sliceWidth;
     var sheight = fgCvs.height;
 
-    var dx = i * sliceWidth;
-    var dy = y < 0 ? 0 : y;
+    var dx = _i2 * sliceWidth;
+    var dy = _y < 0 ? 0 : _y;
     var dwidth = sliceWidth;
     var dheight = fgCvs.height;
 

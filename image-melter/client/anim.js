@@ -32,11 +32,24 @@ const normalizeCvses = (cvses) => {
   cvses.map(cvs => {
     if (cvs === mostSquare.cvs) return cvs;
   
-    if (cvs.width > cvs.height) {
-      if (mostSquare.cvs.width > mostSquare.cvs.height) {
-      
-      }
-    }
+    const heightRatio = cvs.height / mostSquare.height;
+    const widthRatio = cvs.width / mostSquare.width;
+    
+    const smallest = Math.min(heightRatio, widthRatio);
+    
+    const scaled = makeCanvas();
+    scaled.cvs.width = mostSquare.cvs.width;
+    scaled.cvs.height = mostSquare.cvs.height;
+    const sx = smallest === widthRatio ? 0 : ((cvs.width / widthRatio) / 2) - (mostSquare.cvs.width / 2);
+    const sy = (cvs.height / 2 / 2);
+    const swidth = mostSquare.cvs.width;
+    const sheight = mostSquare.cvs.height;
+    
+    const dx = i * sliceWidth;
+    const dy = y < 0 ? 0 : y;
+    const dwidth = sliceWidth;
+    const dheight = fgCvs.height;
+    scaled.drawImage();
   });
 }
 
