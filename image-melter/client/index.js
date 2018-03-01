@@ -57,31 +57,31 @@ const createFrames = () => (dispatch, getState) => {
   }); 
   
   // Allow it to "loop" until finished
-  let nullOnce = false;
-  const nextFrame = (idx) => {
+  // let nullOnce = false;
+  const nextFrame = () => {
     dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
     setTimeout(() => {
       
       // TODO: would be great to have an Option<ImageData> here...
-      const imgData = animStateFrame(animState, idx);
+      const imgData = animStateFrame(animState);
       dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
       
       if (!imgData) {
-        if (nullOnce) {
-          // animation is done!  
+        // if (nullOnce) {
+        //   // animation is done!  
           gif.render();
-        } else {
-          nullOnce = true; 
-          nextFrame(0);
-        }  
+        // } else {
+        //   // nullOnce = true; 
+        //   nextFrame();
+        // }  
       } else {
         gif.addFrame(imgData, { delay: 16 });  
-        nextFrame(idx + 1);
+        nextFrame();
       }
     })
   }
   
-  nextFrame(0);
+  nextFrame();
 }
 
 function reduceState(action, state=defaultState) {

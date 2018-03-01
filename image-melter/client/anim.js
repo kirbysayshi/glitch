@@ -40,10 +40,12 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
     initialVelocity,
     scratch,
     bgIdx: 0,
+    frameNum: 0,
+    wipeCount: 0,
   }
 }
 
-export function animStateFrame(animState, frameNum) {
+export function animStateFrame(animState) {
   const {
     cvses,
     scratch,
@@ -51,7 +53,8 @@ export function animStateFrame(animState, frameNum) {
     sliceWidth,
     acceleration,
     initialVelocity,
-    bgIdx
+    bgIdx,
+    frameNum,
   } = animState;
   
   // TODO: put frameNum into animState
@@ -96,11 +99,18 @@ export function animStateFrame(animState, frameNum) {
     slicesRenderedThisFrame++;
   }
   
+  animState.frameNum += 1;
+  
   if (slicesRenderedThisFrame === 0) {
     animState.bgIdx = (animState.bgIdx + 1) % animState.cvses.length;
-    // we done!
-    return null;
-  } else {
-    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
+    animState.frameNum = 0;
+    animState.wipeCount++;
   }
+  
+  if (animState.wipeCount === animState.cvses.length) {
+    // we done!
+    return null;  
+  }
+  
+  return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
 }

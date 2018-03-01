@@ -2649,18 +2649,21 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
     acceleration: acceleration,
     initialVelocity: initialVelocity,
     scratch: scratch,
-    bgIdx: 0
+    bgIdx: 0,
+    frameNum: 0,
+    wipeCount: 0
   };
 }
 
-function animStateFrame(animState, frameNum) {
+function animStateFrame(animState) {
   var cvses = animState.cvses,
       scratch = animState.scratch,
       sliceCount = animState.sliceCount,
       sliceWidth = animState.sliceWidth,
       acceleration = animState.acceleration,
       initialVelocity = animState.initialVelocity,
-      bgIdx = animState.bgIdx;
+      bgIdx = animState.bgIdx,
+      frameNum = animState.frameNum;
 
   // TODO: put frameNum into animState
   // TODO: how to generically scale the bg/fg consistently?
@@ -2700,13 +2703,20 @@ function animStateFrame(animState, frameNum) {
     slicesRenderedThisFrame++;
   }
 
+  animState.frameNum += 1;
+
   if (slicesRenderedThisFrame === 0) {
     animState.bgIdx = (animState.bgIdx + 1) % animState.cvses.length;
+    animState.frameNum = 0;
+    animState.wipeCount++;
+  }
+
+  if (animState.wipeCount === animState.cvses.length) {
     // we done!
     return null;
-  } else {
-    return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
   }
+
+  return scratch.ctx.getImageData(0, 0, scratch.cvs.width, scratch.cvs.height);
 }
 
 /** Virtual DOM Node */
@@ -3739,31 +3749,31 @@ var createFrames = function createFrames() {
     });
 
     // Allow it to "loop" until finished
-    var nullOnce = false;
-    var nextFrame = function nextFrame(idx) {
+    // let nullOnce = false;
+    var nextFrame = function nextFrame() {
       dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
       setTimeout(function () {
 
         // TODO: would be great to have an Option<ImageData> here...
-        var imgData = animStateFrame(animState, idx);
+        var imgData = animStateFrame(animState);
         dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
 
         if (!imgData) {
-          if (nullOnce) {
-            // animation is done!  
-            gif$$1.render();
-          } else {
-            nullOnce = true;
-            nextFrame(0);
-          }
+          // if (nullOnce) {
+          //   // animation is done!  
+          gif$$1.render();
+          // } else {
+          //   // nullOnce = true; 
+          //   nextFrame();
+          // }  
         } else {
           gif$$1.addFrame(imgData, { delay: 16 });
-          nextFrame(idx + 1);
+          nextFrame();
         }
       });
     };
 
-    nextFrame(0);
+    nextFrame();
   };
 };
 
