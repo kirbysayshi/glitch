@@ -16,20 +16,28 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   return ys;
 }
 
-const ratiosForCvs = (cvses, cvs) => {
+const normalizeCvses = (cvses) => {
   // find the canvas with the ratio closest to 1
   const mostSquare = cvses.reduce((prev, cvs, idx) => {
     const top = Math.min(cvs.width, cvs.height);
     const bottom = Math.max(cvs.width, cvs.height);
-    const r = top / bottom;
-    if (r > prev.ratio) {
-      return { r, cvs }  
+    const ratio = top / bottom;
+    if (ratio > prev.ratio) {
+      return { ratio, cvs }  
     } else {
       return prev
     }
-  }, { ratio: 0, cvs });
+  }, { ratio: 0, cvs: null });
   
+  cvses.map(cvs => {
+    if (cvs === mostSquare.cvs) return cvs;
   
+    if (cvs.width > cvs.height) {
+      if (mostSquare.cvs.width > mostSquare.cvs.height) {
+      
+      }
+    }
+  });
 }
 
 export function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
