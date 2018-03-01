@@ -2691,12 +2691,9 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
   scratch.cvs.width = fgCvs.width;
   scratch.cvs.height = fgCvs.height;
 
-  // normalizeCvses(cvses).forEach(cvs => {
-  //   cvs.style.display = 'block';
-  //   document.body.appendChild(cvs);  
-  // });
-
   return {
+    // TODO: put this normalizing into the reducer instead to give intelligent
+    // guesses about slice values.
     cvses: normalizeCvses(cvses),
     ys: [bgYs, fgYs],
     sliceWidth: sliceWidth,
@@ -2720,15 +2717,12 @@ function animStateFrame(animState) {
       bgIdx = animState.bgIdx,
       frameNum = animState.frameNum;
 
-  // TODO: put frameNum into animState
-  // TODO: how to generically scale the bg/fg consistently?
 
   var slicesRenderedThisFrame = 0;
   var bgCvs = cvses[bgIdx];
   var fgCvs = cvses[(bgIdx + 1) % cvses.length];
   var ys = animState.ys[bgIdx];
 
-  // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height, 0, 0, scratch.cvs.width, scratch.cvs.height);
 
   for (var i = 0; i < sliceCount; i++) {
@@ -3845,6 +3839,9 @@ function reduceState(action) {
         cvs = _action$payload.cvs,
         layer = _action$payload.layer;
 
+    // TODO: do this once we start computing the frames so a more
+    // intelligent sizing can be done. (avg size between, for example)
+
     var downscaled = downscaleToCanvas(cvs, Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)), Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
 
     // doom used 16. ~200 / 16 == 12.5... 
@@ -3904,7 +3901,7 @@ function reduceState(action) {
 
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
-    action.payload.style.width = '100%';
+    // action.payload.style.width = '100%';
     return _extends({}, state, { rendering: false, gif: action.payload });
   }
 

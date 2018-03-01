@@ -88,12 +88,9 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   scratch.cvs.width = fgCvs.width;
   scratch.cvs.height = fgCvs.height;
   
-  // normalizeCvses(cvses).forEach(cvs => {
-  //   cvs.style.display = 'block';
-  //   document.body.appendChild(cvs);  
-  // });
-  
   return {
+    // TODO: put this normalizing into the reducer instead to give intelligent
+    // guesses about slice values.
     cvses: normalizeCvses(cvses),
     ys: [bgYs, fgYs],
     sliceWidth,
@@ -119,15 +116,11 @@ export function animStateFrame(animState) {
     frameNum,
   } = animState;
   
-  // TODO: put frameNum into animState
-  // TODO: how to generically scale the bg/fg consistently?
-  
   let slicesRenderedThisFrame = 0;
   let bgCvs = cvses[bgIdx];
   let fgCvs = cvses[(bgIdx + 1) % cvses.length];
   let ys = animState.ys[bgIdx];
   
-  // scratch.ctx.clearRect(0, 0, scratch.cvs.width, scratch.cvs.height);
   scratch.ctx.drawImage(bgCvs, 0, 0, bgCvs.width, bgCvs.height,
     0, 0, scratch.cvs.width, scratch.cvs.height);
                         

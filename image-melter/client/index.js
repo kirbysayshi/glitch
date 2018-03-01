@@ -1,7 +1,7 @@
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
-import { blobToImage, } from 'image-juggler';
+import { blobToImage, imageToCanvas, } from 'image-juggler';
 
 import { doomRand } from './doom';
 import { fileToRotatedCanvas } from './orient-cvs';
@@ -92,6 +92,9 @@ function reduceState(action, state=defaultState) {
   
   if (action.type === 'IMAGE_LOAD') {
     const { cvs, layer } = action.payload;
+    
+    // TODO: do this once we start computing the frames so a more
+    // intelligent sizing can be done. (avg size between, for example)
     const downscaled = downscaleToCanvas(cvs,
       Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
       Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
@@ -161,7 +164,7 @@ function reduceState(action, state=defaultState) {
   
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
-    action.payload.style.width = '100%';
+    // action.payload.style.width = '100%';
     return { ...state, rendering: false, gif: action.payload };
   }
   
