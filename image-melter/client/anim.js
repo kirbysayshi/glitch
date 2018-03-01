@@ -16,6 +16,8 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   return ys;
 }
 
+// TODO: also include an initial bounding width/height to avoid
+// using huge cvs? And avoid blowing up a tiny image too much.
 const normalizeCvses = (cvses) => {
   // find the canvas with the ratio closest to 1
   const mostSquare = cvses.reduce((prev, cvs, idx) => {
@@ -42,12 +44,20 @@ const normalizeCvses = (cvses) => {
     scaled.cvs.height = mostSquare.cvs.height;
     
     const ctx = cvs.getContext('2d');
-    // ctx.translate(cvs.width / 2, cvs.height / 2);
-    // ctx.scale(1/smallest, 1/smallest);
-    // ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    const cvsHWidth = cvs.width / 2;
+    const cvsHHeight = cvs.height / 2;
+    // Transform the half coords of mostSquare into the coordinate space
+    // of cvs.
+    const mostHWidthScaled = (mostSquare.cvs.width / 2) * smallest;
+    const mostHHeightScaled = (mostSquare.cvs.height / 2) * smallest;
     
-    const sx = smallest === widthRatio ? 0 : (mostSquare.cvs.width / 2) - ( (mostSquare.cvs.width / 2) * smallest);
-    const sy = smallest === heightRatio ? 0 : (mostSquare.cvs.he / 2) - ( (mostSquare.cvs.he / 2) * smallest);
+    // Use as much of the image as possible.
+    const sx = smallest === widthRatio
+      ? 0
+      : cvsHWidth - mostHWidthScaled;
+    const sy = smallest === heightRatio
+      ? 0
+      : cvsHHeight - mostHHeightScaled;
     const swidth = mostSquare.cvs.width * smallest;
     const sheight = mostSquare.cvs.height * smallest;
     
@@ -78,13 +88,13 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   scratch.cvs.width = fgCvs.width;
   scratch.cvs.height = fgCvs.height;
   
-  normalizeCvses(cvses).forEach(cvs => {
-    cvs.style.display = 'block';
-    document.body.appendChild(cvs);  
-  });
+  // normalizeCvses(cvses).forEach(cvs => {
+  //   cvs.style.display = 'block';
+  //   document.body.appendChild(cvs);  
+  // });
   
   return {
-    cvses,
+    cvses: normalizeCvses(cvses),
     ys: [bgYs, fgYs],
     sliceWidth,
     sliceCount,
