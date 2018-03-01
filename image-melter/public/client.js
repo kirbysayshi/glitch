@@ -2648,14 +2648,14 @@ var normalizeCvses = function normalizeCvses(cvses) {
     scaled.cvs.height = mostSquare.cvs.height;
 
     var ctx = cvs.getContext('2d');
-    ctx.translate(cvs.width / 2, cvs.height / 2);
-    ctx.scale(smallest, smallest);
-    ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    // ctx.translate(cvs.width / 2, cvs.height / 2);
+    // ctx.scale(1/smallest, 1/smallest);
+    // ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
 
-    var sx = 0;
-    var sy = 0;
-    var swidth = mostSquare.cvs.width;
-    var sheight = mostSquare.cvs.height;
+    var sx = smallest === widthRatio ? 0 : 0; //(mostSquare.cvs.width * smallest) / 2;
+    var sy = smallest === heightRatio ? 0 : 0;
+    var swidth = mostSquare.cvs.width * smallest;
+    var sheight = mostSquare.cvs.height * smallest;
 
     var dx = 0;
     var dy = 0;

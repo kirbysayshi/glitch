@@ -42,14 +42,14 @@ const normalizeCvses = (cvses) => {
     scaled.cvs.height = mostSquare.cvs.height;
     
     const ctx = cvs.getContext('2d');
-    ctx.translate(cvs.width / 2, cvs.height / 2);
-    ctx.scale(smallest, smallest);
-    ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    // ctx.translate(cvs.width / 2, cvs.height / 2);
+    // ctx.scale(1/smallest, 1/smallest);
+    // ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
     
-    const sx = 0;
-    const sy = 0;
-    const swidth = mostSquare.cvs.width;
-    const sheight = mostSquare.cvs.height;
+    const sx = smallest === widthRatio ? 0 : (mostSquare.cvs.width / 2) - ( (mostSquare.cvs.width / 2) * smallest);
+    const sy = smallest === heightRatio ? 0 : (mostSquare.cvs.he / 2) - ( (mostSquare.cvs.he / 2) * smallest);
+    const swidth = mostSquare.cvs.width * smallest;
+    const sheight = mostSquare.cvs.height * smallest;
     
     const dx = 0;
     const dy = 0;
