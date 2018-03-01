@@ -16,6 +16,22 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   return ys;
 }
 
+const ratiosForCvs = (cvses, cvs) => {
+  // find the canvas with the ratio closest to 1
+  const mostSquare = cvses.reduce((prev, cvs, idx) => {
+    const top = Math.min(cvs.width, cvs.height);
+    const bottom = Math.max(cvs.width, cvs.height);
+    const r = top / bottom;
+    if (r > prev.ratio) {
+      return { r, cvs }  
+    } else {
+      return prev
+    }
+  }, { ratio: 0, cvs });
+  
+  
+}
+
 export function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration, initialVelocity) {
   const [bgCvs, fgCvs] = cvses;
 
