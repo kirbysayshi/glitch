@@ -32,8 +32,8 @@ const normalizeCvses = (cvses) => {
   return cvses.map(cvs => {
     if (cvs === mostSquare.cvs) return cvs;
   
-    const heightRatio = cvs.height / mostSquare.height;
-    const widthRatio = cvs.width / mostSquare.width;
+    const heightRatio = cvs.height / mostSquare.cvs.height;
+    const widthRatio = cvs.width / mostSquare.cvs.width;
     
     const smallest = Math.min(heightRatio, widthRatio);
     
@@ -41,9 +41,10 @@ const normalizeCvses = (cvses) => {
     scaled.cvs.width = mostSquare.cvs.width;
     scaled.cvs.height = mostSquare.cvs.height;
     
-    cvs.translate(cvs.width / 2, cvs.height / 2);
-    cvs.scale(smallest, smallest);
-    cvs.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    const ctx = cvs.getContext('2d');
+    ctx.translate(cvs.width / 2, cvs.height / 2);
+    ctx.scale(smallest, smallest);
+    ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
     
     const sx = 0;
     const sy = 0;
@@ -54,11 +55,11 @@ const normalizeCvses = (cvses) => {
     const dy = 0;
     const dwidth = scaled.cvs.width;
     const dheight = scaled.cvs.height;
-    scaled.drawImage(cvs,
+    scaled.ctx.drawImage(cvs,
       sx, sy, swidth, sheight,
       dx, dy, dwidth, dheight
     );
-    return scaled;
+    return scaled.cvs;
   });
 }
 

@@ -2638,8 +2638,8 @@ var normalizeCvses = function normalizeCvses(cvses) {
   return cvses.map(function (cvs) {
     if (cvs === mostSquare.cvs) return cvs;
 
-    var heightRatio = cvs.height / mostSquare.height;
-    var widthRatio = cvs.width / mostSquare.width;
+    var heightRatio = cvs.height / mostSquare.cvs.height;
+    var widthRatio = cvs.width / mostSquare.cvs.width;
 
     var smallest = Math.min(heightRatio, widthRatio);
 
@@ -2647,9 +2647,10 @@ var normalizeCvses = function normalizeCvses(cvses) {
     scaled.cvs.width = mostSquare.cvs.width;
     scaled.cvs.height = mostSquare.cvs.height;
 
-    cvs.translate(cvs.width / 2, cvs.height / 2);
-    cvs.scale(smallest, smallest);
-    cvs.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
+    var ctx = cvs.getContext('2d');
+    ctx.translate(cvs.width / 2, cvs.height / 2);
+    ctx.scale(smallest, smallest);
+    ctx.translate(-mostSquare.cvs.width / 2, -mostSquare.cvs.height / 2);
 
     var sx = 0;
     var sy = 0;
@@ -2660,8 +2661,8 @@ var normalizeCvses = function normalizeCvses(cvses) {
     var dy = 0;
     var dwidth = scaled.cvs.width;
     var dheight = scaled.cvs.height;
-    scaled.drawImage(cvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
-    return scaled;
+    scaled.ctx.drawImage(cvs, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+    return scaled.cvs;
   });
 };
 
