@@ -2622,8 +2622,6 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   return ys;
 }
 
-// TODO: also include an initial bounding width/height to avoid
-// using huge cvs? And avoid blowing up a tiny image too much.
 var normalizeCvses = function normalizeCvses(cvses) {
   // find the canvas with the ratio closest to 1
   var mostSquare = cvses.reduce(function (prev, cvs, idx) {
@@ -2645,6 +2643,9 @@ var normalizeCvses = function normalizeCvses(cvses) {
 
     var smallest = Math.min(heightRatio, widthRatio);
 
+    // TODO: how to handle if the square is drastically smaller
+    // than the other? Shouldn't the square get blown up to show
+    // more detail of the other?
     var scaled = makeCanvas();
     scaled.cvs.width = mostSquare.cvs.width;
     scaled.cvs.height = mostSquare.cvs.height;

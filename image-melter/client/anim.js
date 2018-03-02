@@ -16,8 +16,6 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   return ys;
 }
 
-// TODO: also include an initial bounding width/height to avoid
-// using huge cvs? And avoid blowing up a tiny image too much.
 export const normalizeCvses = (cvses) => {
   // find the canvas with the ratio closest to 1
   const mostSquare = cvses.reduce((prev, cvs, idx) => {
@@ -39,6 +37,9 @@ export const normalizeCvses = (cvses) => {
     
     const smallest = Math.min(heightRatio, widthRatio);
     
+    // TODO: how to handle if the square is drastically smaller
+    // than the other? Shouldn't the square get blown up to show
+    // more detail of the other?
     const scaled = makeCanvas();
     scaled.cvs.width = mostSquare.cvs.width;
     scaled.cvs.height = mostSquare.cvs.height;
