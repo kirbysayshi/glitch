@@ -282,6 +282,7 @@ class InputPanel extends Component {
         'Background Image',
         h('input', {
           type: 'file',
+          accept: 'image/*',
           onchange: (e) => {
             const file = e.target.files[0];
             fileToRotatedCanvas(file, (err, cvs) => {
@@ -297,6 +298,7 @@ class InputPanel extends Component {
         'Foreground Image',
         h('input', {
           type: 'file',
+          accept: 'image/*',
           onchange: (e) => {
             const file = e.target.files[0];
             fileToRotatedCanvas(file, (err, cvs) => {

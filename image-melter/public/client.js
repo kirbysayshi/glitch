@@ -4036,6 +4036,7 @@ var InputPanel = function (_Component3) {
 
       return h('form', null, [h('label', null, ['Background Image', h('input', {
         type: 'file',
+        accept: 'image/*',
         onchange: function onchange(e) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
@@ -4045,6 +4046,7 @@ var InputPanel = function (_Component3) {
         }
       })]), h('label', null, ['Foreground Image', h('input', {
         type: 'file',
+        accept: 'image/*',
         onchange: function onchange(e) {
           var file = e.target.files[0];
           fileToRotatedCanvas(file, function (err, cvs) {
