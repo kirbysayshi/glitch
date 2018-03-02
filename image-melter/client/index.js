@@ -99,22 +99,26 @@ function reduceState(action, state=defaultState) {
   if (action.type === 'IMAGE_LOAD') {
     const { layer } = action.payload;
     
+    const pdr = window.pixelDeviceRatio || 1;
+    const inputCvs = action.payload.cvs;
+    
+    // TODO: do this once we start computing the frames so a more
+    // intelligent sizing can be done. (avg size between, for example)
+    const downscaled = downscaleToCanvas(inputCvs,
+      Math.min(inputCvs.width, window.screen.width * pdr),
+      Math.min(inputCvs.height, window.screen.height * pdr));
+    
     const cvses = [
-      layer === 'background' ? action.payload.cvs : null,
+      layer === 'background' ? downscaled : null,
       state.bgCvs,
       state.fgCvs,
-      layer === 'foreground' ? action.payload.cvs : null,
+      layer === 'foreground' ? downscaled : null,
     ].filter(Boolean);
     const normalized = normalizeCvses(cvses);
     
-    // not always the fg, but good enough.
+    // not always the fg, but good enough. We have to pick one
+    // of them...
     const fg = normalized[normalized.length - 1];
-
-    // TODO: do this once we start computing the frames so a more
-    // intelligent sizing can be done. (avg size between, for example)
-    const downscaled = downscaleToCanvas(cvs,
-      Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
-      Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
     
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
@@ -131,8 +135,8 @@ function reduceState(action, state=defaultState) {
     
     return {
       ...state,
-      fgCvs: layer === 'foreground' ? action.payload.cvs : state.fgCvs,
-      bgCvs: layer === 'background' ? action.payload.cvs : state.bgCvs,
+      fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
+      bgCvs: layer === 'background' ? downscaled : state.bgCvs,
       cvses: normalized,
       maxStartOffset,
       numSlices,
@@ -181,7 +185,7 @@ function reduceState(action, state=defaultState) {
   
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
-    // action.payload.style.width = '100%';
+    action.payload.style.width = '100%';
     return { ...state, rendering: false, gif: action.payload };
   }
   

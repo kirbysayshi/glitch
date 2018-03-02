@@ -8,9 +8,17 @@
   box-sizing: border-box;
 }
 
+html {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: helvetica, arial, sans-serif;
-  margin: 25px;
+  margin: 0;
+  padding: 25px;
+  width: 100%;
 }
 
 h1 {

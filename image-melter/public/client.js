@@ -3845,15 +3845,19 @@ function reduceState(action) {
     var layer = action.payload.layer;
 
 
-    var cvses = [layer === 'background' ? action.payload.cvs : null, state.bgCvs, state.fgCvs, layer === 'foreground' ? action.payload.cvs : null].filter(Boolean);
-    var normalized = normalizeCvses(cvses);
-
-    // not always the fg, but good enough.
-    var fg = normalized[normalized.length - 1];
+    var pdr = window.pixelDeviceRatio || 1;
+    var inputCvs = action.payload.cvs;
 
     // TODO: do this once we start computing the frames so a more
     // intelligent sizing can be done. (avg size between, for example)
-    var downscaled = downscaleToCanvas(cvs, Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)), Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+    var downscaled = downscaleToCanvas(inputCvs, Math.min(inputCvs.width, window.screen.width * pdr), Math.min(inputCvs.height, window.screen.height * pdr));
+
+    var cvses = [layer === 'background' ? downscaled : null, state.bgCvs, state.fgCvs, layer === 'foreground' ? downscaled : null].filter(Boolean);
+    var normalized = normalizeCvses(cvses);
+
+    // not always the fg, but good enough. We have to pick one
+    // of them...
+    var fg = normalized[normalized.length - 1];
 
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
@@ -3863,8 +3867,8 @@ function reduceState(action) {
     var initialVelocity = layer === 'foreground' ? fg.height / 200 : state.initialVelocity;
 
     return _extends({}, state, {
-      fgCvs: layer === 'foreground' ? action.payload.cvs : state.fgCvs,
-      bgCvs: layer === 'background' ? action.payload.cvs : state.bgCvs,
+      fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
+      bgCvs: layer === 'background' ? downscaled : state.bgCvs,
       cvses: normalized,
       maxStartOffset: maxStartOffset,
       numSlices: numSlices,
@@ -3912,7 +3916,7 @@ function reduceState(action) {
 
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
-    // action.payload.style.width = '100%';
+    action.payload.style.width = '100%';
     return _extends({}, state, { rendering: false, gif: action.payload });
   }
 
