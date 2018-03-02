@@ -32,11 +32,12 @@ export const SAFARI_LOG = (text) => {
   document.body.appendChild(status);
 }
 
-export function blobToImage(blob, opt_image, cb) {
+export function leakBlobToImage(blob, opt_image, cb) {
   if (!cb) { cb = opt_image; opt_image = null; }
   var img = opt_image || document.createElement('img');
   var url = URL.createObjectURL(blob);
   img.onload = function() {
+    URL.revokeObjectURL(url);
     cb(null, img);
   }
   img.src = url;

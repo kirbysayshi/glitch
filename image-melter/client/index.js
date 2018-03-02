@@ -1,11 +1,11 @@
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
-import { blobToImage, imageToCanvas, } from 'image-juggler';
+import { imageToCanvas, } from 'image-juggler';
 
 import { doomRand } from './doom';
 import { fileToRotatedCanvas } from './orient-cvs';
-import { makeCanvas, downscaleToCanvas } from './utils';
+import { makeCanvas, downscaleToCanvas, leakBlobToImage } from './utils';
 import { initAnimState, normalizeCvses, animStateFrame, } from './anim';
 
 // BEGIN STATE MANAGEMENT
@@ -57,7 +57,8 @@ const createFrames = () => (dispatch, getState) => {
 
   gif.on('finished', function(blob) {
     // window.open(URL.createObjectURL(blob));
-    blobToImage(blob, (err, img) => {
+    leakBlobToImage(blob, (err, img) => {
+    // blobToImage(blob, (err, img) => {
       dispatch({ type: 'GIF_COMPLETED', payload: img });
     })
   }); 

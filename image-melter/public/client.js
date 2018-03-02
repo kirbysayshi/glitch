@@ -45,21 +45,9 @@ function fileToImage(file, opt_image, cb) {
   img.src = url;
 }
 
-function blobToImage(blob, opt_image, cb) {
-  if (!cb) { cb = opt_image; opt_image = null; }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(blob);
-  img.onload = function() {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
-}
-
 var imageToCanvas_1 = imageToCanvas;
 var fileToArrayBuffer_1 = fileToArrayBuffer;
 var fileToImage_1 = fileToImage;
-var blobToImage_1 = blobToImage;
 
 // https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/m_random.c
 var doomRand = function doomRand() {
@@ -2498,6 +2486,19 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   return cvs;
 }
 
+function leakBlobToImage(blob, opt_image, cb) {
+  if (!cb) {
+    cb = opt_image;opt_image = null;
+  }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(blob);
+  img.onload = function () {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -3800,7 +3801,8 @@ var createFrames = function createFrames() {
 
     gif$$1.on('finished', function (blob) {
       // window.open(URL.createObjectURL(blob));
-      blobToImage_1(blob, function (err, img) {
+      leakBlobToImage(blob, function (err, img) {
+        // blobToImage(blob, (err, img) => {
         dispatch({ type: 'GIF_COMPLETED', payload: img });
       });
     });
