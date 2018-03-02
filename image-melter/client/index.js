@@ -6,7 +6,7 @@ import { blobToImage, imageToCanvas, } from 'image-juggler';
 import { doomRand } from './doom';
 import { fileToRotatedCanvas } from './orient-cvs';
 import { makeCanvas, downscaleToCanvas } from './utils';
-import { initAnimState, animStateFrame, } from './anim';
+import { initAnimState, normalizeCvses, animStateFrame, } from './anim';
 
 // BEGIN STATE MANAGEMENT
 
@@ -91,31 +91,39 @@ function reduceState(action, state=defaultState) {
   }
   
   if (action.type === 'IMAGE_LOAD') {
-    const { cvs, layer } = action.payload;
+    const { layer } = action.payload;
     
+    const cvses = [
+      layer === 'background' ? action.payload.cvs : null,
+      ...cvses,
+      layer === 'foreground' ? action.payload.cvs : null,
+    ].filter(Boolean);
+    const normalized = normalizeCvses(cvses);
+    
+    const [cvs, other] = cvses;
     // TODO: do this once we start computing the frames so a more
     // intelligent sizing can be done. (avg size between, for example)
-    const downscaled = downscaleToCanvas(cvs,
-      Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
-      Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+    // const downscaled = downscaleToCanvas(cvs,
+    //   Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
+    //   Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
     
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
     const maxStartOffset = layer === 'foreground'
-      ? downscaled.height / (12.5 / 2)
+      ? cvs.height / (12.5 / 2)
       : state.maxStartOffset;
     const numSlices = layer === 'foreground'
-      ? downscaled.width
+      ? cvs.width
       : state.numSlices;
     // doom had 200 height : 1 velocity
     const initialVelocity = layer === 'foreground'
-      ? downscaled.height / 200
+      ? cvs.height / 200
       : state.initialVelocity;
     
     return {
       ...state,
-      fgCvs: layer === 'foreground' ? downscaled : state.fgCvs,
-      bgCvs: layer === 'background' ? downscaled : state.bgCvs,
+      fgCvs: layer === 'foreground' ? action.payload.cvs : state.fgCvs,
+      bgCvs: layer === 'background' ? action.payload.cvs : state.bgCvs,
 
       maxStartOffset,
       numSlices,

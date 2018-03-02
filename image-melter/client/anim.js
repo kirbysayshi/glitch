@@ -18,7 +18,7 @@ function makeInitialYs(maxStartOffset, sliceCount) {
 
 // TODO: also include an initial bounding width/height to avoid
 // using huge cvs? And avoid blowing up a tiny image too much.
-const normalizeCvses = (cvses) => {
+export const normalizeCvses = (cvses) => {
   // find the canvas with the ratio closest to 1
   const mostSquare = cvses.reduce((prev, cvs, idx) => {
     const top = Math.min(cvs.width, cvs.height);
