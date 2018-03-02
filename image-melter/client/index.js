@@ -12,8 +12,13 @@ import { initAnimState, normalizeCvses, animStateFrame, } from './anim';
 
 const defaultState = {
   errors: [],
+  
+  // the normalized canvas els
+  cvses: [],
+  // unnormalized, copied straight from an img
   bgCvs: null,
   fgCvs: null,
+
   numSlices: 400,
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
@@ -31,7 +36,8 @@ const createFrames = () => (dispatch, getState) => {
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(
-    [state.bgCvs, state.fgCvs],
+    //[state.bgCvs, state.fgCvs],
+    state.cvses,
     parseInt(state.numSlices, 10),
     parseInt(state.maxStartOffset, 10),
     parseFloat(state.acceleration, 10),
@@ -95,36 +101,39 @@ function reduceState(action, state=defaultState) {
     
     const cvses = [
       layer === 'background' ? action.payload.cvs : null,
-      ...cvses,
+      state.bgCvs,
+      state.fgCvs,
       layer === 'foreground' ? action.payload.cvs : null,
     ].filter(Boolean);
     const normalized = normalizeCvses(cvses);
     
-    const [cvs, other] = cvses;
+    // not always the fg, but good enough.
+    const fg = normalized[normalized.length - 1];
+
     // TODO: do this once we start computing the frames so a more
     // intelligent sizing can be done. (avg size between, for example)
-    // const downscaled = downscaleToCanvas(cvs,
-    //   Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
-    //   Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+    const downscaled = downscaleToCanvas(cvs,
+      Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
+      Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
     
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
     const maxStartOffset = layer === 'foreground'
-      ? cvs.height / (12.5 / 2)
+      ? fg.height / (12.5 / 2)
       : state.maxStartOffset;
     const numSlices = layer === 'foreground'
-      ? cvs.width
+      ? fg.width
       : state.numSlices;
     // doom had 200 height : 1 velocity
     const initialVelocity = layer === 'foreground'
-      ? cvs.height / 200
+      ? fg.height / 200
       : state.initialVelocity;
     
     return {
       ...state,
       fgCvs: layer === 'foreground' ? action.payload.cvs : state.fgCvs,
       bgCvs: layer === 'background' ? action.payload.cvs : state.bgCvs,
-
+      cvses: normalized,
       maxStartOffset,
       numSlices,
       initialVelocity,

@@ -2478,6 +2478,26 @@ function makeCanvas() {
   return { cvs: cvs, ctx: ctx };
 }
 
+function downscaleToCanvas(img, maxWidth, maxHeight) {
+  var _makeCanvas = makeCanvas(),
+      cvs = _makeCanvas.cvs,
+      ctx = _makeCanvas.ctx;
+
+  var ratio = img.width > img.height ? maxWidth / Math.max(img.width, maxWidth) : maxHeight / Math.max(img.height, maxHeight);
+  cvs.width = img.width * ratio;
+  cvs.height = img.height * ratio;
+  var sx = 0;
+  var sy = 0;
+  var swidth = img.width;
+  var sheight = img.height;
+  var dx = 0;
+  var dy = 0;
+  var dwidth = cvs.width;
+  var dheight = cvs.height;
+  ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+  return cvs;
+}
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -2674,7 +2694,7 @@ function initAnimState(cvses, requestedSliceCount, maxStartOffset, acceleration,
   return {
     // TODO: put this normalizing into the reducer instead to give intelligent
     // guesses about slice values.
-    cvses: normalizeCvses(cvses),
+    cvses: cvses, //: normalizeCvses(cvses),
     ys: [bgYs, fgYs],
     sliceWidth: sliceWidth,
     sliceCount: sliceCount,
@@ -3737,8 +3757,13 @@ var GIF_WORKER_PATH = 'gif.worker.js';
 
 var defaultState = {
   errors: [],
+
+  // the normalized canvas els
+  cvses: [],
+  // unnormalized, copied straight from an img
   bgCvs: null,
   fgCvs: null,
+
   numSlices: 400,
   maxStartOffset: 160, // pixels?
   initialVelocity: 1,
@@ -3756,7 +3781,9 @@ var createFrames = function createFrames() {
 
     dispatch({ type: 'GIF_START' });
 
-    var animState = initAnimState([state.bgCvs, state.fgCvs], parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
+    var animState = initAnimState(
+    //[state.bgCvs, state.fgCvs],
+    state.cvses, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
@@ -3818,31 +3845,27 @@ function reduceState(action) {
     var layer = action.payload.layer;
 
 
-    var cvses = [layer === 'background' ? action.payload.cvs : null, layer === 'foreground' ? action.payload.cvs : null, state.fgCvs, state.bgCvs].filter(Boolean);
+    var cvses = [layer === 'background' ? action.payload.cvs : null, state.bgCvs, state.fgCvs, layer === 'foreground' ? action.payload.cvs : null].filter(Boolean);
     var normalized = normalizeCvses(cvses);
 
-    var _cvses = slicedToArray(cvses, 2),
-        cvs = _cvses[0],
-        other = _cvses[1];
+    // not always the fg, but good enough.
+    var fg = normalized[normalized.length - 1];
+
     // TODO: do this once we start computing the frames so a more
     // intelligent sizing can be done. (avg size between, for example)
-    // const downscaled = downscaleToCanvas(cvs,
-    //   Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)),
-    //   Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
+    var downscaled = downscaleToCanvas(cvs, Math.min(cvs.width, window.screen.width * (window.pixelDeviceRatio || 1)), Math.min(cvs.height, window.screen.height * (window.pixelDeviceRatio || 1)));
 
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
-
-
-    var maxStartOffset = layer === 'foreground' ? cvs.height / (12.5 / 2) : state.maxStartOffset;
-    var numSlices = layer === 'foreground' ? cvs.width : state.numSlices;
+    var maxStartOffset = layer === 'foreground' ? fg.height / (12.5 / 2) : state.maxStartOffset;
+    var numSlices = layer === 'foreground' ? fg.width : state.numSlices;
     // doom had 200 height : 1 velocity
-    var initialVelocity = layer === 'foreground' ? cvs.height / 200 : state.initialVelocity;
+    var initialVelocity = layer === 'foreground' ? fg.height / 200 : state.initialVelocity;
 
     return _extends({}, state, {
       fgCvs: layer === 'foreground' ? action.payload.cvs : state.fgCvs,
       bgCvs: layer === 'background' ? action.payload.cvs : state.bgCvs,
-
+      cvses: normalized,
       maxStartOffset: maxStartOffset,
       numSlices: numSlices,
       initialVelocity: initialVelocity

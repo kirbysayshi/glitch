@@ -91,7 +91,7 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   return {
     // TODO: put this normalizing into the reducer instead to give intelligent
     // guesses about slice values.
-    cvses: normalizeCvses(cvses),
+    cvses,//: normalizeCvses(cvses),
     ys: [bgYs, fgYs],
     sliceWidth,
     sliceCount,
