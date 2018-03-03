@@ -43,6 +43,8 @@ const createFrames = () => (dispatch, getState) => {
     parseFloat(state.acceleration, 10),
     parseFloat(state.initialVelocity, 10));
   
+  console.log('state', state, 'animState', animState)
+  
   const gif = new GIF({
     workerScript: GIF_WORKER_PATH,
     workers: 2,

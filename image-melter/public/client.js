@@ -2613,7 +2613,7 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
   for (var i = 1; i < sliceCount; i++) {
     var prev = ys[i - 1];
-    var maxInc = Math.floor(maxStartOffset / 10.333);
+    var maxInc = Math.floor(maxStartOffset / 10.333) || 1;
     var amount = maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
     var r = proposed;
@@ -3786,6 +3786,8 @@ var createFrames = function createFrames() {
     var animState = initAnimState(
     //[state.bgCvs, state.fgCvs],
     state.cvses, parseInt(state.numSlices, 10), parseInt(state.maxStartOffset, 10), parseFloat(state.acceleration, 10), parseFloat(state.initialVelocity, 10));
+
+    console.log('state', state, 'animState', animState);
 
     var gif$$1 = new gif({
       workerScript: GIF_WORKER_PATH,
