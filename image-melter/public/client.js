@@ -2499,6 +2499,8 @@ function leakBlobToImage(blob, opt_image, cb) {
   img.src = url;
 }
 
+// basically https://thebookofshaders.com/11/
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -2614,7 +2616,6 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   for (var i = 1; i < sliceCount; i++) {
     var prev = ys[i - 1];
     var maxInc = Math.floor(maxStartOffset / 10.333) || 1;
-    //const maxInc = 1;
     var amount = maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
     var r = proposed;
