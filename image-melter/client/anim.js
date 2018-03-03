@@ -1,5 +1,6 @@
 import { doomRand } from './doom';
 import { makeCanvas, } from './utils';
+import { noise, } from './noise';
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   const ys = [-doomRand() % maxStartOffset];
