@@ -2615,7 +2615,8 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
   for (var i = 1; i < sliceCount; i++) {
     var prev = ys[i - 1];
-    var maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+    // const maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+    var maxInc = 1;
     var amount = maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
     var r = proposed;
