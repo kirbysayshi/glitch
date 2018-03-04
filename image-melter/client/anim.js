@@ -18,8 +18,8 @@ function makeInitialYs(maxStartOffset, sliceCount) {
 }
 
 function makeInitialYsNoise(maxStartOffset, sliceCount) {
-  const octaves = 7;
-  const persistence = 4;
+  const octaves = 9;
+  const persistence = 1;
   const repeat = 0;
   
   const noise0 = OctavePerlin(0, 0, 0, octaves, persistence, repeat);

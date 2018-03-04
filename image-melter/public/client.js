@@ -2748,8 +2748,8 @@ var toConsumableArray = function (arr) {
 };
 
 function makeInitialYsNoise(maxStartOffset, sliceCount) {
-  var octaves = 7;
-  var persistence = 4;
+  var octaves = 9;
+  var persistence = 1;
   var repeat = 0;
 
   var noise0 = OctavePerlin(0, 0, 0, octaves, persistence, repeat);
