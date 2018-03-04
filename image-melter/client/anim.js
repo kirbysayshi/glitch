@@ -17,8 +17,11 @@ function makeInitialYs(maxStartOffset, sliceCount) {
     const amount = (Math.random() * maxInc) * dir;
     const proposed = prev + amount;
     let r = proposed;
-    if (proposed > 0) r = 0;
-    else if (proposed < -maxStartOffset) r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
+    if (proposed > 0) {
+      r = 0;
+    } else if (proposed < -maxStartOffset) {
+      r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
+    }
     ys.push(r);
   }
   return ys;

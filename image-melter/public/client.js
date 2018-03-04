@@ -2633,7 +2633,11 @@ function makeInitialYs(maxStartOffset, sliceCount) {
     var amount = Math.random() * maxInc * dir;
     var proposed = prev + amount;
     var r = proposed;
-    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
+    if (proposed > 0) {
+      r = 0;
+    } else if (proposed < -maxStartOffset) {
+      r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
+    }
     ys.push(r);
   }
   return ys;
