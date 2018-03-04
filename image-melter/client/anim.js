@@ -18,11 +18,11 @@ function makeInitialYs(maxStartOffset, sliceCount) {
 }
 
 function makeInitialYsNoise(maxStartOffset, sliceCount) {
-  const octaves = 1;
-  const persistence = 1;
+  const octaves = 7;
+  const persistence = 4;
   const repeat = 0;
   
-  const noise0 = -OctavePerlin(0, 0, 0, octaves, persistence, repeat);
+  const noise0 = OctavePerlin(0, 0, 0, octaves, persistence, repeat);
   const amount0 = -noise0 * maxStartOffset;
   
   const ys = [amount0];
@@ -31,7 +31,7 @@ function makeInitialYsNoise(maxStartOffset, sliceCount) {
     // x, y, z, octaves, persistence,
     const noise = OctavePerlin(i / sliceCount, 0, 0, octaves, persistence, repeat);
     const amount = -noise * maxStartOffset;
-    const proposed = prev + amount;
+    const proposed = Math.floor(amount);
     let r = proposed;
     if (proposed > 0) r = 0;
     else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;

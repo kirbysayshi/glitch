@@ -2748,20 +2748,19 @@ var toConsumableArray = function (arr) {
 };
 
 function makeInitialYsNoise(maxStartOffset, sliceCount) {
-  var octaves = 1;
-  var persistence = 1;
+  var octaves = 7;
+  var persistence = 4;
   var repeat = 0;
 
-  var noise0 = -OctavePerlin(0, 0, 0, octaves, persistence, repeat);
+  var noise0 = OctavePerlin(0, 0, 0, octaves, persistence, repeat);
   var amount0 = -noise0 * maxStartOffset;
 
   var ys = [amount0];
   for (var i = 1; i < sliceCount; i++) {
-    var prev = ys[i - 1];
     // x, y, z, octaves, persistence,
     var noise = OctavePerlin(i / sliceCount, 0, 0, octaves, persistence, repeat);
     var amount = -noise * maxStartOffset;
-    var proposed = prev + amount;
+    var proposed = Math.floor(amount);
     var r = proposed;
     if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
     ys.push(r);
@@ -4014,7 +4013,8 @@ function reduceState(action) {
 
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
-    var maxStartOffset = layer === 'foreground' ? fg.height / (12.5 / 2) : state.maxStartOffset;
+    var maxStartOffset = layer === 'foreground' ? fg.height / 2 //(12.5 / 2)
+    : state.maxStartOffset;
     var numSlices = layer === 'foreground' ? fg.width : state.numSlices;
     // doom had 200 height : 1 velocity
     var initialVelocity = layer === 'foreground' ? fg.height / 200 : state.initialVelocity;
