@@ -2,6 +2,10 @@ import { doomRand } from './doom';
 import { makeCanvas, } from './utils';
 import { OctavePerlin } from './noise';
 
+function clampRand(min, max) {
+  return min + (Math.random() * (max - min));
+}
+
 function makeInitialYs(maxStartOffset, sliceCount) {
   const ys = [-doomRand() % maxStartOffset];
   
@@ -9,12 +13,12 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   
   for (let i = 1; i < sliceCount; i++) {
     const prev = ys[i - 1];
-    
-    const amount = (Math.random() * maxInc) * ((doomRand() % 3) - 1);
+    const dir = (doomRand() % 3) - 1;
+    const amount = (Math.random() * maxInc) * dir;
     const proposed = prev + amount;
     let r = proposed;
     if (proposed > 0) r = 0;
-    else if (proposed < -maxStartOffset) r = -Math.random() * maxStartOffset;
+    else if (proposed < -maxStartOffset) r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
     ys.push(r);
   }
   return ys;

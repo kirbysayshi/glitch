@@ -2618,6 +2618,10 @@ var toConsumableArray = function (arr) {
   }
 };
 
+function clampRand(min, max) {
+  return min + Math.random() * (max - min);
+}
+
 function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
 
@@ -2625,11 +2629,11 @@ function makeInitialYs(maxStartOffset, sliceCount) {
 
   for (var i = 1; i < sliceCount; i++) {
     var prev = ys[i - 1];
-
-    var amount = Math.random() * maxInc * (doomRand() % 3 - 1);
+    var dir = doomRand() % 3 - 1;
+    var amount = Math.random() * maxInc * dir;
     var proposed = prev + amount;
     var r = proposed;
-    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -Math.random() * maxStartOffset;
+    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = clampRand(maxStartOffset / 10, maxStartOffset); //-maxStartOffset + 1;
     ys.push(r);
   }
   return ys;
