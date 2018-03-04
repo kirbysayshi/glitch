@@ -106,10 +106,10 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
   
   // create initial ys
-  // const fgYs = makeInitialYs(maxStartOffset, sliceCount);
-  // const bgYs = makeInitialYs(maxStartOffset, sliceCount);
-  const fgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
-  const bgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
+  const fgYs = makeInitialYs(maxStartOffset, sliceCount);
+  const bgYs = makeInitialYs(maxStartOffset, sliceCount);
+  // const fgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
+  // const bgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
   
   const scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;

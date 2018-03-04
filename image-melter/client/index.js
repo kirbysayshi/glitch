@@ -126,7 +126,7 @@ function reduceState(action, state=defaultState) {
     // doom used 16. ~200 / 16 == 12.5... 
     // But we've got different ratios than doom.
     const maxStartOffset = layer === 'foreground'
-      ? fg.height / 2//(12.5 / 2)
+      ? fg.height // / (12.5 / 2)
       : state.maxStartOffset;
     const numSlices = layer === 'foreground'
       ? fg.width
