@@ -1,15 +1,36 @@
 import { doomRand } from './doom';
 import { makeCanvas, } from './utils';
-import { noise2, } from './noise';
+import { OctavePerlin } from './noise';
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   const ys = [-doomRand() % maxStartOffset];
   for (let i = 1; i < sliceCount; i++) {
     const prev = ys[i - 1];
-    // const maxInc = Math.floor(maxStartOffset / 10.333) || 1;
-    //const maxInc = 1;
-    const maxInc = maxStartOffset;
+    const maxInc = Math.floor(maxStartOffset / 10.333) || 1;
     const amount = (Math.random() * maxInc) * ((doomRand() % 3) - 1);
+    const proposed = prev + amount;
+    let r = proposed;
+    if (proposed > 0) r = 0;
+    else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    ys.push(r);
+  }
+  return ys;
+}
+
+function makeInitialYsNoise(maxStartOffset, sliceCount) {
+  const octaves = 1;
+  const persistence = 1;
+  const repeat = 0;
+  
+  const noise0 = -OctavePerlin(0, 0, 0, octaves, persistence, repeat);
+  const amount0 = -noise0 * maxStartOffset;
+  
+  const ys = [amount0];
+  for (let i = 1; i < sliceCount; i++) {
+    const prev = ys[i - 1];
+    // x, y, z, octaves, persistence,
+    const noise = OctavePerlin(i / sliceCount, 0, 0, octaves, persistence, repeat);
+    const amount = -noise * maxStartOffset;
     const proposed = prev + amount;
     let r = proposed;
     if (proposed > 0) r = 0;
@@ -85,8 +106,10 @@ export function initAnimState(cvses, requestedSliceCount, maxStartOffset, accele
   const sliceCount = Math.ceil(fgCvs.width / sliceWidth);
   
   // create initial ys
-  const fgYs = makeInitialYs(maxStartOffset, sliceCount);
-  const bgYs = makeInitialYs(maxStartOffset, sliceCount);
+  // const fgYs = makeInitialYs(maxStartOffset, sliceCount);
+  // const bgYs = makeInitialYs(maxStartOffset, sliceCount);
+  const fgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
+  const bgYs = makeInitialYsNoise(maxStartOffset, sliceCount);
   
   const scratch = makeCanvas();
   scratch.cvs.width = fgCvs.width;

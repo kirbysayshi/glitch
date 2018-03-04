@@ -62,7 +62,7 @@ function lerp(a, b, x) {
   return a + x * (b - a);
 }
 
-function Perlin(x, y, z, repeat = 0) {
+export function Perlin(x, y, z, repeat = 0) {
   // If we have any repeat on, change the coordinates to their "local" repetitions
   if (repeat > 0) {
     x = x % repeat;
@@ -111,7 +111,7 @@ function Perlin(x, y, z, repeat = 0) {
   return (lerp (y1, y2, w)+1)/2;
 }
 
-function OctavePerlin(x, y, z, octaves, persistence, repeat=0) {
+export function OctavePerlin(x, y, z, octaves, persistence, repeat=0) {
   let total = 0;
   let frequency = 1;
   let amplitude = 1;
