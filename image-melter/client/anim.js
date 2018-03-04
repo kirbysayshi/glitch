@@ -4,14 +4,17 @@ import { OctavePerlin } from './noise';
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   const ys = [-doomRand() % maxStartOffset];
+  
+  const maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+  
   for (let i = 1; i < sliceCount; i++) {
     const prev = ys[i - 1];
-    const maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+    
     const amount = (Math.random() * maxInc) * ((doomRand() % 3) - 1);
     const proposed = prev + amount;
     let r = proposed;
     if (proposed > 0) r = 0;
-    else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    else if (proposed < -maxStartOffset) r = -Math.random() * maxStartOffset;
     ys.push(r);
   }
   return ys;

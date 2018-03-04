@@ -2620,13 +2620,16 @@ var toConsumableArray = function (arr) {
 
 function makeInitialYs(maxStartOffset, sliceCount) {
   var ys = [-doomRand() % maxStartOffset];
+
+  var maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+
   for (var i = 1; i < sliceCount; i++) {
     var prev = ys[i - 1];
-    var maxInc = Math.floor(maxStartOffset / 10.333) || 1;
+
     var amount = Math.random() * maxInc * (doomRand() % 3 - 1);
     var proposed = prev + amount;
     var r = proposed;
-    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -maxStartOffset + 1;
+    if (proposed > 0) r = 0;else if (proposed < -maxStartOffset) r = -Math.random() * maxStartOffset;
     ys.push(r);
   }
   return ys;
