@@ -12,15 +12,21 @@ function makeInitialYs(maxStartOffset, sliceCount) {
   for (let i = 1; i < sliceCount; i++) {
     const prev = ys[i - 1];
     const dir = (doomRand() % 3) - 1;
-    // DOOM used 
+    // DOOM used 1 * dir, basically. But with today's large images,
+    // the value needs to be scaled to make the effect aesthetically
+    // similar to the original.
     const amount = (Math.random() * maxInc) * dir;
     const proposed = prev + amount;
     let r = proposed;
     if (proposed > 0) {
       r = 0;
     } else if (proposed < -maxStartOffset) {
-      r = -maxStartOffset + 1;
-      //r = clampRand(maxStartOffset / 10, maxStartOffset);
+      // DOOM used this value presumably to help decrease the probability
+      // of a flatline if the max is reached.
+      // Since images are larger now, we need it to be scaled to have a
+      // reasonable chance of avoiding a flatline.
+      // r = -maxStartOffset + 1;
+      r = -maxStartOffset + (Math.floor(maxStartOffset / 100) || 1);
     }
     ys.push(r);
   }
