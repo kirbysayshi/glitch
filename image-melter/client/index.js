@@ -367,6 +367,8 @@ const AppContainer = (props) => {
     h(InputPanel, props),
     h(ElHolder, { el: props.app.gif }),
     props.app.gifBlob && h('a', {
+      href: '#',
+      download: 'melted.gif',
       onclick: e => {
         e.preventDefault();
         e.stopPropagation();

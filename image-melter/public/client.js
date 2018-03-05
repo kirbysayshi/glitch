@@ -4318,6 +4318,8 @@ var AppContainer = function AppContainer(props) {
   return h('div', null, [props.app.errors.map(function (err) {
     return h('div', null, err.message);
   }), h(InputPanel, props), h(ElHolder, { el: props.app.gif }), props.app.gifBlob && h('a', {
+    href: '#',
+    download: 'melted.gif',
     onclick: function onclick(e) {
       e.preventDefault();
       e.stopPropagation();
