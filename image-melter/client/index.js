@@ -2,6 +2,7 @@ import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
 import { imageToCanvas, } from 'image-juggler';
+import { default as FileSaver } from 'file-saver';
 
 import { doomRand } from './doom';
 import { fileToRotatedCanvas } from './orient-cvs';
@@ -28,6 +29,7 @@ const defaultState = {
   rendering: false,
   gifPercent: 0,
   gif: null,
+  gifBlob: null,
 };
 
 const createFrames = () => (dispatch, getState) => {
@@ -61,7 +63,7 @@ const createFrames = () => (dispatch, getState) => {
     // window.open(URL.createObjectURL(blob));
     leakBlobToImage(blob, (err, img) => {
     // blobToImage(blob, (err, img) => {
-      dispatch({ type: 'GIF_COMPLETED', payload: img });
+      dispatch({ type: 'GIF_COMPLETED', payload: { img, blob } });
     })
   }); 
   
@@ -177,6 +179,7 @@ function reduceState(action, state=defaultState) {
       rendering: true,
       gifPercent: 0,
       gif: null,
+      gifBlob: null,
       totalStages: 0,
       finishedStages: 0,
     };
@@ -188,8 +191,13 @@ function reduceState(action, state=defaultState) {
   
   if (action.type === 'GIF_COMPLETED') {
     // TODO: remove this once styling is more coherent
-    action.payload.style.width = '100%';
-    return { ...state, rendering: false, gif: action.payload };
+    action.payload.img.style.width = '100%';
+    return {
+      ...state,
+      rendering: false,
+      gif: action.payload.img,
+      gifBlob: action.payload.blob,
+    };
   }
   
   return state;
@@ -358,6 +366,13 @@ const AppContainer = (props) => {
     props.app.errors.map(err => h('div', null, err.message)),
     h(InputPanel, props),
     h(ElHolder, { el: props.app.gif }),
+    props.app.gifBlob && h('a', {
+      onclick: e => {
+        e.preventDefault();
+        e.stopPropagation();
+        FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
+      },
+    }, 'Download Image')
   ])
 }
 
