@@ -289,12 +289,22 @@ const DOSFileInput = styled.input`
 
 const DOSLabel = styled.label`
   display: block;
+  overflow: hidden;
   margin-bottom: 10px;
   padding: 5px;
   width: 100%;
   border: 1px solid lightgrey;
   border-radius: 0px;
   font-size: 16px;
+`;
+
+const DOSTextInput = styled.input`
+  width: 20%;
+  float: right;
+  text-align: right;
+  border: 0;
+  background-color: magenta;
+  color: white;
 `;
 
 const DOSImageInputButton = ({ text, onFile }) => {
@@ -343,6 +353,11 @@ class InputPanel extends Component {
           });
         }}
       />,
+      
+      <DOSLabel>
+        Vertical Slices
+        <DOSTextInput />
+      </DOSLabel>,
       
       LabeledInput({
         labelText: 'Vertical Slices',
