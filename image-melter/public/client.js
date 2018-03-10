@@ -1,10 +1,5 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var React = require('react');
-var React__default = _interopDefault(React);
-
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function commonjsRequire () {
@@ -3124,6 +3119,16 @@ function extend(obj, props) {
  */
 var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
 
+/**
+ * Clones the given VNode, optionally adding attributes/props and replacing its children.
+ * @param {VNode} vnode		The virutal DOM element to clone
+ * @param {Object} props	Attributes/props to add when cloning
+ * @param {VNode} rest		Any additional arguments will be used as replacement children.
+ */
+function cloneElement(vnode, props) {
+  return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);
+}
+
 // DOM properties that should NOT have "px" added when numeric
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
 
@@ -5735,7 +5740,7 @@ var emptyFunction_1 = emptyFunction;
 
 var validateFormat = function validateFormat(format) {};
 
-if (process.env.NODE_ENV !== 'production') {
+if (undefined !== 'production') {
   validateFormat = function validateFormat(format) {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
@@ -5775,7 +5780,7 @@ var invariant_1 = invariant;
 
 var warning = emptyFunction_1;
 
-if (process.env.NODE_ENV !== 'production') {
+if (undefined !== 'production') {
   var printWarning = function printWarning(format) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
@@ -5917,7 +5922,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 var ReactPropTypesSecret_1 = ReactPropTypesSecret;
 
-if (process.env.NODE_ENV !== 'production') {
+if (undefined !== 'production') {
   var invariant$1 = invariant_1;
   var warning$1 = warning_1;
   var ReactPropTypesSecret$1 = ReactPropTypesSecret_1;
@@ -5936,7 +5941,7 @@ if (process.env.NODE_ENV !== 'production') {
  * @private
  */
 function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (undefined !== 'production') {
     for (var typeSpecName in typeSpecs) {
       if (typeSpecs.hasOwnProperty(typeSpecName)) {
         var error;
@@ -6099,7 +6104,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
   PropTypeError.prototype = Error.prototype;
 
   function createChainableTypeChecker(validate) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (undefined !== 'production') {
       var manualPropTypeCallCache = {};
       var manualPropTypeWarningCount = 0;
     }
@@ -6116,7 +6121,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
             'Use `PropTypes.checkPropTypes()` to call them. ' +
             'Read more at http://fb.me/use-check-prop-types'
           );
-        } else if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined') {
+        } else if (undefined !== 'production' && typeof console !== 'undefined') {
           // Old behavior for people using React.PropTypes
           var cacheKey = componentName + ':' + propName;
           if (
@@ -6226,7 +6231,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
 
   function createEnumTypeChecker(expectedValues) {
     if (!Array.isArray(expectedValues)) {
-      process.env.NODE_ENV !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
+      undefined !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
       return emptyFunction_1.thatReturnsNull;
     }
 
@@ -6269,7 +6274,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
 
   function createUnionTypeChecker(arrayOfTypeCheckers) {
     if (!Array.isArray(arrayOfTypeCheckers)) {
-      process.env.NODE_ENV !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+      undefined !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
       return emptyFunction_1.thatReturnsNull;
     }
 
@@ -6546,7 +6551,7 @@ var propTypes = createCommonjsModule(function (module) {
  * LICENSE file in the root directory of this source tree.
  */
 
-if (process.env.NODE_ENV !== 'production') {
+if (undefined !== 'production') {
   var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
     Symbol.for &&
     Symbol.for('react.element')) ||
@@ -6568,6 +6573,631 @@ if (process.env.NODE_ENV !== 'production') {
   module.exports = factoryWithThrowingShims();
 }
 });
+
+var version = '15.1.0'; // trick libraries to think we are react
+
+var ELEMENTS = 'a abbr address area article aside audio b base bdi bdo big blockquote body br button canvas caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param picture pre progress q rp rt ruby s samp script section select small source span strong style sub summary sup table tbody td textarea tfoot th thead time title tr track u ul var video wbr circle clipPath defs ellipse g image line linearGradient mask path pattern polygon polyline radialGradient rect stop svg text tspan'.split(' ');
+
+var REACT_ELEMENT_TYPE = (typeof Symbol!=='undefined' && Symbol.for && Symbol.for('react.element')) || 0xeac7;
+
+var COMPONENT_WRAPPER_KEY = (typeof Symbol!=='undefined' && Symbol.for) ? Symbol.for('__preactCompatWrapper') : '__preactCompatWrapper';
+
+// don't autobind these methods since they already have guaranteed context.
+var AUTOBIND_BLACKLIST = {
+	constructor: 1,
+	render: 1,
+	shouldComponentUpdate: 1,
+	componentWillReceiveProps: 1,
+	componentWillUpdate: 1,
+	componentDidUpdate: 1,
+	componentWillMount: 1,
+	componentDidMount: 1,
+	componentWillUnmount: 1,
+	componentDidUnmount: 1
+};
+
+
+var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vector|vert|word|writing|x)[A-Z]/;
+
+
+var BYPASS_HOOK = {};
+
+/*global process*/
+var DEV = typeof process==='undefined' || !process.env || undefined!=='production';
+
+// a component that renders nothing. Used to replace components for unmountComponentAtNode.
+function EmptyComponent() { return null; }
+
+
+
+// make react think we're react.
+var VNode$1 = h('a', null).constructor;
+VNode$1.prototype.$$typeof = REACT_ELEMENT_TYPE;
+VNode$1.prototype.preactCompatUpgraded = false;
+VNode$1.prototype.preactCompatNormalized = false;
+
+Object.defineProperty(VNode$1.prototype, 'type', {
+	get: function() { return this.nodeName; },
+	set: function(v) { this.nodeName = v; },
+	configurable:true
+});
+
+Object.defineProperty(VNode$1.prototype, 'props', {
+	get: function() { return this.attributes; },
+	set: function(v) { this.attributes = v; },
+	configurable:true
+});
+
+
+
+var oldEventHook = options.event;
+options.event = function (e) {
+	if (oldEventHook) { e = oldEventHook(e); }
+	e.persist = Object;
+	e.nativeEvent = e;
+	return e;
+};
+
+
+var oldVnodeHook = options.vnode;
+options.vnode = function (vnode) {
+	if (!vnode.preactCompatUpgraded) {
+		vnode.preactCompatUpgraded = true;
+
+		var tag = vnode.nodeName,
+			attrs = vnode.attributes = extend$1({}, vnode.attributes);
+
+		if (typeof tag==='function') {
+			if (tag[COMPONENT_WRAPPER_KEY]===true || (tag.prototype && 'isReactComponent' in tag.prototype)) {
+				if (vnode.children && String(vnode.children)==='') { vnode.children = undefined; }
+				if (vnode.children) { attrs.children = vnode.children; }
+
+				if (!vnode.preactCompatNormalized) {
+					normalizeVNode(vnode);
+				}
+				handleComponentVNode(vnode);
+			}
+		}
+		else {
+			if (vnode.children && String(vnode.children)==='') { vnode.children = undefined; }
+			if (vnode.children) { attrs.children = vnode.children; }
+
+			if (attrs.defaultValue) {
+				if (!attrs.value && attrs.value!==0) {
+					attrs.value = attrs.defaultValue;
+				}
+				delete attrs.defaultValue;
+			}
+
+			handleElementVNode(vnode, attrs);
+		}
+	}
+
+	if (oldVnodeHook) { oldVnodeHook(vnode); }
+};
+
+function handleComponentVNode(vnode) {
+	var tag = vnode.nodeName,
+		a = vnode.attributes;
+
+	vnode.attributes = {};
+	if (tag.defaultProps) { extend$1(vnode.attributes, tag.defaultProps); }
+	if (a) { extend$1(vnode.attributes, a); }
+}
+
+function handleElementVNode(vnode, a) {
+	var shouldSanitize, attrs, i;
+	if (a) {
+		for (i in a) { if ((shouldSanitize = CAMEL_PROPS.test(i))) { break; } }
+		if (shouldSanitize) {
+			attrs = vnode.attributes = {};
+			for (i in a) {
+				if (a.hasOwnProperty(i)) {
+					attrs[ CAMEL_PROPS.test(i) ? i.replace(/([A-Z0-9])/, '-$1').toLowerCase() : i ] = a[i];
+				}
+			}
+		}
+	}
+}
+
+
+
+// proxy render() since React returns a Component reference.
+function render$1(vnode, parent, callback) {
+	var prev = parent && parent._preactCompatRendered && parent._preactCompatRendered.base;
+
+	// ignore impossible previous renders
+	if (prev && prev.parentNode!==parent) { prev = null; }
+
+	// default to first Element child
+	if (!prev && parent) { prev = parent.firstElementChild; }
+
+	// remove unaffected siblings
+	for (var i=parent.childNodes.length; i--; ) {
+		if (parent.childNodes[i]!==prev) {
+			parent.removeChild(parent.childNodes[i]);
+		}
+	}
+
+	var out = render(vnode, parent, prev);
+	if (parent) { parent._preactCompatRendered = out && (out._component || { base: out }); }
+	if (typeof callback==='function') { callback(); }
+	return out && out._component || out;
+}
+
+
+var ContextProvider = function () {};
+
+ContextProvider.prototype.getChildContext = function () {
+	return this.props.context;
+};
+ContextProvider.prototype.render = function (props) {
+	return props.children[0];
+};
+
+function renderSubtreeIntoContainer(parentComponent, vnode, container, callback) {
+	var wrap = h(ContextProvider, { context: parentComponent.context }, vnode);
+	var renderContainer = render$1(wrap, container);
+	var component = renderContainer._component || renderContainer.base;
+	if (callback) { callback.call(component, renderContainer); }
+	return component;
+}
+
+
+function unmountComponentAtNode(container) {
+	var existing = container._preactCompatRendered && container._preactCompatRendered.base;
+	if (existing && existing.parentNode===container) {
+		render(h(EmptyComponent), container, existing);
+		return true;
+	}
+	return false;
+}
+
+
+
+var ARR = [];
+
+// This API is completely unnecessary for Preact, so it's basically passthrough.
+var Children = {
+	map: function(children, fn, ctx) {
+		if (children == null) { return null; }
+		children = Children.toArray(children);
+		if (ctx && ctx!==children) { fn = fn.bind(ctx); }
+		return children.map(fn);
+	},
+	forEach: function(children, fn, ctx) {
+		if (children == null) { return null; }
+		children = Children.toArray(children);
+		if (ctx && ctx!==children) { fn = fn.bind(ctx); }
+		children.forEach(fn);
+	},
+	count: function(children) {
+		return children && children.length || 0;
+	},
+	only: function(children) {
+		children = Children.toArray(children);
+		if (children.length!==1) { throw new Error('Children.only() expects only one child.'); }
+		return children[0];
+	},
+	toArray: function(children) {
+		if (children == null) { return []; }
+		return ARR.concat(children);
+	}
+};
+
+
+/** Track current render() component for ref assignment */
+var currentComponent;
+
+
+function createFactory(type) {
+	return createElement.bind(null, type);
+}
+
+
+var DOM = {};
+for (var i=ELEMENTS.length; i--; ) {
+	DOM[ELEMENTS[i]] = createFactory(ELEMENTS[i]);
+}
+
+function upgradeToVNodes(arr, offset) {
+	for (var i=offset || 0; i<arr.length; i++) {
+		var obj = arr[i];
+		if (Array.isArray(obj)) {
+			upgradeToVNodes(obj);
+		}
+		else if (obj && typeof obj==='object' && !isValidElement(obj) && ((obj.props && obj.type) || (obj.attributes && obj.nodeName) || obj.children)) {
+			arr[i] = createElement(obj.type || obj.nodeName, obj.props || obj.attributes, obj.children);
+		}
+	}
+}
+
+function isStatelessComponent(c) {
+	return typeof c==='function' && !(c.prototype && c.prototype.render);
+}
+
+
+// wraps stateless functional components in a PropTypes validator
+function wrapStatelessComponent(WrappedComponent) {
+	return createClass$1({
+		displayName: WrappedComponent.displayName || WrappedComponent.name,
+		render: function() {
+			return WrappedComponent(this.props, this.context);
+		}
+	});
+}
+
+
+function statelessComponentHook(Ctor) {
+	var Wrapped = Ctor[COMPONENT_WRAPPER_KEY];
+	if (Wrapped) { return Wrapped===true ? Ctor : Wrapped; }
+
+	Wrapped = wrapStatelessComponent(Ctor);
+
+	Object.defineProperty(Wrapped, COMPONENT_WRAPPER_KEY, { configurable:true, value:true });
+	Wrapped.displayName = Ctor.displayName;
+	Wrapped.propTypes = Ctor.propTypes;
+	Wrapped.defaultProps = Ctor.defaultProps;
+
+	Object.defineProperty(Ctor, COMPONENT_WRAPPER_KEY, { configurable:true, value:Wrapped });
+
+	return Wrapped;
+}
+
+
+function createElement() {
+	var args = [], len = arguments.length;
+	while ( len-- ) args[ len ] = arguments[ len ];
+
+	upgradeToVNodes(args, 2);
+	return normalizeVNode(h.apply(void 0, args));
+}
+
+
+function normalizeVNode(vnode) {
+	vnode.preactCompatNormalized = true;
+
+	applyClassName(vnode);
+
+	if (isStatelessComponent(vnode.nodeName)) {
+		vnode.nodeName = statelessComponentHook(vnode.nodeName);
+	}
+
+	var ref = vnode.attributes.ref,
+		type = ref && typeof ref;
+	if (currentComponent && (type==='string' || type==='number')) {
+		vnode.attributes.ref = createStringRefProxy(ref, currentComponent);
+	}
+
+	applyEventNormalization(vnode);
+
+	return vnode;
+}
+
+
+function cloneElement$1(element, props) {
+	var children = [], len = arguments.length - 2;
+	while ( len-- > 0 ) children[ len ] = arguments[ len + 2 ];
+
+	if (!isValidElement(element)) { return element; }
+	var elementProps = element.attributes || element.props;
+	var node = h(
+		element.nodeName || element.type,
+		extend$1({}, elementProps),
+		element.children || elementProps && elementProps.children
+	);
+	// Only provide the 3rd argument if needed.
+	// Arguments 3+ overwrite element.children in preactCloneElement
+	var cloneArgs = [node, props];
+	if (children && children.length) {
+		cloneArgs.push(children);
+	}
+	else if (props && props.children) {
+		cloneArgs.push(props.children);
+	}
+	return normalizeVNode(cloneElement.apply(void 0, cloneArgs));
+}
+
+
+function isValidElement(element) {
+	return element && ((element instanceof VNode$1) || element.$$typeof===REACT_ELEMENT_TYPE);
+}
+
+
+function createStringRefProxy(name, component) {
+	return component._refProxies[name] || (component._refProxies[name] = function (resolved) {
+		if (component && component.refs) {
+			component.refs[name] = resolved;
+			if (resolved===null) {
+				delete component._refProxies[name];
+				component = null;
+			}
+		}
+	});
+}
+
+
+function applyEventNormalization(ref) {
+	var nodeName = ref.nodeName;
+	var attributes = ref.attributes;
+
+	if (!attributes || typeof nodeName!=='string') { return; }
+	var props = {};
+	for (var i in attributes) {
+		props[i.toLowerCase()] = i;
+	}
+	if (props.ondoubleclick) {
+		attributes.ondblclick = attributes[props.ondoubleclick];
+		delete attributes[props.ondoubleclick];
+	}
+	// for *textual inputs* (incl textarea), normalize `onChange` -> `onInput`:
+	if (props.onchange && (nodeName==='textarea' || (nodeName.toLowerCase()==='input' && !/^fil|che|rad/i.test(attributes.type)))) {
+		var normalized = props.oninput || 'oninput';
+		if (!attributes[normalized]) {
+			attributes[normalized] = multihook([attributes[normalized], attributes[props.onchange]]);
+			delete attributes[props.onchange];
+		}
+	}
+}
+
+
+function applyClassName(vnode) {
+	var a = vnode.attributes || (vnode.attributes = {});
+	classNameDescriptor.enumerable = 'className' in a;
+	if (a.className) { a.class = a.className; }
+	Object.defineProperty(a, 'className', classNameDescriptor);
+}
+
+
+var classNameDescriptor = {
+	configurable: true,
+	get: function() { return this.class; },
+	set: function(v) { this.class = v; }
+};
+
+function extend$1(base, props) {
+	var arguments$1 = arguments;
+
+	for (var i=1, obj = (void 0); i<arguments.length; i++) {
+		if ((obj = arguments$1[i])) {
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					base[key] = obj[key];
+				}
+			}
+		}
+	}
+	return base;
+}
+
+
+function shallowDiffers(a, b) {
+	for (var i in a) { if (!(i in b)) { return true; } }
+	for (var i$1 in b) { if (a[i$1]!==b[i$1]) { return true; } }
+	return false;
+}
+
+
+function findDOMNode(component) {
+	return component && component.base || component;
+}
+
+
+function F(){}
+
+function createClass$1(obj) {
+	function cl(props, context) {
+		bindAll(this);
+		Component$1.call(this, props, context, BYPASS_HOOK);
+		newComponentHook.call(this, props, context);
+	}
+
+	obj = extend$1({ constructor: cl }, obj);
+
+	// We need to apply mixins here so that getDefaultProps is correctly mixed
+	if (obj.mixins) {
+		applyMixins(obj, collateMixins(obj.mixins));
+	}
+	if (obj.statics) {
+		extend$1(cl, obj.statics);
+	}
+	if (obj.propTypes) {
+		cl.propTypes = obj.propTypes;
+	}
+	if (obj.defaultProps) {
+		cl.defaultProps = obj.defaultProps;
+	}
+	if (obj.getDefaultProps) {
+		cl.defaultProps = obj.getDefaultProps.call(cl);
+	}
+
+	F.prototype = Component$1.prototype;
+	cl.prototype = extend$1(new F(), obj);
+
+	cl.displayName = obj.displayName || 'Component';
+
+	return cl;
+}
+
+
+// Flatten an Array of mixins to a map of method name to mixin implementations
+function collateMixins(mixins) {
+	var keyed = {};
+	for (var i=0; i<mixins.length; i++) {
+		var mixin = mixins[i];
+		for (var key in mixin) {
+			if (mixin.hasOwnProperty(key) && typeof mixin[key]==='function') {
+				(keyed[key] || (keyed[key]=[])).push(mixin[key]);
+			}
+		}
+	}
+	return keyed;
+}
+
+
+// apply a mapping of Arrays of mixin methods to a component prototype
+function applyMixins(proto, mixins) {
+	for (var key in mixins) { if (mixins.hasOwnProperty(key)) {
+		proto[key] = multihook(
+			mixins[key].concat(proto[key] || ARR),
+			key==='getDefaultProps' || key==='getInitialState' || key==='getChildContext'
+		);
+	} }
+}
+
+
+function bindAll(ctx) {
+	for (var i in ctx) {
+		var v = ctx[i];
+		if (typeof v==='function' && !v.__bound && !AUTOBIND_BLACKLIST.hasOwnProperty(i)) {
+			(ctx[i] = v.bind(ctx)).__bound = true;
+		}
+	}
+}
+
+
+function callMethod(ctx, m, args) {
+	if (typeof m==='string') {
+		m = ctx.constructor.prototype[m];
+	}
+	if (typeof m==='function') {
+		return m.apply(ctx, args);
+	}
+}
+
+function multihook(hooks, skipDuplicates) {
+	return function() {
+		var arguments$1 = arguments;
+		var this$1 = this;
+
+		var ret;
+		for (var i=0; i<hooks.length; i++) {
+			var r = callMethod(this$1, hooks[i], arguments$1);
+
+			if (skipDuplicates && r!=null) {
+				if (!ret) { ret = {}; }
+				for (var key in r) { if (r.hasOwnProperty(key)) {
+					ret[key] = r[key];
+				} }
+			}
+			else if (typeof r!=='undefined') { ret = r; }
+		}
+		return ret;
+	};
+}
+
+
+function newComponentHook(props, context) {
+	propsHook.call(this, props, context);
+	this.componentWillReceiveProps = multihook([propsHook, this.componentWillReceiveProps || 'componentWillReceiveProps']);
+	this.render = multihook([propsHook, beforeRender, this.render || 'render', afterRender]);
+}
+
+
+function propsHook(props, context) {
+	if (!props) { return; }
+
+	// React annoyingly special-cases single children, and some react components are ridiculously strict about this.
+	var c = props.children;
+	if (c && Array.isArray(c) && c.length===1 && (typeof c[0]==='string' || typeof c[0]==='function' || c[0] instanceof VNode$1)) {
+		props.children = c[0];
+
+		// but its totally still going to be an Array.
+		if (props.children && typeof props.children==='object') {
+			props.children.length = 1;
+			props.children[0] = props.children;
+		}
+	}
+
+	// add proptype checking
+	if (DEV) {
+		var ctor = typeof this==='function' ? this : this.constructor,
+			propTypes$$1 = this.propTypes || ctor.propTypes;
+		var displayName = this.displayName || ctor.name;
+
+		if (propTypes$$1) {
+			propTypes.checkPropTypes(propTypes$$1, props, 'prop', displayName);
+		}
+	}
+}
+
+
+function beforeRender(props) {
+	currentComponent = this;
+}
+
+function afterRender() {
+	if (currentComponent===this) {
+		currentComponent = null;
+	}
+}
+
+
+
+function Component$1(props, context, opts) {
+	Component.call(this, props, context);
+	this.state = this.getInitialState ? this.getInitialState() : {};
+	this.refs = {};
+	this._refProxies = {};
+	if (opts!==BYPASS_HOOK) {
+		newComponentHook.call(this, props, context);
+	}
+}
+extend$1(Component$1.prototype = new Component(), {
+	constructor: Component$1,
+
+	isReactComponent: {},
+
+	replaceState: function(state, callback) {
+		var this$1 = this;
+
+		this.setState(state, callback);
+		for (var i in this$1.state) {
+			if (!(i in state)) {
+				delete this$1.state[i];
+			}
+		}
+	},
+
+	getDOMNode: function() {
+		return this.base;
+	},
+
+	isMounted: function() {
+		return !!this.base;
+	}
+});
+
+
+
+function PureComponent(props, context) {
+	Component$1.call(this, props, context);
+}
+F.prototype = Component$1.prototype;
+PureComponent.prototype = new F();
+PureComponent.prototype.isPureReactComponent = true;
+PureComponent.prototype.shouldComponentUpdate = function(props, state) {
+	return shallowDiffers(this.props, props) || shallowDiffers(this.state, state);
+};
+
+var index = {
+	version: version,
+	DOM: DOM,
+	PropTypes: propTypes,
+	Children: Children,
+	render: render$1,
+	createClass: createClass$1,
+	createFactory: createFactory,
+	createElement: createElement,
+	cloneElement: cloneElement$1,
+	isValidElement: isValidElement,
+	findDOMNode: findDOMNode,
+	unmountComponentAtNode: unmountComponentAtNode,
+	Component: Component$1,
+	PureComponent: PureComponent,
+	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer,
+	__spread: extend$1
+};
 
 /**
  * Copyright 2015, Yahoo! Inc.
@@ -6782,7 +7412,7 @@ var CONTEXT_KEY = '__styled-components-stylesheet__';
 
 var IS_BROWSER = typeof window !== 'undefined';
 
-var DISABLE_SPEEDY = typeof false === 'boolean' && false || process.env.NODE_ENV !== 'production';
+var DISABLE_SPEEDY = typeof false === 'boolean' && false || undefined !== 'production';
 
 // 
 var SC_COMPONENT_ID = /^[^\S\n]*?\/\* sc-component-id:\s*(\S+)\s+\*\//gm;
@@ -6830,7 +7460,7 @@ var classCallCheck$1 = function (instance, Constructor) {
   }
 };
 
-var createClass$1 = function () {
+var createClass$2 = function () {
   function defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
@@ -6986,7 +7616,7 @@ var sheetForTag = function sheetForTag(tag) {
 };
 
 /* insert a rule safely and return whether it was actually injected */
-var safeInsertRule = function safeInsertRule(sheet, cssRule, index) {
+var safeInsertRule = function safeInsertRule(sheet, cssRule, index$$1) {
   /* abort early if cssRule string is falsy */
   if (!cssRule) return false;
 
@@ -6994,7 +7624,7 @@ var safeInsertRule = function safeInsertRule(sheet, cssRule, index) {
 
   try {
     /* use insertRule and cap passed index with maxIndex (no of cssRules) */
-    sheet.insertRule(cssRule, index <= maxIndex ? index : maxIndex);
+    sheet.insertRule(cssRule, index$$1 <= maxIndex ? index$$1 : maxIndex);
   } catch (err) {
     /* any error indicates an invalid rule */
     return false;
@@ -7016,11 +7646,11 @@ var deleteRules = function deleteRules(sheet, removalIndex, size) {
 /* eslint-disable react/prop-types */
 
 /* this error is used for makeStyleTag */
-var parentNodeUnmountedErr = process.env.NODE_ENV !== 'production' ? '\nTrying to insert a new style tag, but the given Node is unmounted!\n- Are you using a custom target that isn\'t mounted?\n- Does your document not have a valid head element?\n- Have you accidentally removed a style tag manually?\n'.trim() : '';
+var parentNodeUnmountedErr = undefined !== 'production' ? '\nTrying to insert a new style tag, but the given Node is unmounted!\n- Are you using a custom target that isn\'t mounted?\n- Does your document not have a valid head element?\n- Have you accidentally removed a style tag manually?\n'.trim() : '';
 
 /* this error is used for tags */
 var throwCloneTagErr = function throwCloneTagErr() {
-  throw new Error(process.env.NODE_ENV !== 'production' ? '\nThe clone method cannot be used on the client!\n- Are you running in a client-like environment on the server?\n- Are you trying to run SSR on the client?\n'.trim() : '');
+  throw new Error(undefined !== 'production' ? '\nThe clone method cannot be used on the client!\n- Are you running in a client-like environment on the server?\n- Are you trying to run SSR on the client?\n'.trim() : '');
 };
 
 /* this marker separates component styles and is important for rehydration */
@@ -7029,9 +7659,9 @@ var makeTextMarker = function makeTextMarker(id) {
 };
 
 /* add up all numbers in array up until and including the index */
-var addUpUntilIndex = function addUpUntilIndex(sizes, index) {
+var addUpUntilIndex = function addUpUntilIndex(sizes, index$$1) {
   var totalUpToIndex = 0;
-  for (var i = 0; i <= index; i += 1) {
+  for (var i = 0; i <= index$$1; i += 1) {
     totalUpToIndex += sizes[i];
   }
 
@@ -7091,7 +7721,7 @@ var wrapAsElement = function wrapAsElement(css, names) {
     }
 
     // eslint-disable-next-line react/no-danger
-    return React__default.createElement('style', _extends$1({}, props, { dangerouslySetInnerHTML: { __html: css() } }));
+    return index.createElement('style', _extends$1({}, props, { dangerouslySetInnerHTML: { __html: css() } }));
   };
 };
 
@@ -7697,11 +8327,11 @@ var StyleSheet = function () {
 
     return this.tags.map(function (tag, i) {
       var key = 'sc-' + id + '-' + i;
-      return React.cloneElement(tag.toElement(), { key: key });
+      return cloneElement$1(tag.toElement(), { key: key });
     });
   };
 
-  createClass$1(StyleSheet, null, [{
+  createClass$2(StyleSheet, null, [{
     key: 'master',
     get: function get$$1() {
       return master || (master = new StyleSheet().rehydrate());
@@ -7722,7 +8352,7 @@ var _StyleSheetManager$ch;
 
 // 
 /* this error is used for makeStyleTag */
-var targetPropErr = process.env.NODE_ENV !== 'production' ? '\nThe StyleSheetManager expects a valid target or sheet prop!\n- Does this error occur on the client and is your target falsy?\n- Does this error occur on the server and is the sheet falsy?\n'.trim() : '';
+var targetPropErr = undefined !== 'production' ? '\nThe StyleSheetManager expects a valid target or sheet prop!\n- Does this error occur on the client and is your target falsy?\n- Does this error occur on the server and is the sheet falsy?\n'.trim() : '';
 
 var StyleSheetManager = function (_Component) {
   inherits$1(StyleSheetManager, _Component);
@@ -7753,15 +8383,15 @@ var StyleSheetManager = function (_Component) {
     // Flow v0.43.1 will report an error accessing the `children` property,
     // but v0.47.0 will not. It is necessary to use a type cast instead of
     // a "fixme" comment to satisfy both Flow versions.
-    return React__default.Children.only(this.props.children);
+    return index.Children.only(this.props.children);
   };
 
   return StyleSheetManager;
-}(React.Component);
+}(Component$1);
 
 StyleSheetManager.childContextTypes = (_StyleSheetManager$ch = {}, _StyleSheetManager$ch[CONTEXT_KEY] = propTypes.oneOfType([propTypes.instanceOf(StyleSheet), propTypes.instanceOf(ServerStyleSheet)]).isRequired, _StyleSheetManager$ch);
 
-process.env.NODE_ENV !== "production" ? StyleSheetManager.propTypes = {
+undefined !== "production" ? StyleSheetManager.propTypes = {
   sheet: propTypes.oneOfType([propTypes.instanceOf(StyleSheet), propTypes.instanceOf(ServerStyleSheet)]),
   target: propTypes.shape({
     appendChild: propTypes.func.isRequired
@@ -7771,9 +8401,9 @@ process.env.NODE_ENV !== "production" ? StyleSheetManager.propTypes = {
 // 
 /* eslint-disable no-underscore-dangle */
 /* this error is used for makeStyleTag */
-var sheetClosedErr = process.env.NODE_ENV !== 'production' ? '\nCan\'t collect styles once you\'ve consumed a ServerStyleSheet\'s styles!\nServerStyleSheet is a one off instance for each server-side render cycle.\n- Are you trying to reuse it across renders?\n- Are you accidentally calling collectStyles twice?\n'.trim() : '';
+var sheetClosedErr = undefined !== 'production' ? '\nCan\'t collect styles once you\'ve consumed a ServerStyleSheet\'s styles!\nServerStyleSheet is a one off instance for each server-side render cycle.\n- Are you trying to reuse it across renders?\n- Are you accidentally calling collectStyles twice?\n'.trim() : '';
 
-var streamBrowserErr = process.env.NODE_ENV !== 'production' ? 'Streaming SSR is only supported in a Node.js environment; Please do not try to call this method in the browser.' : '';
+var streamBrowserErr = undefined !== 'production' ? 'Streaming SSR is only supported in a Node.js environment; Please do not try to call this method in the browser.' : '';
 
 var ServerStyleSheet = function () {
   function ServerStyleSheet() {
@@ -7788,7 +8418,7 @@ var ServerStyleSheet = function () {
       throw new Error(sheetClosedErr);
     }
 
-    return React__default.createElement(
+    return index.createElement(
       StyleSheetManager,
       { sheet: this.instance },
       children
@@ -8014,7 +8644,7 @@ var CONTEXT_CHANNEL_SHAPE = propTypes.shape({
 });
 
 var warnChannelDeprecated = void 0;
-if (process.env.NODE_ENV !== 'production') {
+if (undefined !== 'production') {
   warnChannelDeprecated = once(function () {
     // eslint-disable-next-line no-console
     console.error('Warning: Usage of `context.' + CHANNEL + '` as a function is deprecated. It will be replaced with the object on `.context.' + CHANNEL_NEXT + '` in a future version.');
@@ -8072,7 +8702,7 @@ var ThemeProvider = function (_Component) {
       subscribe: this.broadcast.subscribe,
       unsubscribe: this.broadcast.unsubscribe
     }, _babelHelpers$extends[CHANNEL] = function (subscriber) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (undefined !== 'production') {
         warnChannelDeprecated();
       }
 
@@ -8103,13 +8733,13 @@ var ThemeProvider = function (_Component) {
     var theme = passedTheme || this.props.theme;
     if (isFunction(theme)) {
       var mergedTheme = theme(this.outerTheme);
-      if (process.env.NODE_ENV !== 'production' && !isPlainObject(mergedTheme)) {
-        throw new Error(process.env.NODE_ENV !== 'production' ? '[ThemeProvider] Please return an object from your theme function, i.e. theme={() => ({})}!' : '');
+      if (undefined !== 'production' && !isPlainObject(mergedTheme)) {
+        throw new Error(undefined !== 'production' ? '[ThemeProvider] Please return an object from your theme function, i.e. theme={() => ({})}!' : '');
       }
       return mergedTheme;
     }
     if (!isPlainObject(theme)) {
-      throw new Error(process.env.NODE_ENV !== 'production' ? '[ThemeProvider] Please make your theme prop a plain object' : '');
+      throw new Error(undefined !== 'production' ? '[ThemeProvider] Please make your theme prop a plain object' : '');
     }
     return _extends$1({}, this.outerTheme, theme);
   };
@@ -8122,11 +8752,11 @@ var ThemeProvider = function (_Component) {
     if (!this.props.children) {
       return null;
     }
-    return React__default.Children.only(this.props.children);
+    return index.Children.only(this.props.children);
   };
 
   return ThemeProvider;
-}(React.Component);
+}(Component$1);
 
 ThemeProvider.childContextTypes = (_ThemeProvider$childC = {}, _ThemeProvider$childC[CHANNEL] = propTypes.func, _ThemeProvider$childC[CHANNEL_NEXT] = CONTEXT_CHANNEL_SHAPE, _ThemeProvider$childC);
 ThemeProvider.contextTypes = (_ThemeProvider$contex = {}, _ThemeProvider$contex[CHANNEL_NEXT] = CONTEXT_CHANNEL_SHAPE, _ThemeProvider$contex);
@@ -8220,7 +8850,7 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
         var executionContext = this.buildExecutionContext(theme, props);
         var className = componentStyle.generateAndInjectStyles(executionContext, styleSheet);
 
-        if (process.env.NODE_ENV !== 'production' && warnTooManyClasses !== undefined) {
+        if (undefined !== 'production' && warnTooManyClasses !== undefined) {
           warnTooManyClasses(className);
         }
 
@@ -8322,11 +8952,11 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
         return acc;
       }, baseProps);
 
-      return React.createElement(target, propsForElement);
+      return createElement(target, propsForElement);
     };
 
     return BaseStyledComponent;
-  }(React.Component);
+  }(Component$1);
 
   var createStyledComponent = function createStyledComponent(target, options, rules) {
     var _StyledComponent$cont;
@@ -8368,7 +8998,7 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
         return createStyledComponent(tag, newOptions, rules);
       };
 
-      createClass$1(StyledComponent, null, [{
+      createClass$2(StyledComponent, null, [{
         key: 'extend',
         get: function get$$1() {
           var rulesFromOptions = options.rules,
@@ -8398,7 +9028,7 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
     StyledComponent.target = target;
 
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (undefined !== 'production') {
       StyledComponent.warnTooManyClasses = createWarnTooManyClasses(displayName);
     }
 
@@ -8475,7 +9105,7 @@ var isStaticRules = function isStaticRules(rules, attrs) {
   return true;
 };
 
-var isHRMEnabled = typeof module !== 'undefined' && module.hot && process.env.NODE_ENV !== 'production';
+var isHRMEnabled = typeof module !== 'undefined' && module.hot && undefined !== 'production';
 
 /*
  ComponentStyle is all the CSS-specific stuff, not
@@ -8496,7 +9126,7 @@ var _ComponentStyle = (function (nameGenerator, flatten, stringifyRules) {
       this.componentId = componentId;
 
       if (!StyleSheet.master.hasId(componentId)) {
-        var placeholder = process.env.NODE_ENV !== 'production' ? ['.' + componentId + ' {}'] : [];
+        var placeholder = undefined !== 'production' ? ['.' + componentId + ' {}'] : [];
 
         StyleSheet.master.deferredInject(componentId, placeholder);
       }
@@ -8569,7 +9199,7 @@ var _constructWithOptions = (function (css) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     if (typeof tag !== 'string' && typeof tag !== 'function') {
-      throw new Error(process.env.NODE_ENV !== 'production' ? 'Cannot create styled-component for component: ' + String(tag) : '');
+      throw new Error(undefined !== 'production' ? 'Cannot create styled-component for component: ' + String(tag) : '');
     }
 
     /* This is callable directly as a template function */
@@ -8601,13 +9231,13 @@ var _constructWithOptions = (function (css) {
 /* Import components */
 /* Import Higher Order Components */
 /* Warning if you've imported this file on React Native */
-if (process.env.NODE_ENV !== 'production' && typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+if (undefined !== 'production' && typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
   // eslint-disable-next-line no-console
   console.warn("It looks like you've imported 'styled-components' on React Native.\n" + "Perhaps you're looking to import 'styled-components/native'?\n" + 'Read more about this at https://www.styled-components.com/docs/basics#react-native');
 }
 
 /* Warning if there are several instances of styled-components */
-if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
+if (undefined !== 'production' && typeof window !== 'undefined') {
   window['__styled-components-init__'] = window['__styled-components-init__'] || 0;
 
   if (window['__styled-components-init__'] === 1) {
@@ -9049,12 +9679,12 @@ function dispatch(action) {
 
   if (curr === AppState) return;
 
-  render$1();
+  render$2();
 }
 
 var DomRoot = document.querySelector('#preact-root');
 var AppDom = void 0;
-function render$1() {
+function render$2() {
   var app = h(AppContainer, { app: AppState, dispatch: dispatch });
   AppDom = render(app, DomRoot, AppDom);
 }
@@ -9062,4 +9692,4 @@ function render$1() {
 // Make sure we have a good initial state.
 dispatch({ type: '@@BOOT@@' });
 
-render$1();
+render$2();
