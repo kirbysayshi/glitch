@@ -287,16 +287,26 @@ const DOSFileInput = styled.input`
   z-index: -1;      
 `;
 
+const DOSLabel = styled.label`
+  display: block;
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 100%;
+  border: 1px solid lightgrey;
+  border-radius: 0px;
+  font-size: 16px;
+`;
+
 const DOSImageInputButton = ({ text, onFile }) => {
   return (
-    <label>
+    <DOSLabel>
       { text }
       <DOSFileInput
         type='file'
         accept='image/*'
         onchange={e => onFile(e.target.files[0])}
       />
-    </label>
+    </DOSLabel>
   )
 }
 
@@ -315,7 +325,7 @@ class InputPanel extends Component {
     return h('form', null, [
       
       <DOSImageInputButton
-        text='Background Image'
+        text='Choose Background Image'
         onFile={file => {
           fileToRotatedCanvas(file, (err, cvs) => {
             if (err) return dispatch({ error: err });
@@ -324,36 +334,15 @@ class InputPanel extends Component {
         }}
       />,
       
-//       h('label', null, [
-//         'Background Image',
-//         h('input', {
-//           type: 'file',
-//           accept: 'image/*',
-//           onchange: (e) => {
-//             const file = e.target.files[0];
-//             fileToRotatedCanvas(file, (err, cvs) => {
-//               if (err) return dispatch({ error: err });
-//               dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
-//             });
-//           }
-//         })
-        
-//       ]),
-      
-      h('label', null, [
-        'Foreground Image',
-        h('input', {
-          type: 'file',
-          accept: 'image/*',
-          onchange: (e) => {
-            const file = e.target.files[0];
-            fileToRotatedCanvas(file, (err, cvs) => {
-              if (err) return dispatch({ error: err });
-              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'foreground', }});
-            });
-          }
-        })
-      ]),
+      <DOSImageInputButton
+        text='Choose Foreground Image'
+        onFile={file => {
+          fileToRotatedCanvas(file, (err, cvs) => {
+            if (err) return dispatch({ error: err });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'foreground', }});
+          });
+        }}
+      />,
       
       LabeledInput({
         labelText: 'Vertical Slices',

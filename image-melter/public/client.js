@@ -9254,7 +9254,8 @@ var constructWithOptions = _constructWithOptions(css);
 var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 var styled = _styled(StyledComponent, constructWithOptions);
 
-var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']);
+var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
+    _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  border: 1px solid lightgrey;\n  border-radius: 0px;\n  font-size: 16px;\n'], ['\n  display: block;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  border: 1px solid lightgrey;\n  border-radius: 0px;\n  font-size: 16px;\n']);
 var GIF_WORKER_PATH = 'gif.worker.js';
 
 // BEGIN STATE MANAGEMENT
@@ -9530,12 +9531,14 @@ var ElHolder = function (_Component2) {
 
 var DOSFileInput = styled.input(_templateObject);
 
+var DOSLabel = styled.label(_templateObject2);
+
 var DOSImageInputButton = function DOSImageInputButton(_ref3) {
   var text = _ref3.text,
       onFile = _ref3.onFile;
 
   return h(
-    'label',
+    DOSLabel,
     null,
     text,
     h(DOSFileInput, {
@@ -9568,42 +9571,22 @@ var InputPanel = function (_Component3) {
           gif$$1 = _props$app.gif;
 
       return h('form', null, [h(DOSImageInputButton, {
-        text: 'Background Image',
+        text: 'Choose Background Image',
         onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
             dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
           });
         }
-      }),
-
-      //       h('label', null, [
-      //         'Background Image',
-      //         h('input', {
-      //           type: 'file',
-      //           accept: 'image/*',
-      //           onchange: (e) => {
-      //             const file = e.target.files[0];
-      //             fileToRotatedCanvas(file, (err, cvs) => {
-      //               if (err) return dispatch({ error: err });
-      //               dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
-      //             });
-      //           }
-      //         })
-
-      //       ]),
-
-      h('label', null, ['Foreground Image', h('input', {
-        type: 'file',
-        accept: 'image/*',
-        onchange: function onchange(e) {
-          var file = e.target.files[0];
+      }), h(DOSImageInputButton, {
+        text: 'Choose Foreground Image',
+        onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
             dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'foreground' } });
           });
         }
-      })]), LabeledInput({
+      }), LabeledInput({
         labelText: 'Vertical Slices',
         value: numSlices,
         onChange: function onChange(value) {
