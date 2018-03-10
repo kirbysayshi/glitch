@@ -2,6 +2,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
+import alias from 'rollup-plugin-alias';
 
 export default {
   input: 'client/index.js',
@@ -10,6 +11,11 @@ export default {
     format: 'cjs'
   },
   plugins: [
+    
+    alias({
+      'react': 'preact/dist/preact-compat.es.js',
+      'react-dom': 'preact/dist/preact-compat.es.js',
+    }),
     resolve({
       browser: true  
     }),
