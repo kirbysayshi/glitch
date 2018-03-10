@@ -2,8 +2,8 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var React$1 = require('react');
-var React$1__default = _interopDefault(React$1);
+var React = require('react');
+var React__default = _interopDefault(React);
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -2794,6 +2794,14 @@ var slicedToArray = function () {
     }
   };
 }();
+
+var taggedTemplateLiteral = function (strings, raw) {
+  return Object.freeze(Object.defineProperties(strings, {
+    raw: {
+      value: Object.freeze(raw)
+    }
+  }));
+};
 
 var toConsumableArray = function (arr) {
   if (Array.isArray(arr)) {
@@ -7083,7 +7091,7 @@ var wrapAsElement = function wrapAsElement(css, names) {
     }
 
     // eslint-disable-next-line react/no-danger
-    return React$1__default.createElement('style', _extends$1({}, props, { dangerouslySetInnerHTML: { __html: css() } }));
+    return React__default.createElement('style', _extends$1({}, props, { dangerouslySetInnerHTML: { __html: css() } }));
   };
 };
 
@@ -7689,7 +7697,7 @@ var StyleSheet = function () {
 
     return this.tags.map(function (tag, i) {
       var key = 'sc-' + id + '-' + i;
-      return React$1.cloneElement(tag.toElement(), { key: key });
+      return React.cloneElement(tag.toElement(), { key: key });
     });
   };
 
@@ -7745,11 +7753,11 @@ var StyleSheetManager = function (_Component) {
     // Flow v0.43.1 will report an error accessing the `children` property,
     // but v0.47.0 will not. It is necessary to use a type cast instead of
     // a "fixme" comment to satisfy both Flow versions.
-    return React$1__default.Children.only(this.props.children);
+    return React__default.Children.only(this.props.children);
   };
 
   return StyleSheetManager;
-}(React$1.Component);
+}(React.Component);
 
 StyleSheetManager.childContextTypes = (_StyleSheetManager$ch = {}, _StyleSheetManager$ch[CONTEXT_KEY] = propTypes.oneOfType([propTypes.instanceOf(StyleSheet), propTypes.instanceOf(ServerStyleSheet)]).isRequired, _StyleSheetManager$ch);
 
@@ -7780,7 +7788,7 @@ var ServerStyleSheet = function () {
       throw new Error(sheetClosedErr);
     }
 
-    return React$1__default.createElement(
+    return React__default.createElement(
       StyleSheetManager,
       { sheet: this.instance },
       children
@@ -8114,11 +8122,11 @@ var ThemeProvider = function (_Component) {
     if (!this.props.children) {
       return null;
     }
-    return React$1__default.Children.only(this.props.children);
+    return React__default.Children.only(this.props.children);
   };
 
   return ThemeProvider;
-}(React$1.Component);
+}(React.Component);
 
 ThemeProvider.childContextTypes = (_ThemeProvider$childC = {}, _ThemeProvider$childC[CHANNEL] = propTypes.func, _ThemeProvider$childC[CHANNEL_NEXT] = CONTEXT_CHANNEL_SHAPE, _ThemeProvider$childC);
 ThemeProvider.contextTypes = (_ThemeProvider$contex = {}, _ThemeProvider$contex[CHANNEL_NEXT] = CONTEXT_CHANNEL_SHAPE, _ThemeProvider$contex);
@@ -8314,11 +8322,11 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
         return acc;
       }, baseProps);
 
-      return React$1.createElement(target, propsForElement);
+      return React.createElement(target, propsForElement);
     };
 
     return BaseStyledComponent;
-  }(React$1.Component);
+  }(React.Component);
 
   var createStyledComponent = function createStyledComponent(target, options, rules) {
     var _StyledComponent$cont;
@@ -8616,6 +8624,7 @@ var constructWithOptions = _constructWithOptions(css);
 var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 var styled = _styled(StyledComponent, constructWithOptions);
 
+var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']);
 var GIF_WORKER_PATH = 'gif.worker.js';
 
 // BEGIN STATE MANAGEMENT
@@ -8889,6 +8898,26 @@ var ElHolder = function (_Component2) {
   return ElHolder;
 }(Component);
 
+var DOSFileInput = styled.input(_templateObject);
+
+var DOSImageInputButton = function DOSImageInputButton(_ref3) {
+  var text = _ref3.text,
+      onFile = _ref3.onFile;
+
+  return h(
+    'label',
+    null,
+    text,
+    h(DOSFileInput, {
+      type: 'file',
+      accept: 'image/*',
+      onchange: function onchange(e) {
+        return onFile(e.target.files[0]);
+      }
+    })
+  );
+};
+
 var InputPanel = function (_Component3) {
   inherits(InputPanel, _Component3);
 
@@ -8908,17 +8937,33 @@ var InputPanel = function (_Component3) {
           maxStartOffset = _props$app.maxStartOffset,
           gif$$1 = _props$app.gif;
 
-      return h('form', null, [h('label', null, ['Background Image', h('input', {
-        type: 'file',
-        accept: 'image/*',
-        onchange: function onchange(e) {
-          var file = e.target.files[0];
+      return h('form', null, [h(DOSImageInputButton, {
+        text: 'Background Image',
+        onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
             if (err) return dispatch({ error: err });
             dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
           });
         }
-      })]), h('label', null, ['Foreground Image', h('input', {
+      }),
+
+      //       h('label', null, [
+      //         'Background Image',
+      //         h('input', {
+      //           type: 'file',
+      //           accept: 'image/*',
+      //           onchange: (e) => {
+      //             const file = e.target.files[0];
+      //             fileToRotatedCanvas(file, (err, cvs) => {
+      //               if (err) return dispatch({ error: err });
+      //               dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
+      //             });
+      //           }
+      //         })
+
+      //       ]),
+
+      h('label', null, ['Foreground Image', h('input', {
         type: 'file',
         accept: 'image/*',
         onchange: function onchange(e) {

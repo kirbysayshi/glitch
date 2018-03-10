@@ -47,7 +47,8 @@
       "stage-2"
     ],
     "plugins": [
-      "external-helpers"
+      "external-helpers",
+      ["transform-react-jsx", { "pragma": "h" }]
     ]
   },
   "repository": {

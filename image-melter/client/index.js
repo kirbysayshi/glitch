@@ -1,3 +1,4 @@
+/** @jsx h */
 import GIF from 'gif.js';
 const GIF_WORKER_PATH = 'gif.worker.js';
 
@@ -277,21 +278,23 @@ class ElHolder extends Component {
 
 import styled from 'styled-components';
 
-// const DOSFileInput = styled.label`
-  
-// `;
+const DOSFileInput = styled.input`
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;      
+`;
 
-const DOSImageInput = ({ text, onFile }) => {
+const DOSImageInputButton = ({ text, onFile }) => {
   return (
     <label>
       { text }
-      <input
+      <DOSFileInput
         type='file'
         accept='image/*'
         onchange={e => onFile(e.target.files[0])}
-        style={{
-              
-              }
       />
     </label>
   )
@@ -311,21 +314,31 @@ class InputPanel extends Component {
     } = props;
     return h('form', null, [
       
-      h('label', null, [
-        'Background Image',
-        h('input', {
-          type: 'file',
-          accept: 'image/*',
-          onchange: (e) => {
-            const file = e.target.files[0];
-            fileToRotatedCanvas(file, (err, cvs) => {
-              if (err) return dispatch({ error: err });
-              dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
-            });
-          }
-        })
+      <DOSImageInputButton
+        text='Background Image'
+        onFile={file => {
+          fileToRotatedCanvas(file, (err, cvs) => {
+            if (err) return dispatch({ error: err });
+            dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
+          });
+        }}
+      />,
+      
+//       h('label', null, [
+//         'Background Image',
+//         h('input', {
+//           type: 'file',
+//           accept: 'image/*',
+//           onchange: (e) => {
+//             const file = e.target.files[0];
+//             fileToRotatedCanvas(file, (err, cvs) => {
+//               if (err) return dispatch({ error: err });
+//               dispatch({ type: 'IMAGE_LOAD', payload: { cvs, layer: 'background', }});
+//             });
+//           }
+//         })
         
-      ]),
+//       ]),
       
       h('label', null, [
         'Foreground Image',
