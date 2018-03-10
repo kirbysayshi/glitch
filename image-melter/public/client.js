@@ -9448,23 +9448,6 @@ var computePercentComplete = function computePercentComplete(_ref) {
   return (gifPercent * 100 + framePercent * 100) / 2;
 };
 
-var LabeledInput = function LabeledInput(_ref2) {
-  var labelText = _ref2.labelText,
-      value = _ref2.value,
-      onChange = _ref2.onChange;
-
-  var readVal = function readVal(e) {
-    return onChange(e.target.value);
-  };
-  return h('label', null, [labelText, h('input', {
-    type: 'text',
-    inputmode: 'numeric',
-    value: value,
-    onchange: readVal,
-    onkeyup: readVal
-  })]);
-};
-
 var RenderButton = function (_Component) {
   inherits(RenderButton, _Component);
 
@@ -9536,6 +9519,8 @@ var DOSLabel = styled.label(_templateObject2);
 
 var DOSTextInput = styled.input(_templateObject3);
 
+// TODO: make this stateful so it can display the selected file name
+// TODO: drag n drop is now broken by hiding the input! How to fix???
 var DOSImageInputButton = function DOSImageInputButton(_ref3) {
   var text = _ref3.text,
       onFile = _ref3.onFile;
@@ -9547,7 +9532,7 @@ var DOSImageInputButton = function DOSImageInputButton(_ref3) {
     h(DOSFileInput, {
       type: 'file',
       accept: 'image/*',
-      onchange: function onchange(e) {
+      onChange: function onChange(e) {
         return onFile(e.target.files[0]);
       }
     })
@@ -9596,47 +9581,104 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: numSlices,
-          onChange: function onChange(e) {
-            return console.log('change', e.target.value);
+          onChange: function onChange(_ref4) {
+            var value = _ref4.target.value;
+            return dispatch({
+              type: 'SLICE_COUNT_CHANGE',
+              payload: value
+            });
           }
         })
-      ), LabeledInput({
-        labelText: 'Vertical Slices',
-        value: numSlices,
-        onChange: function onChange(value) {
-          return dispatch({
-            type: 'SLICE_COUNT_CHANGE',
-            payload: value
-          });
-        }
-      }), LabeledInput({
-        labelText: 'Initial Velocity',
-        value: initialVelocity,
-        onChange: function onChange(value) {
-          return dispatch({
-            type: 'INITIAL_VELOCITY_CHANGE',
-            payload: value
-          });
-        }
-      }), LabeledInput({
-        labelText: 'Acceleration',
-        value: acceleration,
-        onChange: function onChange(value) {
-          return dispatch({
-            type: 'ACCELERATION_CHANGE',
-            payload: value
-          });
-        }
-      }), LabeledInput({
-        labelText: 'Maximum Start Offset',
-        value: maxStartOffset,
-        onChange: function onChange(value) {
-          return dispatch({
-            type: 'MAX_START_OFFSET_CHANGE',
-            payload: value
-          });
-        }
-      }), h(RenderButton, props)]);
+      ),
+
+      // LabeledInput({
+      //   labelText: 'Vertical Slices',
+      //   value: numSlices,
+      //   onChange: (value) => dispatch({
+      //     type: 'SLICE_COUNT_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
+
+      h(
+        DOSLabel,
+        null,
+        'Initial Velocity',
+        h(DOSTextInput, {
+          inputmode: 'numeric',
+          value: initialVelocity,
+          onChange: function onChange(_ref5) {
+            var value = _ref5.target.value;
+            return dispatch({
+              type: 'INITIAL_VELOCITY_CHANGE',
+              payload: value
+            });
+          }
+        })
+      ),
+
+      // LabeledInput({
+      //   labelText: 'Initial Velocity',
+      //   value: initialVelocity,
+      //   onChange: (value) => dispatch({
+      //     type: 'INITIAL_VELOCITY_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
+
+      h(
+        DOSLabel,
+        null,
+        'Acceleration',
+        h(DOSTextInput, {
+          inputmode: 'numeric',
+          value: acceleration,
+          onChange: function onChange(_ref6) {
+            var value = _ref6.target.value;
+            return dispatch({
+              type: 'ACCELERATION_CHANGE',
+              payload: value
+            });
+          }
+        })
+      ),
+
+      // LabeledInput({
+      //   labelText: 'Acceleration',
+      //   value: acceleration,
+      //   onChange: (value) => dispatch({
+      //     type: 'ACCELERATION_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
+
+      h(
+        DOSLabel,
+        null,
+        'Maximum Start Offset',
+        h(DOSTextInput, {
+          inputmode: 'numeric',
+          value: maxStartOffset,
+          onChange: function onChange(_ref7) {
+            var value = _ref7.target.value;
+            return dispatch({
+              type: 'MAX_START_OFFSET_CHANGE',
+              payload: value
+            });
+          }
+        })
+      ),
+
+      // LabeledInput({
+      //   labelText: 'Maximum Start Offset',
+      //   value: maxStartOffset,
+      //   onChange: (value) => dispatch({
+      //     type: 'MAX_START_OFFSET_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
+
+      h(RenderButton, props)]);
     }
   }]);
   return InputPanel;

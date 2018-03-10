@@ -310,6 +310,8 @@ const DOSTextInput = styled.input`
   background-color: magenta;
 `;
 
+// TODO: make this stateful so it can display the selected file name
+// TODO: drag n drop is now broken by hiding the input! How to fix???
 const DOSImageInputButton = ({ text, onFile }) => {
   return (
     <DOSLabel>
@@ -317,7 +319,7 @@ const DOSImageInputButton = ({ text, onFile }) => {
       <DOSFileInput
         type='file'
         accept='image/*'
-        onchange={e => onFile(e.target.files[0])}
+        onChange={e => onFile(e.target.files[0])}
       />
     </DOSLabel>
   )
@@ -362,45 +364,84 @@ class InputPanel extends Component {
         <DOSTextInput
           inputmode='numeric'
           value={numSlices}
-          onChange={e => console.log('change', e.target.value)}
+          onChange={({ target: { value } }) => dispatch({
+            type: 'SLICE_COUNT_CHANGE',
+            payload: value,
+          })}
         />
       </DOSLabel>,
       
-      LabeledInput({
-        labelText: 'Vertical Slices',
-        value: numSlices,
-        onChange: (value) => dispatch({
-          type: 'SLICE_COUNT_CHANGE',
-          payload: value,
-        })
-      }),
+      // LabeledInput({
+      //   labelText: 'Vertical Slices',
+      //   value: numSlices,
+      //   onChange: (value) => dispatch({
+      //     type: 'SLICE_COUNT_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
       
-      LabeledInput({
-        labelText: 'Initial Velocity',
-        value: initialVelocity,
-        onChange: (value) => dispatch({
-          type: 'INITIAL_VELOCITY_CHANGE',
-          payload: value,
-        })
-      }),
+      <DOSLabel>
+        Initial Velocity
+        <DOSTextInput
+          inputmode='numeric'
+          value={initialVelocity}
+          onChange={({ target: { value } }) => dispatch({
+            type: 'INITIAL_VELOCITY_CHANGE',
+            payload: value,
+          })}
+        />
+      </DOSLabel>,
       
-      LabeledInput({
-        labelText: 'Acceleration',
-        value: acceleration,
-        onChange: (value) => dispatch({
-          type: 'ACCELERATION_CHANGE',
-          payload: value,
-        })
-      }),
+      // LabeledInput({
+      //   labelText: 'Initial Velocity',
+      //   value: initialVelocity,
+      //   onChange: (value) => dispatch({
+      //     type: 'INITIAL_VELOCITY_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
       
-      LabeledInput({
-        labelText: 'Maximum Start Offset',
-        value: maxStartOffset,
-        onChange: (value) => dispatch({
-          type: 'MAX_START_OFFSET_CHANGE',
-          payload: value,
-        })
-      }),
+      <DOSLabel>
+        Acceleration
+        <DOSTextInput
+          inputmode='numeric'
+          value={acceleration}
+          onChange={({ target: { value } }) => dispatch({
+            type: 'ACCELERATION_CHANGE',
+            payload: value,
+          })}
+        />
+      </DOSLabel>,
+      
+      // LabeledInput({
+      //   labelText: 'Acceleration',
+      //   value: acceleration,
+      //   onChange: (value) => dispatch({
+      //     type: 'ACCELERATION_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
+      
+      <DOSLabel>
+        Maximum Start Offset
+        <DOSTextInput
+          inputmode='numeric'
+          value={maxStartOffset}
+          onChange={({ target: { value } }) => dispatch({
+            type: 'MAX_START_OFFSET_CHANGE',
+            payload: value,
+          })}
+        />
+      </DOSLabel>,
+      
+      // LabeledInput({
+      //   labelText: 'Maximum Start Offset',
+      //   value: maxStartOffset,
+      //   onChange: (value) => dispatch({
+      //     type: 'MAX_START_OFFSET_CHANGE',
+      //     payload: value,
+      //   })
+      // }),
       
       h(RenderButton, props),
     ]);
