@@ -7,7 +7,8 @@ import { default as FileSaver } from 'file-saver';
 
 import { doomRand } from './doom';
 import { fileToRotatedCanvas } from './orient-cvs';
-import { makeCanvas, downscaleToCanvas, leakBlobToImage } from './utils';
+import { makeCanvas, downscaleToCanvas } from './utils';
+import { blobToImage, } from 'image-juggler';
 import { initAnimState, normalizeCvses, animStateFrame, } from './anim';
 
 // BEGIN STATE MANAGEMENT
@@ -36,6 +37,9 @@ const defaultState = {
 const createFrames = () => (dispatch, getState) => {
   const state = getState();
 
+  // TODO: do some precondition checks here, like if both images
+  // have been set. Dispatch errors if not.
+  
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(
@@ -62,8 +66,7 @@ const createFrames = () => (dispatch, getState) => {
 
   gif.on('finished', function(blob) {
     // window.open(URL.createObjectURL(blob));
-    leakBlobToImage(blob, (err, img) => {
-    // blobToImage(blob, (err, img) => {
+    blobToImage(blob, (err, img) => {
       dispatch({ type: 'GIF_COMPLETED', payload: { img, blob } });
     })
   }); 
@@ -246,15 +249,15 @@ class RenderButton extends Component {
       ? `RENDERING ${percent}%`
       : "Render";
 
-    return h('input', {
-      type: 'button',
-      value,
-      disabled: rendering ? 'disabled' : null,
-      onclick: () => {
+    return <DOSButton
+      disabled={rendering ? 'disabled' : null}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
         if (rendering) return;
         dispatch(createFrames());
-      }
-    });
+      }}
+    >{value}</DOSButton>
   }
 }
 
@@ -299,6 +302,8 @@ const DOSLabel = styled.label`
   background-color: magenta;
   color: white;
 `;
+
+const DOSButton = DOSLabel.withComponent('button');
 
 const DOSTextInput = styled.input`
   padding: 0;

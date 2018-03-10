@@ -45,9 +45,21 @@ function fileToImage(file, opt_image, cb) {
   img.src = url;
 }
 
+function blobToImage(blob, opt_image, cb) {
+  if (!cb) { cb = opt_image; opt_image = null; }
+  var img = opt_image || document.createElement('img');
+  var url = URL.createObjectURL(blob);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+    cb(null, img);
+  };
+  img.src = url;
+}
+
 var imageToCanvas_1 = imageToCanvas;
 var fileToArrayBuffer_1 = fileToArrayBuffer;
 var fileToImage_1 = fileToImage;
+var blobToImage_1 = blobToImage;
 
 var FileSaver = createCommonjsModule(function (module) {
 /* FileSaver.js
@@ -2675,19 +2687,6 @@ function downscaleToCanvas(img, maxWidth, maxHeight) {
   var dheight = cvs.height;
   ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
   return cvs;
-}
-
-function leakBlobToImage(blob, opt_image, cb) {
-  if (!cb) {
-    cb = opt_image;opt_image = null;
-  }
-  var img = opt_image || document.createElement('img');
-  var url = URL.createObjectURL(blob);
-  img.onload = function () {
-    URL.revokeObjectURL(url);
-    cb(null, img);
-  };
-  img.src = url;
 }
 
 var classCallCheck = function (instance, Constructor) {
@@ -9286,6 +9285,9 @@ var createFrames = function createFrames() {
   return function (dispatch, getState) {
     var state = getState();
 
+    // TODO: do some precondition checks here, like if both images
+    // have been set. Dispatch errors if not.
+
     dispatch({ type: 'GIF_START' });
 
     var animState = initAnimState(
@@ -9308,8 +9310,7 @@ var createFrames = function createFrames() {
 
     gif$$1.on('finished', function (blob) {
       // window.open(URL.createObjectURL(blob));
-      leakBlobToImage(blob, function (err, img) {
-        // blobToImage(blob, (err, img) => {
+      blobToImage_1(blob, function (err, img) {
         dispatch({ type: 'GIF_COMPLETED', payload: { img: img, blob: blob } });
       });
     });
@@ -9466,15 +9467,19 @@ var RenderButton = function (_Component) {
       var percent = computePercentComplete(props.app).toFixed(2);
       var value = rendering === true ? 'RENDERING ' + percent + '%' : "Render";
 
-      return h('input', {
-        type: 'button',
-        value: value,
-        disabled: rendering ? 'disabled' : null,
-        onclick: function onclick() {
-          if (rendering) return;
-          dispatch(createFrames());
-        }
-      });
+      return h(
+        DOSButton,
+        {
+          disabled: rendering ? 'disabled' : null,
+          onClick: function onClick(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (rendering) return;
+            dispatch(createFrames());
+          }
+        },
+        value
+      );
     }
   }]);
   return RenderButton;
@@ -9516,6 +9521,8 @@ var ElHolder = function (_Component2) {
 var DOSFileInput = styled.input(_templateObject);
 
 var DOSLabel = styled.label(_templateObject2);
+
+var DOSButton = DOSLabel.withComponent('button');
 
 var DOSTextInput = styled.input(_templateObject3);
 
