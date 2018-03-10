@@ -275,6 +275,28 @@ class ElHolder extends Component {
   }
 }
 
+import styled from 'styled-components';
+
+// const DOSFileInput = styled.label`
+  
+// `;
+
+const DOSImageInput = ({ text, onFile }) => {
+  return (
+    <label>
+      { text }
+      <input
+        type='file'
+        accept='image/*'
+        onchange={e => onFile(e.target.files[0])}
+        style={{
+              
+              }
+      />
+    </label>
+  )
+}
+
 class InputPanel extends Component {  
   render(props) {
     const {
