@@ -13,8 +13,8 @@ export default {
   plugins: [
     
     alias({
-      'react': 'preact/dist/preact-compat.es.js',
-      'react-dom': 'preact/dist/preact-compat.es.js',
+      'react': 'preact-compat/src/index.js',
+      'react-dom': 'preact-compat/src/index.js',
     }),
     resolve({
       browser: true  
