@@ -293,18 +293,21 @@ const DOSLabel = styled.label`
   margin-bottom: 10px;
   padding: 5px;
   width: 100%;
-  border: 1px solid lightgrey;
+  //border: 1px solid lightgrey;
   border-radius: 0px;
-  font-size: 16px;
+  //font-size: 16px;
+  background-color: magenta;
+  color: white;
 `;
 
 const DOSTextInput = styled.input`
+  padding: 0;
   width: 20%;
   float: right;
   text-align: right;
   border: 0;
-  background-color: magenta;
   color: white;
+  background-color: magenta;
 `;
 
 const DOSImageInputButton = ({ text, onFile }) => {
@@ -356,7 +359,11 @@ class InputPanel extends Component {
       
       <DOSLabel>
         Vertical Slices
-        <DOSTextInput />
+        <DOSTextInput
+          inputmode='numeric'
+          value={numSlices}
+          onChange={e => console.log('change', e.target.value)}
+        />
       </DOSLabel>,
       
       LabeledInput({

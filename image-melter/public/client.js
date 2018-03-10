@@ -9255,8 +9255,8 @@ var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 var styled = _styled(StyledComponent, constructWithOptions);
 
 var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
-    _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  border: 1px solid lightgrey;\n  border-radius: 0px;\n  font-size: 16px;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  border: 1px solid lightgrey;\n  border-radius: 0px;\n  font-size: 16px;\n']),
-    _templateObject3 = taggedTemplateLiteral(['\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  background-color: magenta;\n  color: white;\n'], ['\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  background-color: magenta;\n  color: white;\n']);
+    _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: magenta;\n  color: white;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: magenta;\n  color: white;\n']),
+    _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: white;\n  background-color: magenta;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: white;\n  background-color: magenta;\n']);
 var GIF_WORKER_PATH = 'gif.worker.js';
 
 // BEGIN STATE MANAGEMENT
@@ -9593,7 +9593,13 @@ var InputPanel = function (_Component3) {
         DOSLabel,
         null,
         'Vertical Slices',
-        h(DOSTextInput, null)
+        h(DOSTextInput, {
+          inputmode: 'numeric',
+          value: numSlices,
+          onChange: function onChange(e) {
+            return console.log('change', e.target.value);
+          }
+        })
       ), LabeledInput({
         labelText: 'Vertical Slices',
         value: numSlices,
