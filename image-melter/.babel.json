@@ -593,5 +593,304 @@
       ]
     },
     "mtime": 1520709059733
+  },
+  "{\"filename\":\"/app/server.js\",\"env\":{\"development\":{\"plugins\":[]}},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],{\"pragma\":\"h\"}],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}],[[],{\"spec\":false,\"loose\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.26.0": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/server.js",
+      "filenameRelative": "/app/server.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "pragma": "h"
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "spec": false,
+            "loose": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "server.js",
+      "sourceFileName": "server.js",
+      "sourceRoot": "/app",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "server"
+    },
+    "ignored": false,
+    "code": "// server.js\n// where your node app starts\n\n// init project\nvar express = require('express');\nvar app = express();\n\n// we've started you off with Express, \n// but feel free to use whatever libs or frameworks you'd like through `package.json`.\n\n// http://expressjs.com/en/starter/static-files.html\napp.use(express.static('public'));\n\n// http://expressjs.com/en/starter/basic-routing.html\napp.get(\"/\", function (request, response) {\n  response.sendFile(__dirname + '/views/index.html');\n});\n\n// listen for requests :)\nvar listener = app.listen(process.env.PORT, function () {\n  console.log('Your app is listening on port ' + listener.address().port);\n});\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNlcnZlci5qcyJdLCJuYW1lcyI6WyJleHByZXNzIiwicmVxdWlyZSIsImFwcCIsInVzZSIsInN0YXRpYyIsImdldCIsInJlcXVlc3QiLCJyZXNwb25zZSIsInNlbmRGaWxlIiwiX19kaXJuYW1lIiwibGlzdGVuZXIiLCJsaXN0ZW4iLCJwcm9jZXNzIiwiZW52IiwiUE9SVCIsImNvbnNvbGUiLCJsb2ciLCJhZGRyZXNzIiwicG9ydCJdLCJtYXBwaW5ncyI6IkFBQUE7QUFDQTs7QUFFQTtBQUNBLElBQUlBLFVBQVVDLFFBQVEsU0FBUixDQUFkO0FBQ0EsSUFBSUMsTUFBTUYsU0FBVjs7QUFFQTtBQUNBOztBQUVBO0FBQ0FFLElBQUlDLEdBQUosQ0FBUUgsUUFBUUksTUFBUixDQUFlLFFBQWYsQ0FBUjs7QUFFQTtBQUNBRixJQUFJRyxHQUFKLENBQVEsR0FBUixFQUFhLFVBQVVDLE9BQVYsRUFBbUJDLFFBQW5CLEVBQTZCO0FBQ3hDQSxXQUFTQyxRQUFULENBQWtCQyxZQUFZLG1CQUE5QjtBQUNELENBRkQ7O0FBSUE7QUFDQSxJQUFJQyxXQUFXUixJQUFJUyxNQUFKLENBQVdDLFFBQVFDLEdBQVIsQ0FBWUMsSUFBdkIsRUFBNkIsWUFBWTtBQUN0REMsVUFBUUMsR0FBUixDQUFZLG1DQUFtQ04sU0FBU08sT0FBVCxHQUFtQkMsSUFBbEU7QUFDRCxDQUZjLENBQWYiLCJmaWxlIjoic2VydmVyLmpzIiwic291cmNlUm9vdCI6Ii9hcHAiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBzZXJ2ZXIuanNcbi8vIHdoZXJlIHlvdXIgbm9kZSBhcHAgc3RhcnRzXG5cbi8vIGluaXQgcHJvamVjdFxudmFyIGV4cHJlc3MgPSByZXF1aXJlKCdleHByZXNzJyk7XG52YXIgYXBwID0gZXhwcmVzcygpO1xuXG4vLyB3ZSd2ZSBzdGFydGVkIHlvdSBvZmYgd2l0aCBFeHByZXNzLCBcbi8vIGJ1dCBmZWVsIGZyZWUgdG8gdXNlIHdoYXRldmVyIGxpYnMgb3IgZnJhbWV3b3JrcyB5b3UnZCBsaWtlIHRocm91Z2ggYHBhY2thZ2UuanNvbmAuXG5cbi8vIGh0dHA6Ly9leHByZXNzanMuY29tL2VuL3N0YXJ0ZXIvc3RhdGljLWZpbGVzLmh0bWxcbmFwcC51c2UoZXhwcmVzcy5zdGF0aWMoJ3B1YmxpYycpKTtcblxuLy8gaHR0cDovL2V4cHJlc3Nqcy5jb20vZW4vc3RhcnRlci9iYXNpYy1yb3V0aW5nLmh0bWxcbmFwcC5nZXQoXCIvXCIsIGZ1bmN0aW9uIChyZXF1ZXN0LCByZXNwb25zZSkge1xuICByZXNwb25zZS5zZW5kRmlsZShfX2Rpcm5hbWUgKyAnL3ZpZXdzL2luZGV4Lmh0bWwnKTtcbn0pO1xuXG4vLyBsaXN0ZW4gZm9yIHJlcXVlc3RzIDopXG52YXIgbGlzdGVuZXIgPSBhcHAubGlzdGVuKHByb2Nlc3MuZW52LlBPUlQsIGZ1bmN0aW9uICgpIHtcbiAgY29uc29sZS5sb2coJ1lvdXIgYXBwIGlzIGxpc3RlbmluZyBvbiBwb3J0ICcgKyBsaXN0ZW5lci5hZGRyZXNzKCkucG9ydCk7XG59KTtcbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "server.js"
+      ],
+      "names": [
+        "express",
+        "require",
+        "app",
+        "use",
+        "static",
+        "get",
+        "request",
+        "response",
+        "sendFile",
+        "__dirname",
+        "listener",
+        "listen",
+        "process",
+        "env",
+        "PORT",
+        "console",
+        "log",
+        "address",
+        "port"
+      ],
+      "mappings": "AAAA;AACA;;AAEA;AACA,IAAIA,UAAUC,QAAQ,SAAR,CAAd;AACA,IAAIC,MAAMF,SAAV;;AAEA;AACA;;AAEA;AACAE,IAAIC,GAAJ,CAAQH,QAAQI,MAAR,CAAe,QAAf,CAAR;;AAEA;AACAF,IAAIG,GAAJ,CAAQ,GAAR,EAAa,UAAUC,OAAV,EAAmBC,QAAnB,EAA6B;AACxCA,WAASC,QAAT,CAAkBC,YAAY,mBAA9B;AACD,CAFD;;AAIA;AACA,IAAIC,WAAWR,IAAIS,MAAJ,CAAWC,QAAQC,GAAR,CAAYC,IAAvB,EAA6B,YAAY;AACtDC,UAAQC,GAAR,CAAY,mCAAmCN,SAASO,OAAT,GAAmBC,IAAlE;AACD,CAFc,CAAf",
+      "file": "server.js",
+      "sourceRoot": "/app",
+      "sourcesContent": [
+        "// server.js\n// where your node app starts\n\n// init project\nvar express = require('express');\nvar app = express();\n\n// we've started you off with Express, \n// but feel free to use whatever libs or frameworks you'd like through `package.json`.\n\n// http://expressjs.com/en/starter/static-files.html\napp.use(express.static('public'));\n\n// http://expressjs.com/en/starter/basic-routing.html\napp.get(\"/\", function (request, response) {\n  response.sendFile(__dirname + '/views/index.html');\n});\n\n// listen for requests :)\nvar listener = app.listen(process.env.PORT, function () {\n  console.log('Your app is listening on port ' + listener.address().port);\n});\n"
+      ]
+    },
+    "mtime": 1520709059733
   }
 }
