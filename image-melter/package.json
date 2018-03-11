@@ -7,9 +7,10 @@
   "description": "What am I about?",
   "main": "server.js",
   "scripts": {
-    "bundle": "rollup -c ./rollup.config.js {@}",
+    "bundle": "rollup -c ./rollup.config.js",
     "server": "node server.js",
-    "start": "run-p bundle server -- -w",
+    "start": "node server.js",
+    "xxxxxstart": "run-p bundle server -- -w",
     "//start": "rollup -w -c & babel-register server",
     "postinstall": "cp node_modules/gif.js/dist/gif.worker.js public/"
   },
