@@ -113,7 +113,7 @@ const DOSBox = styled.div`
   margin: ${CHAR_WIDTH_EMS};
   color: ${props => props.txtcolor};
 
-  &::before {
+  &::after {
     position: absolute;
     content: '';
     background-color: ${props => props.bgcolor};
@@ -231,13 +231,20 @@ class InputPanel extends Component {
   }
 }
 
+const RootContainer = styled.div`
+  padding: ${CHAR_WIDTH_EMS};
+  font-family: 'Less Perfect DOS VGA';
+  background-color: ${VGA_BLUE};
+  color: ${VGA_WHITE};
+`;
+
 export const AppContainer = (props) => {
   
   const cvurl = 'https://www.youtube.com/watch?v=4Xe6leSt_dU';
   const smurl = 'http://doom.wikia.com/wiki/Screen_melt';
   
   return (
-    <div>
+    <RootContainer>
       <header>
         <DOSH1Box bgcolor={VGA_BRIGHT_RED} txtcolor={VGA_YELLOW}>
           Welcome to the Most Advanced Special Effect™ of 1993 
@@ -296,7 +303,7 @@ export const AppContainer = (props) => {
           <dd><a href="http://laemeur.sdf.org/fonts/">"Less Perfect DOS VGA" font via LAEMEUR</a></dd>
         </dl>
       </footer>
-    </div>
+    </RootContainer>
   )
 }
 
