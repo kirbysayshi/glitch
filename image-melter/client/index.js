@@ -72,7 +72,6 @@ const createFrames = () => (dispatch, getState) => {
   }); 
   
   // Allow it to "loop" until finished
-  // let nullOnce = false;
   const nextFrame = () => {
     dispatch({ type: 'INC_TOTAL_STAGES', payload: 1 });
     setTimeout(() => {
@@ -82,13 +81,7 @@ const createFrames = () => (dispatch, getState) => {
       dispatch({ type: 'INC_FINISHED_STAGES', payload: 1 });
       
       if (!imgData) {
-        // if (nullOnce) {
-        //   // animation is done!  
-          gif.render();
-        // } else {
-        //   // nullOnce = true; 
-        //   nextFrame();
-        // }  
+        gif.render();
       } else {
         gif.addFrame(imgData, { delay: 16 });  
         nextFrame();

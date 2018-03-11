@@ -8,11 +8,11 @@
   "restart": {
     "exclude": [
       "^public/",
-      "^dist/"
+      "^dist/",
+      "^client/"
     ],
     "include": [
       "\\.json",
-      "^client/",
       "^views/"
     ]
   },
