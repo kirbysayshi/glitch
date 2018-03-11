@@ -236,6 +236,7 @@ const RootContainer = styled.div`
   font-family: 'Less Perfect DOS VGA';
   background-color: ${VGA_BLUE};
   color: ${VGA_WHITE};
+  z-index: -1;
 `;
 
 export const AppContainer = (props) => {

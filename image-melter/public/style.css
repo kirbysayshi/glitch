@@ -27,12 +27,12 @@ html {
 }
 
 body {
-  font-family: 'Less Perfect DOS VGA';
+/*   font-family: 'Less Perfect DOS VGA'; */
   margin: 0;
-  padding: 25px;
+/*   padding: 25px; */
   width: 100%;
-  background-color: #0000aa;
-  color: white;
+/*   background-color: #0000aa; */
+/*   color: white; */
   
   /* unfortunately this has artifacts... */
 /*   background-image:
