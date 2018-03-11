@@ -7,7 +7,7 @@
   "description": "What am I about?",
   "main": "server.js",
   "scripts": {
-    "start": "rollup -c && babel-register server",
+    "start": "rollup -w -c & babel-register server",
     "postinstall": "cp node_modules/gif.js/dist/gif.worker.js public/"
   },
   "dependencies": {
