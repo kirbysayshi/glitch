@@ -7,7 +7,7 @@
   "description": "What am I about?",
   "main": "server.js",
   "scripts": {
-    "bundle": "rollup -c",
+    "bundle": "rollup -c ./rollup.config.js",
     "server": "node server.js",
     "start": "run-p 'bundle -- -w' 'server'",
     "//start": "rollup -w -c & babel-register server",
