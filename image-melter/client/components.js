@@ -5,20 +5,6 @@ import { default as FileSaver } from 'file-saver';
 import { fileToRotatedCanvas } from './orient-cvs';
 import { computePercentComplete, createFrames } from './state';
 
-const LabeledInput = ({ labelText, value, onChange }) => {
-  const readVal = (e) => onChange(e.target.value);
-  return h('label', null, [
-    labelText,
-    h('input', {
-      type: 'text',
-      inputmode: 'numeric',
-      value,
-      onchange: readVal,
-      onkeyup: readVal,
-    })
-  ]);
-}
-
 class RenderButton extends Component {
   
   render (props) {
@@ -159,15 +145,6 @@ class InputPanel extends Component {
         />
       </DOSLabel>,
       
-      // LabeledInput({
-      //   labelText: 'Vertical Slices',
-      //   value: numSlices,
-      //   onChange: (value) => dispatch({
-      //     type: 'SLICE_COUNT_CHANGE',
-      //     payload: value,
-      //   })
-      // }),
-      
       <DOSLabel>
         Initial Velocity
         <DOSTextInput
@@ -179,15 +156,6 @@ class InputPanel extends Component {
           })}
         />
       </DOSLabel>,
-      
-      // LabeledInput({
-      //   labelText: 'Initial Velocity',
-      //   value: initialVelocity,
-      //   onChange: (value) => dispatch({
-      //     type: 'INITIAL_VELOCITY_CHANGE',
-      //     payload: value,
-      //   })
-      // }),
       
       <DOSLabel>
         Acceleration
@@ -201,15 +169,6 @@ class InputPanel extends Component {
         />
       </DOSLabel>,
       
-      // LabeledInput({
-      //   labelText: 'Acceleration',
-      //   value: acceleration,
-      //   onChange: (value) => dispatch({
-      //     type: 'ACCELERATION_CHANGE',
-      //     payload: value,
-      //   })
-      // }),
-      
       <DOSLabel>
         Maximum Start Offset
         <DOSTextInput
@@ -221,15 +180,7 @@ class InputPanel extends Component {
           })}
         />
       </DOSLabel>,
-      
-      // LabeledInput({
-      //   labelText: 'Maximum Start Offset',
-      //   value: maxStartOffset,
-      //   onChange: (value) => dispatch({
-      //     type: 'MAX_START_OFFSET_CHANGE',
-      //     payload: value,
-      //   })
-      // }),
+    
       
       h(RenderButton, props),
     ]);
