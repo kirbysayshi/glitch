@@ -58,23 +58,24 @@ p {
 }
 
 form {
-  margin-bottom: 25px;
   padding: 15px;
   background-color: cyan;
   display: inline-block;
   width: 100%;
   max-width: 340px;
-  border-radius: 3px;
+/*   border-radius: 3px; */
   position: relative;
+  border: 0.143 solid black;
+  margin: 1.15;
 }
 
-form::after {
+/* form::b {
   position: absolute;
   content: '';
   width: 100%;
   height: 100%;
   background-color: black;
-}
+} */
 /* input {
   display: block;
   margin-bottom: 10px;
