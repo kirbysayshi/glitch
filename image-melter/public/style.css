@@ -58,24 +58,24 @@ p {
 }
 
 form {
-  padding: 15px;
-  background-color: cyan;
+  padding: 1.15em;
+  background-color: magenta;
   display: inline-block;
-  width: 100%;
-  max-width: 340px;
-/*   border-radius: 3px; */
   position: relative;
-  border: 0.143 solid black;
-  margin: 1.15;
+  border: 0.12em solid white;
+  margin: 1.15em;
 }
 
-/* form::b {
+form::before {
   position: absolute;
   content: '';
-  width: 100%;
-  height: 100%;
-  background-color: black;
-} */
+  background-color: magenta;
+  top: -1.15em; /* Must match margin */
+  right: -1.15em;
+  bottom: -1.15em;
+  left: -1.15em;
+  z-index: -1;
+}
 /* input {
   display: block;
   margin-bottom: 10px;
