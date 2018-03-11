@@ -9440,9 +9440,9 @@ var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 var styled = _styled(StyledComponent, constructWithOptions);
 
 var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
-    _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: magenta;\n  color: white;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: magenta;\n  color: white;\n']),
-    _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: white;\n  background-color: magenta;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: white;\n  background-color: magenta;\n']),
-    _templateObject4 = taggedTemplateLiteral(['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']);
+    _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n']),
+    _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
+    _templateObject4 = taggedTemplateLiteral(['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']);
 
 var RenderButton = function (_Component) {
   inherits(RenderButton, _Component);
@@ -9527,10 +9527,13 @@ var BG_COLOR_MAGENTA = 'magenta';
 var DOSBox = styled.div(_templateObject4, CHAR_WIDTH_EMS, function (props) {
   return props.bgcolor;
 }, CHAR_WIDTH_EMS, function (props) {
+  return props.txtcolor;
+}, function (props) {
   return props.bgcolor;
 }, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS);
 
 var DOSFormBox = DOSBox.withComponent('form');
+var DOSH1Box = DOSBox.withComponent('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -9571,7 +9574,7 @@ var InputPanel = function (_Component3) {
           maxStartOffset = _props$app.maxStartOffset,
           gif = _props$app.gif;
 
-      return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA }, [h(DOSImageInputButton, {
+      return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA, txtcolor: 'white' }, [h(DOSImageInputButton, {
         text: 'Choose Background Image',
         onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
@@ -9661,8 +9664,8 @@ var AppContainer = function AppContainer(props) {
       'header',
       null,
       h(
-        'h1',
-        null,
+        DOSH1Box,
+        { bgcolor: 'red', txtcolor: 'yellow' },
         'Welcome to the Most Advanced Special Effect\u2122 of 1993'
       )
     ),

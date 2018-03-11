@@ -68,8 +68,8 @@ const DOSLabel = styled.label`
   //border: 1px solid lightgrey;
   border-radius: 0px;
   //font-size: 16px;
-  background-color: magenta;
-  color: white;
+  background-color: transparent;
+  color: inherit;
 `;
 
 const DOSButton = DOSLabel.withComponent('button');
@@ -80,8 +80,8 @@ const DOSTextInput = styled.input`
   float: right;
   text-align: right;
   border: 0;
-  color: white;
-  background-color: magenta;
+  color: inherit;
+  background-color: transparent;
 `;
 
 const CHAR_WIDTH_EMS = '1.15em';
@@ -94,6 +94,7 @@ const DOSBox = styled.div`
   position: relative;
   border: 0.12em solid white;
   margin: ${CHAR_WIDTH_EMS};
+  color: ${props => props.txtcolor};
 
   &::before {
     position: absolute;
@@ -108,6 +109,7 @@ const DOSBox = styled.div`
 `;
 
 const DOSFormBox = DOSBox.withComponent('form');
+const DOSH1Box = DOSBox.withComponent('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -136,7 +138,7 @@ class InputPanel extends Component {
         gif,
       },
     } = props;
-    return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA }, [
+    return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA, txtcolor: 'white' }, [
       
       <DOSImageInputButton
         text='Choose Background Image'
@@ -216,9 +218,9 @@ export const AppContainer = (props) => {
   return (
     <div>
       <header>
-        <h1>
+        <DOSH1Box bgcolor='red' txtcolor='yellow'>
           Welcome to the Most Advanced Special Effect™ of 1993 
-        </h1>
+        </DOSH1Box>
       </header>
 
       <main>
