@@ -9678,7 +9678,7 @@ var AppContainer = function AppContainer(props) {
       h(
         'p',
         null,
-        'DOOM and ',
+        'DOOM and',
         h(
           'a',
           { href: 'https://www.youtube.com/watch?v=4Xe6leSt_dU' },

@@ -232,6 +232,10 @@ class InputPanel extends Component {
 }
 
 export const AppContainer = (props) => {
+  
+  const cvurl = 'https://www.youtube.com/watch?v=4Xe6leSt_dU';
+  const smurl = 'http://doom.wikia.com/wiki/Screen_melt';
+  
   return (
     <div>
       <header>
@@ -241,10 +245,7 @@ export const AppContainer = (props) => {
       </header>
 
       <main>
-        <p>DOOM and <a href="https://www.youtube.com/watch?v=4Xe6leSt_dU">Castlevania: Symphony of the Night</a>
-          both used a very specific transition effect:
-          the <a href="http://doom.wikia.com/wiki/Screen_melt">screen melt</a> or screen wipe.
-        </p>
+        <p>DOOM and <a href={cvurl}>Castlevania: Symphony of the Night</a> both used a very specific transition effect: the <a href={smurl}>screen melt</a> or screen wipe.</p>
         <p>
           Now, you too can wield this powerful effect!
         </p>
