@@ -84,9 +84,30 @@ const DOSTextInput = styled.input`
   background-color: magenta;
 `;
 
-const DOSBox = styled.div`
+const CHAR_WIDTH_EMS = '1.15em';
+const BG_COLOR_MAGENTA = 'magenta';
 
+const DOSBox = styled.div`
+  padding: ${CHAR_WIDTH_EMS};
+  background-color: ${props => props.bgcolor};
+  display: inline-block;
+  position: relative;
+  border: 0.12em solid white;
+  margin: ${CHAR_WIDTH_EMS};
+
+  &::before {
+    position: absolute;
+    content: '';
+    background-color: ${props => props.bgcolor};
+    top: -${CHAR_WIDTH_EMS}; /* Must match margin */
+    right: -${CHAR_WIDTH_EMS};
+    bottom: -${CHAR_WIDTH_EMS};
+    left: -${CHAR_WIDTH_EMS};
+    z-index: -1;
+  }
 `;
+
+const DOSFormBox = DOSBox.withComponent('form');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -115,7 +136,7 @@ class InputPanel extends Component {
         gif,
       },
     } = props;
-    return h('form', null, [
+    return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA }, [
       
       <DOSImageInputButton
         text='Choose Background Image'

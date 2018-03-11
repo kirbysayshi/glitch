@@ -65,7 +65,7 @@ p {
   max-width: 600px;
 }
 
-form {
+/* form {
   padding: 1.15em;
   background-color: magenta;
   display: inline-block;
@@ -78,12 +78,12 @@ form::before {
   position: absolute;
   content: '';
   background-color: magenta;
-  top: -1.15em; /* Must match margin */
+  top: -1.15em;
   right: -1.15em;
   bottom: -1.15em;
   left: -1.15em;
   z-index: -1;
-}
+} */
 /* input {
   display: block;
   margin-bottom: 10px;
