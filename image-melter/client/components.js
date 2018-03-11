@@ -85,7 +85,24 @@ const DOSTextInput = styled.input`
 `;
 
 const CHAR_WIDTH_EMS = '1.15em';
-const BG_COLOR_MAGENTA = 'magenta';
+
+// https://en.wikipedia.org/wiki/Video_Graphics_Array#Color_palette
+const VGA_BLACK = '#000000';
+const VGA_BLUE = '#0000aa';
+const VGA_GREEN = '#00aa00';
+const VGA_CYAN = '#00aaaa';
+const VGA_RED = '#aa0000';
+const VGA_MAGENTA = '#aa00aa';
+const VGA_BROWN = '#aa5500';
+const VGA_GRAY = '#aaaaaa';
+const VGA_DARK_GRAY = '#555555';
+const VGA_BRIGHT_BLUE = '#5555ff';
+const VGA_BRIGHT_GREEN = '#55ff55';
+const VGA_BRIGHT_CYAN = '#55ffff';
+const VGA_BRIGHT_RED = '#ff5555';
+const VGA_BRIGHT_MAGENTA = '#ff55ff';
+const VGA_YELLOW = '#ffff55';
+const VGA_WHITE = '#ffffff';
 
 const DOSBox = styled.div`
   padding: ${CHAR_WIDTH_EMS};
@@ -138,7 +155,7 @@ class InputPanel extends Component {
         gif,
       },
     } = props;
-    return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA, txtcolor: 'white' }, [
+    return h(DOSFormBox, { bgcolor: VGA_BRIGHT_MAGENTA, txtcolor: VGA_WHITE }, [
       
       <DOSImageInputButton
         text='Choose Background Image'
@@ -218,7 +235,7 @@ export const AppContainer = (props) => {
   return (
     <div>
       <header>
-        <DOSH1Box bgcolor='red' txtcolor='yellow'>
+        <DOSH1Box bgcolor={VGA_BRIGHT_RED} txtcolor={VGA_YELLOW}>
           Welcome to the Most Advanced Special Effect™ of 1993 
         </DOSH1Box>
       </header>

@@ -9522,7 +9522,10 @@ var DOSButton = DOSLabel.withComponent('button');
 var DOSTextInput = styled.input(_templateObject3);
 
 var CHAR_WIDTH_EMS = '1.15em';
-var BG_COLOR_MAGENTA = 'magenta';
+var VGA_BRIGHT_RED = '#ff5555';
+var VGA_BRIGHT_MAGENTA = '#ff55ff';
+var VGA_YELLOW = '#ffff55';
+var VGA_WHITE = '#ffffff';
 
 var DOSBox = styled.div(_templateObject4, CHAR_WIDTH_EMS, function (props) {
   return props.bgcolor;
@@ -9574,7 +9577,7 @@ var InputPanel = function (_Component3) {
           maxStartOffset = _props$app.maxStartOffset,
           gif = _props$app.gif;
 
-      return h(DOSFormBox, { bgcolor: BG_COLOR_MAGENTA, txtcolor: 'white' }, [h(DOSImageInputButton, {
+      return h(DOSFormBox, { bgcolor: VGA_BRIGHT_MAGENTA, txtcolor: VGA_WHITE }, [h(DOSImageInputButton, {
         text: 'Choose Background Image',
         onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
@@ -9665,7 +9668,7 @@ var AppContainer = function AppContainer(props) {
       null,
       h(
         DOSH1Box,
-        { bgcolor: 'red', txtcolor: 'yellow' },
+        { bgcolor: VGA_BRIGHT_RED, txtcolor: VGA_YELLOW },
         'Welcome to the Most Advanced Special Effect\u2122 of 1993'
       )
     ),
