@@ -9442,7 +9442,7 @@ var styled = _styled(StyledComponent, constructWithOptions);
 var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
     _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n']),
     _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
-    _templateObject4 = taggedTemplateLiteral(['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  padding: ', ';\n  background-color: ', ';\n  display: inline-block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']);
+    _templateObject4 = taggedTemplateLiteral(['\n  padding: ', ';\n  background-color: ', ';\n  display: block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  padding: ', ';\n  background-color: ', ';\n  display: block;\n  position: relative;\n  border: 0.12em solid white;\n  margin: ', ';\n  color: ', ';\n\n  &::before {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']);
 
 var RenderButton = function (_Component) {
   inherits(RenderButton, _Component);
@@ -9660,6 +9660,10 @@ var InputPanel = function (_Component3) {
 }(Component);
 
 var AppContainer = function AppContainer(props) {
+
+  var cvurl = 'https://www.youtube.com/watch?v=4Xe6leSt_dU';
+  var smurl = 'http://doom.wikia.com/wiki/Screen_melt';
+
   return h(
     'div',
     null,
@@ -9678,16 +9682,19 @@ var AppContainer = function AppContainer(props) {
       h(
         'p',
         null,
-        'DOOM and',
+        'DOOM and ',
+        ' ',
         h(
           'a',
-          { href: 'https://www.youtube.com/watch?v=4Xe6leSt_dU' },
+          { href: cvurl },
           'Castlevania: Symphony of the Night'
         ),
-        'both used a very specific transition effect: the ',
+        ' ',
+        'both used a very specific transition effect: the',
+        ' ',
         h(
           'a',
-          { href: 'http://doom.wikia.com/wiki/Screen_melt' },
+          { href: smurl },
           'screen melt'
         ),
         ' or screen wipe.'

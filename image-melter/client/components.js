@@ -107,7 +107,7 @@ const VGA_WHITE = '#ffffff';
 const DOSBox = styled.div`
   padding: ${CHAR_WIDTH_EMS};
   background-color: ${props => props.bgcolor};
-  display: inline-block;
+  display: block;
   position: relative;
   border: 0.12em solid white;
   margin: ${CHAR_WIDTH_EMS};
@@ -245,7 +245,11 @@ export const AppContainer = (props) => {
       </header>
 
       <main>
-        <p>DOOM and <a href={cvurl}>Castlevania: Symphony of the Night</a> both used a very specific transition effect: the <a href={smurl}>screen melt</a> or screen wipe.</p>
+        <p>DOOM and {' '}
+          <a href={cvurl}>Castlevania: Symphony of the Night</a>{' '}
+          both used a very specific transition effect: the{' '}
+          <a href={smurl}>screen melt</a> or screen wipe.
+        </p>
         <p>
           Now, you too can wield this powerful effect!
         </p>
