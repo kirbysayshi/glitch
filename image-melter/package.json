@@ -9,8 +9,7 @@
   "scripts": {
     "bundle": "rollup -c ./rollup.config.js",
     "server": "node server.js",
-    "start": "node server.js",
-    "xxxxxstart": "run-p bundle server -- -w",
+    "start": "run-p \"bundle -- -w\" server",
     "//start": "rollup -w -c & babel-register server",
     "postinstall": "cp node_modules/gif.js/dist/gif.worker.js public/"
   },

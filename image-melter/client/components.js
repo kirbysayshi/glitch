@@ -187,21 +187,44 @@ class InputPanel extends Component {
   }
 }
 
+// export const AppContainer = (props) => {
+//   return h('div', null, [
+//     props.app.errors.map(err => h('div', null, err.message)),
+//     h(InputPanel, props),
+//     h(ElHolder, { el: props.app.gif }),
+//     props.app.gifBlob && h('a', {
+//       href: '#',
+//       download: 'melted.gif',
+//       onclick: e => {
+//         e.preventDefault();
+//         e.stopPropagation();
+//         FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
+//       },
+//     }, 'Download Image')
+//   ])
+// }
+
 export const AppContainer = (props) => {
-  return h('div', null, [
-    props.app.errors.map(err => h('div', null, err.message)),
-    h(InputPanel, props),
-    h(ElHolder, { el: props.app.gif }),
-    props.app.gifBlob && h('a', {
-      href: '#',
-      download: 'melted.gif',
-      onclick: e => {
-        e.preventDefault();
-        e.stopPropagation();
-        FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
-      },
-    }, 'Download Image')
-  ])
+  return (
+    <div>
+      {props.app.errors.map(err => h('div', null, err.message))}
+      <InputPanel {...props} />
+      <ElHolder el={props.app.gif} />
+      {
+        props.app.gifBlob
+        && <a
+          href={'#'}
+          download={'melted.gif'}
+          onclick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
+          }}
+        >Download Image</a>
+      }
+    </div>
+  )
 }
 
+console.log('logging')
 // END RENDER RENDER RENDER
