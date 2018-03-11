@@ -20,7 +20,7 @@ function dispatch(action) {
   render();
 }
 
-const DomRoot = document.querySelector('#preact-root');
+const DomRoot = document.body;
 let AppDom;
 function render() {
   const app = h(AppContainer, { app: AppState, dispatch });

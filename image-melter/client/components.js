@@ -84,6 +84,10 @@ const DOSTextInput = styled.input`
   background-color: magenta;
 `;
 
+const DOSBox = styled.div`
+
+`;
+
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
 const DOSImageInputButton = ({ text, onFile }) => {
@@ -187,44 +191,68 @@ class InputPanel extends Component {
   }
 }
 
-// export const AppContainer = (props) => {
-//   return h('div', null, [
-//     props.app.errors.map(err => h('div', null, err.message)),
-//     h(InputPanel, props),
-//     h(ElHolder, { el: props.app.gif }),
-//     props.app.gifBlob && h('a', {
-//       href: '#',
-//       download: 'melted.gif',
-//       onclick: e => {
-//         e.preventDefault();
-//         e.stopPropagation();
-//         FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
-//       },
-//     }, 'Download Image')
-//   ])
-// }
-
 export const AppContainer = (props) => {
   return (
     <div>
-      {props.app.errors.map(err => h('div', null, err.message))}
-      <InputPanel {...props} />
-      <ElHolder el={props.app.gif} />
-      {
-        props.app.gifBlob
-        && <a
-          href={'#'}
-          download={'melted.gif'}
-          onclick={e => {
-            e.preventDefault();
-            e.stopPropagation();
-            FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
-          }}
-        >Download Image</a>
-      }
+      <header>
+        <h1>
+          Welcome to the Most Advanced Special Effect™ of 1993 
+        </h1>
+      </header>
+
+      <main>
+        <p>DOOM and <a href="https://www.youtube.com/watch?v=4Xe6leSt_dU">Castlevania: Symphony of the Night</a>
+          both used a very specific transition effect:
+          the <a href="http://doom.wikia.com/wiki/Screen_melt">screen melt</a> or screen wipe.
+        </p>
+        <p>
+          Now, you too can wield this powerful effect!
+        </p>
+        <div>
+          {props.app.errors.map(err => <div>err.message</div>)}
+          <InputPanel {...props} />
+          <ElHolder el={props.app.gif} />
+          {
+            props.app.gifBlob
+            && <a
+              href='#'
+              download='melted.gif'
+              onclick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                FileSaver.saveAs(props.app.gifBlob, 'melted.gif');
+              }}
+            >Download Image</a>
+          }
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          <a href="https://glitch.com">Remix this in Glitch</a>
+        </p>
+
+        <dl>
+          <dt>Interface Inspiration</dt>
+          <dd>https://www.vogons.org/viewtopic.php?t=16974</dd>
+          <dd>https://archive.org/details/CommanderKeen6AliensAteMyBabySitter</dd>
+          <dd>https://github.com/davemandy/sneakers-effect</dd>
+          <dd>https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery</dd>
+
+          <dt>Learning Resources</dt>
+          <dd>https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/</dd>
+
+          <dt>Technologies/Libraries Used</dt>
+          <dd>https://preactjs.com/</dd>
+          <dd>http://rollupjs.org/</dd>
+          <dd>https://www.styled-components.com</dd>
+
+          <dt>Assets</dt>
+          <dd><a href="http://laemeur.sdf.org/fonts/">"Less Perfect DOS VGA" font via LAEMEUR</a></dd>
+        </dl>
+      </footer>
     </div>
   )
 }
 
-console.log('logging')
 // END RENDER RENDER RENDER
