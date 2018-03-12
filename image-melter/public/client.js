@@ -9543,7 +9543,7 @@ var DOSButton = DOSLabel.withComponent('button');
 
 var DOSTextInput = styled.input(_templateObject3);
 
-var CHAR_WIDTH_EMS = '1.15em';
+var CHAR_LENGTH_EMS = '1.15em';
 var VGA_BLUE = '#0000aa';
 var VGA_RED = '#aa0000';
 var VGA_BRIGHT_RED = '#ff5555';
@@ -9560,17 +9560,17 @@ var DOSBoxMaker = function DOSBoxMaker(tag) {
     return h(
       'div',
       { className: className },
-      '[tag, null, children]'
+      h(tag, null, children)
     );
-  })(_templateObject4, CHAR_WIDTH_EMS, function (props) {
+  })(_templateObject4, CHAR_LENGTH_EMS, function (props) {
     return props.bgcolor;
-  }, CHAR_WIDTH_EMS, function (props) {
+  }, CHAR_LENGTH_EMS, function (props) {
     return props.txtcolor;
   }, function (props) {
     return props.align || 'inherit';
   }, function (props) {
     return props.bgcolor;
-  }, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS);
+  }, CHAR_LENGTH_EMS, CHAR_LENGTH_EMS, CHAR_LENGTH_EMS, CHAR_LENGTH_EMS);
 };
 
 var DOSFormBox = DOSBoxMaker('form');
@@ -9700,7 +9700,7 @@ var InputPanel = function (_Component3) {
   return InputPanel;
 }(Component);
 
-var RootContainer = styled.div(_templateObject6, CHAR_WIDTH_EMS, VGA_BLUE, VGA_WHITE);
+var RootContainer = styled.div(_templateObject6, CHAR_LENGTH_EMS, VGA_BLUE, VGA_WHITE);
 
 var AppContainer = function AppContainer(props) {
 

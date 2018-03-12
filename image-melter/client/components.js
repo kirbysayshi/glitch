@@ -84,7 +84,7 @@ const DOSTextInput = styled.input`
   background-color: transparent;
 `;
 
-const CHAR_WIDTH_EMS = '1.15em';
+const CHAR_LENGTH_EMS = '1.15em';
 
 // https://en.wikipedia.org/wiki/Video_Graphics_Array#Color_palette
 const VGA_BLACK = '#000000';
@@ -107,7 +107,7 @@ const VGA_WHITE = '#ffffff';
 const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
   return (
     <div className={className}>
-      [tag, null, children]
+      {h(tag, null, children)}
     </div>
   )
 })`
@@ -116,12 +116,12 @@ const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
   overflow: hidden;
 
   & > * {
-    padding: ${CHAR_WIDTH_EMS};
+    padding: ${CHAR_LENGTH_EMS};
     background-color: ${props => props.bgcolor};
     display: block;
     position: relative;
     border: 0.12em solid white;
-    margin: ${CHAR_WIDTH_EMS};
+    margin: ${CHAR_LENGTH_EMS};
     color: ${props => props.txtcolor};
     text-align: ${props => props.align || 'inherit'}
   }
@@ -130,10 +130,10 @@ const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
     position: absolute;
     content: '';
     background-color: ${props => props.bgcolor};
-    top: -${CHAR_WIDTH_EMS}; /* Must match margin */
-    right: -${CHAR_WIDTH_EMS};
-    bottom: -${CHAR_WIDTH_EMS};
-    left: -${CHAR_WIDTH_EMS};
+    top: -${CHAR_LENGTH_EMS}; /* Must match margin */
+    right: -${CHAR_LENGTH_EMS};
+    bottom: -${CHAR_LENGTH_EMS};
+    left: -${CHAR_LENGTH_EMS};
     z-index: -1;
   }
 `;
@@ -250,7 +250,7 @@ class InputPanel extends Component {
 }
 
 const RootContainer = styled.div`
-  padding: ${CHAR_WIDTH_EMS};
+  padding: ${CHAR_LENGTH_EMS};
   font-family: 'Less Perfect DOS VGA';
   background-color: ${VGA_BLUE};
   color: ${VGA_WHITE};
