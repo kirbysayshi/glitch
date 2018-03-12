@@ -9797,6 +9797,19 @@ var AppContainer = function AppContainer(props) {
       h(
         'p',
         null,
+        'Made by Drew Petersen. ',
+        h(
+          'a',
+          { href: 'https://twitter.com/kirbysayshi' },
+          'Twitter'
+        ),
+        '. ',
+        h(
+          'a',
+          { href: 'https://github.com/kirbysayshi' },
+          'Github'
+        ),
+        '. ',
         h(
           'a',
           { href: 'https://glitch.com' },

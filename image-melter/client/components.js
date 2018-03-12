@@ -312,7 +312,7 @@ export const AppContainer = (props) => {
 
       <footer>
         <p>
-          <a href="https://glitch.com">Remix this in Glitch</a>
+          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch</a>
         </p>
 
         <dl>
