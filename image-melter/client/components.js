@@ -104,8 +104,14 @@ const VGA_BRIGHT_MAGENTA = '#ff55ff';
 const VGA_YELLOW = '#ffff55';
 const VGA_WHITE = '#ffffff';
 
-const DOSBox = styled.div`
-  > * {
+const DOSBoxWrapper = styled.div(({ children, className }) => {
+  return (
+    <div className={className}>
+    {children}
+    </div>
+  )
+})`
+  & > * {
     padding: ${CHAR_WIDTH_EMS};
     background-color: ${props => props.bgcolor};
     display: block;
@@ -115,7 +121,7 @@ const DOSBox = styled.div`
     color: ${props => props.txtcolor};
   }
 
-  &::after {
+  & > *::after {
     position: absolute;
     content: '';
     background-color: ${props => props.bgcolor};
@@ -126,6 +132,15 @@ const DOSBox = styled.div`
     z-index: -1;
   }
 `;
+
+const DOSBox = ({ children }) => {
+  return (
+    <DOSBoxWrapper>
+      <div>{children}</div>
+    </DOSBoxWrapper>
+  )
+}
+  
 
 const DOSFormBox = DOSBox.withComponent('form');
 const DOSH1Box = DOSBox.withComponent('h1');

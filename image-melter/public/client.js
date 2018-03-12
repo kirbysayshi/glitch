@@ -9442,7 +9442,7 @@ var styled = _styled(StyledComponent, constructWithOptions);
 var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
     _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n']),
     _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
-    _templateObject4 = taggedTemplateLiteral(['\n  > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  &::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  &::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
+    _templateObject4 = taggedTemplateLiteral(['\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
     _templateObject5 = taggedTemplateLiteral(['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
 
 var RenderButton = function (_Component) {
@@ -9529,7 +9529,16 @@ var VGA_BRIGHT_MAGENTA = '#ff55ff';
 var VGA_YELLOW = '#ffff55';
 var VGA_WHITE = '#ffffff';
 
-var DOSBox = styled.div(_templateObject4, CHAR_WIDTH_EMS, function (props) {
+var DOSBoxWrapper = styled.div(function (_ref) {
+  var children = _ref.children,
+      className = _ref.className;
+
+  return h(
+    'div',
+    { className: className },
+    children
+  );
+})(_templateObject4, CHAR_WIDTH_EMS, function (props) {
   return props.bgcolor;
 }, CHAR_WIDTH_EMS, function (props) {
   return props.txtcolor;
@@ -9537,14 +9546,28 @@ var DOSBox = styled.div(_templateObject4, CHAR_WIDTH_EMS, function (props) {
   return props.bgcolor;
 }, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS);
 
+var DOSBox = function DOSBox(_ref2) {
+  var children = _ref2.children;
+
+  return h(
+    DOSBoxWrapper,
+    null,
+    h(
+      'div',
+      null,
+      children
+    )
+  );
+};
+
 var DOSFormBox = DOSBox.withComponent('form');
 var DOSH1Box = DOSBox.withComponent('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
-var DOSImageInputButton = function DOSImageInputButton(_ref) {
-  var text = _ref.text,
-      onFile = _ref.onFile;
+var DOSImageInputButton = function DOSImageInputButton(_ref3) {
+  var text = _ref3.text,
+      onFile = _ref3.onFile;
 
   return h(
     DOSLabel,
@@ -9602,8 +9625,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: numSlices,
-          onChange: function onChange(_ref2) {
-            var value = _ref2.target.value;
+          onChange: function onChange(_ref4) {
+            var value = _ref4.target.value;
             return dispatch({
               type: 'SLICE_COUNT_CHANGE',
               payload: value
@@ -9617,8 +9640,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: initialVelocity,
-          onChange: function onChange(_ref3) {
-            var value = _ref3.target.value;
+          onChange: function onChange(_ref5) {
+            var value = _ref5.target.value;
             return dispatch({
               type: 'INITIAL_VELOCITY_CHANGE',
               payload: value
@@ -9632,8 +9655,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: acceleration,
-          onChange: function onChange(_ref4) {
-            var value = _ref4.target.value;
+          onChange: function onChange(_ref6) {
+            var value = _ref6.target.value;
             return dispatch({
               type: 'ACCELERATION_CHANGE',
               payload: value
@@ -9647,8 +9670,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: maxStartOffset,
-          onChange: function onChange(_ref5) {
-            var value = _ref5.target.value;
+          onChange: function onChange(_ref7) {
+            var value = _ref7.target.value;
             return dispatch({
               type: 'MAX_START_OFFSET_CHANGE',
               payload: value
