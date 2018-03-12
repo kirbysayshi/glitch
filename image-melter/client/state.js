@@ -35,6 +35,13 @@ export const createFrames = () => (dispatch, getState) => {
   // TODO: do some precondition checks here, like if both images
   // have been set. Dispatch errors if not.
   
+  if (!state.cvses || state.cvses.length < 2) {
+    dispatch({
+      error: new Error('You must choose two images')
+    });
+    return;
+  }
+  
   dispatch({ type: 'GIF_START' });
   
   const animState = initAnimState(

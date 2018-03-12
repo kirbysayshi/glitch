@@ -113,6 +113,7 @@ const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
 })`
   position: relative;
   z-index: 0;
+  overflow: hidden;
 
   & > * {
     padding: ${CHAR_WIDTH_EMS};
@@ -122,6 +123,7 @@ const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
     border: 0.12em solid white;
     margin: ${CHAR_WIDTH_EMS};
     color: ${props => props.txtcolor};
+    text-align: ${props => props.align || 'inherit'}
   }
 
   & > *::after {
@@ -138,6 +140,7 @@ const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
 
 const DOSFormBox = DOSBoxMaker('form');
 const DOSH1Box = DOSBoxMaker('h1');
+const DOSDivBox = DOSBoxMaker('div');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -262,7 +265,7 @@ export const AppContainer = (props) => {
   return (
     <RootContainer>
       <header>
-        <DOSH1Box bgcolor={VGA_BRIGHT_RED} txtcolor={VGA_YELLOW}>
+        <DOSH1Box bgcolor={VGA_BRIGHT_RED} txtcolor={VGA_YELLOW} align='center'>
           Welcome to the Most Advanced Special Effect™ of 1993 
         </DOSH1Box>
       </header>
@@ -279,7 +282,13 @@ export const AppContainer = (props) => {
           </p>
         </DOSPlainTextBox>
         <div>
-          {props.app.errors.map(err => <div>err.message</div>)}
+          {props.app.errors.map(err =>
+            <DOSDivBox
+              bgcolor={VGA_RED}
+              txtcolor={VGA_YELLOW}
+              align='center'
+            >{err.message}</DOSDivBox>
+          )}
           <InputPanel {...props} />
           <ElHolder el={props.app.gif} />
           {
