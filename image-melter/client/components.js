@@ -48,7 +48,7 @@ class ElHolder extends Component {
   }
 }
 
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const DOSFileInput = styled.input`
   width: 0.1px;
@@ -104,13 +104,11 @@ const VGA_BRIGHT_MAGENTA = '#ff55ff';
 const VGA_YELLOW = '#ffff55';
 const VGA_WHITE = '#ffffff';
 
-const DOSBoxWrapper = styled.div(({ children, className }) => {
-  return (
-    <div className={className}>
-    {children}
-    </div>
-  )
-})`
+const DOSBoxStyles = css`
+
+  position: relative;
+  z-index: 0;
+
   & > * {
     padding: ${CHAR_WIDTH_EMS};
     background-color: ${props => props.bgcolor};
@@ -133,17 +131,29 @@ const DOSBoxWrapper = styled.div(({ children, className }) => {
   }
 `;
 
-const DOSBox = ({ children }) => {
+const DOSFormBox = styled(({ className, children, ...props }) => {
   return (
-    <DOSBoxWrapper>
-      <div>{children}</div>
-    </DOSBoxWrapper>
+    <div className={className}>
+      <form>{children}</form>
+    </div>
   )
-}
+})`
+  ${DOSBoxStyles}
+`;
+
+// const DOSH1Box = styled(({ className, children, ...props }) => {
+//   return (
+//     <div className={className}>
+//       <h1>{children}</h1>
+//     </div>
+//   )
+// })`
+//   ${DOSBoxStyles}
+// `;
   
 
-const DOSFormBox = DOSBox.withComponent('form');
-const DOSH1Box = DOSBox.withComponent('h1');
+// const DOSFormBox = DOSBox.withComponent('form');
+const DOSH1Box = DOSFormBox.withComponent('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
