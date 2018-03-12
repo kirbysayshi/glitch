@@ -105,13 +105,15 @@ const VGA_YELLOW = '#ffff55';
 const VGA_WHITE = '#ffffff';
 
 const DOSBox = styled.div`
-  padding: ${CHAR_WIDTH_EMS};
-  background-color: ${props => props.bgcolor};
-  display: block;
-  position: relative;
-  border: 0.12em solid white;
-  margin: ${CHAR_WIDTH_EMS};
-  color: ${props => props.txtcolor};
+  > * {
+    padding: ${CHAR_WIDTH_EMS};
+    background-color: ${props => props.bgcolor};
+    display: block;
+    position: relative;
+    border: 0.12em solid white;
+    margin: ${CHAR_WIDTH_EMS};
+    color: ${props => props.txtcolor};
+  }
 
   &::after {
     position: absolute;
