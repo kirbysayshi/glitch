@@ -104,8 +104,13 @@ const VGA_BRIGHT_MAGENTA = '#ff55ff';
 const VGA_YELLOW = '#ffff55';
 const VGA_WHITE = '#ffffff';
 
-const DOSBoxStyles = css`
-
+const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
+  return (
+    <div className={className}>
+      <tag>{children}</tag>
+    </div>
+  )
+})`
   position: relative;
   z-index: 0;
 
@@ -131,29 +136,8 @@ const DOSBoxStyles = css`
   }
 `;
 
-const DOSFormBox = styled(({ className, children, ...props }) => {
-  return (
-    <div className={className}>
-      <form>{children}</form>
-    </div>
-  )
-})`
-  ${DOSBoxStyles}
-`;
-
-// const DOSH1Box = styled(({ className, children, ...props }) => {
-//   return (
-//     <div className={className}>
-//       <h1>{children}</h1>
-//     </div>
-//   )
-// })`
-//   ${DOSBoxStyles}
-// `;
-  
-
-// const DOSFormBox = DOSBox.withComponent('form');
-const DOSH1Box = DOSFormBox.withComponent('h1');
+const DOSFormBox = DOSBoxMaker('form');
+const DOSH1Box = DOSBoxMaker('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -169,6 +153,10 @@ const DOSImageInputButton = ({ text, onFile }) => {
     </DOSLabel>
   )
 }
+
+const DOSPlainTextBox = styled.div`
+  overflow: hidden;
+`;
 
 class InputPanel extends Component {  
   render(props) {
@@ -280,14 +268,16 @@ export const AppContainer = (props) => {
       </header>
 
       <main>
-        <p>DOOM and {' '}
-          <a href={cvurl}>Castlevania: Symphony of the Night</a>{' '}
-          both used a very specific transition effect: the{' '}
-          <a href={smurl}>screen melt</a> or screen wipe.
-        </p>
-        <p>
-          Now, you too can wield this powerful effect!
-        </p>
+        <DOSPlainTextBox>
+          <p>DOOM and {' '}
+            <a href={cvurl}>Castlevania: Symphony of the Night</a>{' '}
+            both used a very specific transition effect: the{' '}
+            <a href={smurl}>screen melt</a> or screen wipe.
+          </p>
+          <p>
+            Now, you too can wield this powerful effect!
+          </p>
+        </DOSPlainTextBox>
         <div>
           {props.app.errors.map(err => <div>err.message</div>)}
           <InputPanel {...props} />

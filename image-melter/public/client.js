@@ -9454,8 +9454,8 @@ var styled = _styled(StyledComponent, constructWithOptions);
 var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n'], ['\n  width: 0.1px;\n  height: 0.1px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;      \n']),
     _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n']),
     _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
-    _templateObject4 = taggedTemplateLiteral(['\n\n  position: relative;\n  z-index: 0;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n\n  position: relative;\n  z-index: 0;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
-    _templateObject5 = taggedTemplateLiteral(['\n  ', '\n'], ['\n  ', '\n']),
+    _templateObject4 = taggedTemplateLiteral(['\n  position: relative;\n  z-index: 0;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  position: relative;\n  z-index: 0;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
+    _templateObject5 = taggedTemplateLiteral(['\n  overflow: hidden;\n'], ['\n  overflow: hidden;\n']),
     _templateObject6 = taggedTemplateLiteral(['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
 
 var RenderButton = function (_Component) {
@@ -9542,43 +9542,32 @@ var VGA_BRIGHT_MAGENTA = '#ff55ff';
 var VGA_YELLOW = '#ffff55';
 var VGA_WHITE = '#ffffff';
 
-var DOSBoxStyles = css(_templateObject4, CHAR_WIDTH_EMS, function (props) {
-  return props.bgcolor;
-}, CHAR_WIDTH_EMS, function (props) {
-  return props.txtcolor;
-}, function (props) {
-  return props.bgcolor;
-}, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS);
+var DOSBoxMaker = function DOSBoxMaker(tag) {
+  return styled(function (_ref) {
+    var className = _ref.className,
+        children = _ref.children,
+        props = objectWithoutProperties(_ref, ['className', 'children']);
 
-var DOSFormBox = styled(function (_ref) {
-  var className = _ref.className,
-      children = _ref.children,
-      props = objectWithoutProperties(_ref, ['className', 'children']);
+    return h(
+      'div',
+      { className: className },
+      h(
+        'tag',
+        null,
+        children
+      )
+    );
+  })(_templateObject4, CHAR_WIDTH_EMS, function (props) {
+    return props.bgcolor;
+  }, CHAR_WIDTH_EMS, function (props) {
+    return props.txtcolor;
+  }, function (props) {
+    return props.bgcolor;
+  }, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS, CHAR_WIDTH_EMS);
+};
 
-  return h(
-    'div',
-    { className: className },
-    h(
-      'form',
-      null,
-      children
-    )
-  );
-})(_templateObject5, DOSBoxStyles);
-
-// const DOSH1Box = styled(({ className, children, ...props }) => {
-//   return (
-//     <div className={className}>
-//       <h1>{children}</h1>
-//     </div>
-//   )
-// })`
-//   ${DOSBoxStyles}
-// `;
-
-
-// const DOSFormBox = DOSBox.withComponent('form');
-var DOSH1Box = DOSFormBox.withComponent('h1');
+var DOSFormBox = DOSBoxMaker('form');
+var DOSH1Box = DOSBoxMaker('h1');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
@@ -9599,6 +9588,8 @@ var DOSImageInputButton = function DOSImageInputButton(_ref2) {
     })
   );
 };
+
+var DOSPlainTextBox = styled.div(_templateObject5);
 
 var InputPanel = function (_Component3) {
   inherits(InputPanel, _Component3);
@@ -9724,29 +9715,33 @@ var AppContainer = function AppContainer(props) {
       'main',
       null,
       h(
-        'p',
+        DOSPlainTextBox,
         null,
-        'DOOM and ',
-        ' ',
         h(
-          'a',
-          { href: cvurl },
-          'Castlevania: Symphony of the Night'
+          'p',
+          null,
+          'DOOM and ',
+          ' ',
+          h(
+            'a',
+            { href: cvurl },
+            'Castlevania: Symphony of the Night'
+          ),
+          ' ',
+          'both used a very specific transition effect: the',
+          ' ',
+          h(
+            'a',
+            { href: smurl },
+            'screen melt'
+          ),
+          ' or screen wipe.'
         ),
-        ' ',
-        'both used a very specific transition effect: the',
-        ' ',
         h(
-          'a',
-          { href: smurl },
-          'screen melt'
-        ),
-        ' or screen wipe.'
-      ),
-      h(
-        'p',
-        null,
-        'Now, you too can wield this powerful effect!'
+          'p',
+          null,
+          'Now, you too can wield this powerful effect!'
+        )
       ),
       h(
         'div',
