@@ -193,6 +193,7 @@ export function reduceState(action, state=defaultState) {
     action.payload.img.style.width = '100%';
     return {
       ...state,
+      errors: [],
       rendering: false,
       gif: action.payload.img,
       gifBlob: action.payload.blob,

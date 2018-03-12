@@ -107,7 +107,7 @@ const VGA_WHITE = '#ffffff';
 const DOSBoxMaker = (tag) => styled(({ className, children, ...props }) => {
   return (
     <div className={className}>
-      <tag>{children}</tag>
+      [tag, null, children]
     </div>
   )
 })`
@@ -259,20 +259,24 @@ const RootContainer = styled.div`
 
 export const AppContainer = (props) => {
   
-  const cvurl = 'https://www.youtube.com/watch?v=4Xe6leSt_dU';
+  const cvurl = 'https://youtu.be/4Xe6leSt_dU?t=8';
   const smurl = 'http://doom.wikia.com/wiki/Screen_melt';
   
   return (
     <RootContainer>
       <header>
-        <DOSH1Box bgcolor={VGA_BRIGHT_RED} txtcolor={VGA_YELLOW} align='center'>
+        <DOSH1Box
+          bgcolor={VGA_BRIGHT_RED}
+          txtcolor={VGA_YELLOW}
+          align='center'
+        >
           Welcome to the Most Advanced Special Effect™ of 1993 
         </DOSH1Box>
       </header>
 
       <main>
         <DOSPlainTextBox>
-          <p>DOOM and {' '}
+          <p><a href={smurl}>DOOM</a> and {' '}
             <a href={cvurl}>Castlevania: Symphony of the Night</a>{' '}
             both used a very specific transition effect: the{' '}
             <a href={smurl}>screen melt</a> or screen wipe.
@@ -319,6 +323,7 @@ export const AppContainer = (props) => {
           <dd>https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery</dd>
 
           <dt>Learning Resources</dt>
+          <dd>https://en.wikipedia.org/wiki/VGA-compatible_text_mode</dd>
           <dd>https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/</dd>
 
           <dt>Technologies/Libraries Used</dt>

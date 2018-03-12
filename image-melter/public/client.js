@@ -4164,6 +4164,7 @@ function reduceState(action) {
     // TODO: remove this once styling is more coherent
     action.payload.img.style.width = '100%';
     return _extends({}, state, {
+      errors: [],
       rendering: false,
       gif: action.payload.img,
       gifBlob: action.payload.blob
@@ -9559,11 +9560,7 @@ var DOSBoxMaker = function DOSBoxMaker(tag) {
     return h(
       'div',
       { className: className },
-      h(
-        'tag',
-        null,
-        children
-      )
+      '[tag, null, children]'
     );
   })(_templateObject4, CHAR_WIDTH_EMS, function (props) {
     return props.bgcolor;
@@ -9707,7 +9704,7 @@ var RootContainer = styled.div(_templateObject6, CHAR_WIDTH_EMS, VGA_BLUE, VGA_W
 
 var AppContainer = function AppContainer(props) {
 
-  var cvurl = 'https://www.youtube.com/watch?v=4Xe6leSt_dU';
+  var cvurl = 'https://youtu.be/4Xe6leSt_dU?t=8';
   var smurl = 'http://doom.wikia.com/wiki/Screen_melt';
 
   return h(
@@ -9718,7 +9715,11 @@ var AppContainer = function AppContainer(props) {
       null,
       h(
         DOSH1Box,
-        { bgcolor: VGA_BRIGHT_RED, txtcolor: VGA_YELLOW, align: 'center' },
+        {
+          bgcolor: VGA_BRIGHT_RED,
+          txtcolor: VGA_YELLOW,
+          align: 'center'
+        },
         'Welcome to the Most Advanced Special Effect\u2122 of 1993'
       )
     ),
@@ -9731,7 +9732,12 @@ var AppContainer = function AppContainer(props) {
         h(
           'p',
           null,
-          'DOOM and ',
+          h(
+            'a',
+            { href: smurl },
+            'DOOM'
+          ),
+          ' and ',
           ' ',
           h(
             'a',
@@ -9829,6 +9835,11 @@ var AppContainer = function AppContainer(props) {
           'dt',
           null,
           'Learning Resources'
+        ),
+        h(
+          'dd',
+          null,
+          'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
         ),
         h(
           'dd',
