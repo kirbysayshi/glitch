@@ -9768,6 +9768,8 @@ var FooterContent = function (_Component5) {
         );
       }
 
+      var glitchUrl = 'https://glitch.com/edit/#!/remix/image-melter';
+
       return h(
         'footer',
         null,
@@ -9794,7 +9796,7 @@ var FooterContent = function (_Component5) {
           '. ',
           h(
             'a',
-            { href: 'https://glitch.com' },
+            { href: glitchUrl },
             'Remix this in Glitch!'
           )
         ),
@@ -9806,41 +9808,33 @@ var FooterContent = function (_Component5) {
             null,
             'Interface Inspiration'
           ),
-          h(
-            'dd',
-            null,
-            'https://www.vogons.org/viewtopic.php?t=16974'
-          ),
-          h(
-            'dd',
-            null,
-            'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter'
-          ),
-          h(
-            'dd',
-            null,
-            'https://github.com/davemandy/sneakers-effect'
-          ),
-          h(
-            'dd',
-            null,
-            'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'
-          ),
+          ['https://www.vogons.org/viewtopic.php?t=16974', 'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter', 'https://github.com/davemandy/sneakers-effect', 'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'].map(function (link) {
+            return h(
+              'dd',
+              null,
+              h(
+                'a',
+                { href: link },
+                link
+              )
+            );
+          }),
           h(
             'dt',
             null,
             'Learning Resources'
           ),
-          h(
-            'dd',
-            null,
-            'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
-          ),
-          h(
-            'dd',
-            null,
-            'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'
-          ),
+          ['https://en.wikipedia.org/wiki/VGA-compatible_text_mode', 'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'].map(function (link) {
+            return h(
+              'dd',
+              null,
+              h(
+                'a',
+                { href: link },
+                link
+              )
+            );
+          }),
           h(
             'dt',
             null,
@@ -9849,17 +9843,11 @@ var FooterContent = function (_Component5) {
           h(
             'dd',
             null,
-            'https://preactjs.com/'
-          ),
-          h(
-            'dd',
-            null,
-            'http://rollupjs.org/'
-          ),
-          h(
-            'dd',
-            null,
-            'https://www.styled-components.com'
+            h(
+              'a',
+              { href: glitchUrl },
+              'Check out this code in Glitch to see the package.json'
+            )
           ),
           h(
             'dt',

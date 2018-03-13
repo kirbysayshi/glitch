@@ -296,29 +296,33 @@ class FooterContent extends Component {
       )  
     }
     
+    const glitchUrl = 'https://glitch.com/edit/#!/remix/image-melter';
+    
     return (
       <footer>
         <p>This effect is somewhat difficult to achieve today. When DOOM was released in 1993, the common supported resolution was 320x200 pixels. The engine itself manipulated each pixel on the screen. But today, we rely on GPUs to composite graphics at the polygon and texture levels: there are too many pixels on the screen to compute each on the CPU sequentially! While this effect can be accomplished in WebGL, you probably can't save it and share it with your friends! Thus, wait a minute and render to a technology almost as old as DOOM itself: the animated GIF.</p>
       
         <p>
-          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch!</a>
+          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href={glitchUrl}>Remix this in Glitch!</a>
         </p>
 
         <dl>
           <dt>Interface Inspiration</dt>
-          <dd>https://www.vogons.org/viewtopic.php?t=16974</dd>
-          <dd>https://archive.org/details/CommanderKeen6AliensAteMyBabySitter</dd>
-          <dd>https://github.com/davemandy/sneakers-effect</dd>
-          <dd>https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery</dd>
+          {[
+            'https://www.vogons.org/viewtopic.php?t=16974',
+            'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter',
+            'https://github.com/davemandy/sneakers-effect',
+            'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery',
+          ].map(link => <dd><a href={link}>{link}</a></dd>)}
 
           <dt>Learning Resources</dt>
-          <dd>https://en.wikipedia.org/wiki/VGA-compatible_text_mode</dd>
-          <dd>https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/</dd>
+          {[
+            'https://en.wikipedia.org/wiki/VGA-compatible_text_mode',
+            'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/',
+          ].map(link => <dd><a href={link}>{link}</a></dd>)}
 
           <dt>Technologies/Libraries Used</dt>
-          <dd>https://preactjs.com/</dd>
-          <dd>http://rollupjs.org/</dd>
-          <dd>https://www.styled-components.com</dd>
+          <dd><a href={glitchUrl}>Check out this code in Glitch to see the package.json</a></dd>
 
           <dt>Assets</dt>
           <dd><a href="http://laemeur.sdf.org/fonts/">"Less Perfect DOS VGA" font via LAEMEUR</a></dd>
