@@ -9463,8 +9463,9 @@ var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px
     _templateObject2 = taggedTemplateLiteral(['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n'], ['\n  display: block;\n  overflow: hidden;\n  margin-bottom: 10px;\n  padding: 5px;\n  width: 100%;\n  //border: 1px solid lightgrey;\n  border-radius: 0px;\n  //font-size: 16px;\n  background-color: transparent;\n  color: inherit;\n']),
     _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
     _templateObject4 = taggedTemplateLiteral(['\n  position: relative;\n  z-index: 0;\n  overflow: hidden;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n    text-align: ', '\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  position: relative;\n  z-index: 0;\n  overflow: hidden;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n    text-align: ', '\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
-    _templateObject5 = taggedTemplateLiteral(['\n  overflow: hidden;\n'], ['\n  overflow: hidden;\n']),
-    _templateObject6 = taggedTemplateLiteral(['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
+    _templateObject5 = taggedTemplateLiteral(['\n  &:hover {\n    cursor: pointer;\n  }\n'], ['\n  &:hover {\n    cursor: pointer;\n  }\n']),
+    _templateObject6 = taggedTemplateLiteral(['\n  overflow: hidden;\n'], ['\n  overflow: hidden;\n']),
+    _templateObject7 = taggedTemplateLiteral(['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
 
 var RenderButton = function (_Component) {
   inherits(RenderButton, _Component);
@@ -9579,25 +9580,55 @@ var DOSDivBox = DOSBoxMaker('div');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
-var DOSImageInputButton = function DOSImageInputButton(_ref2) {
-  var text = _ref2.text,
-      onFile = _ref2.onFile;
+// const DOSImageInputButton = styled(({ text, onFile, className }) => {
+//   return (
+//     <DOSLabel className={className}>
+//       { text }
+//       <DOSFileInput
+//         type='file'
+//         accept='image/*'
+//         onChange={e => onFile(e.target.files[0])}
+//       />
+//     </DOSLabel>
+//   )
+// })`
+//   &:hover {
+//     cursor: pointer;
+//   }
+// `;
 
-  return h(
-    DOSLabel,
-    null,
-    text,
-    h(DOSFileInput, {
-      type: 'file',
-      accept: 'image/*',
-      onChange: function onChange(e) {
-        return onFile(e.target.files[0]);
-      }
-    })
-  );
-};
+var DOSImageInputButton2 = styled(function () {
+  function _class2() {
+    classCallCheck(this, _class2);
+    this.state = {};
+  }
 
-var DOSPlainTextBox = styled.div(_templateObject5);
+  createClass(_class2, [{
+    key: 'render',
+    value: function render$$1() {
+      var _props = this.props,
+          className = _props.className,
+          text = _props.text,
+          onFile = _props.onFile;
+
+      return h(
+        DOSLabel,
+        { className: className },
+        text,
+        h(DOSFileInput, {
+          type: 'file',
+          accept: 'image/*',
+          onChange: function onChange(e) {
+            return onFile(e.target.files[0]);
+          }
+        })
+      );
+    }
+  }]);
+  return _class2;
+}())(_templateObject5);
+
+var DOSPlainTextBox = styled.div(_templateObject6);
 
 var InputPanel = function (_Component3) {
   inherits(InputPanel, _Component3);
@@ -9618,7 +9649,7 @@ var InputPanel = function (_Component3) {
           maxStartOffset = _props$app.maxStartOffset,
           gif = _props$app.gif;
 
-      return h(DOSFormBox, { bgcolor: VGA_BRIGHT_MAGENTA, txtcolor: VGA_WHITE }, [h(DOSImageInputButton, {
+      return h(DOSFormBox, { bgcolor: VGA_BRIGHT_MAGENTA, txtcolor: VGA_WHITE }, [h(DOSImageInputButton2, {
         text: 'Choose Background Image',
         onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
@@ -9626,7 +9657,7 @@ var InputPanel = function (_Component3) {
             dispatch({ type: 'IMAGE_LOAD', payload: { cvs: cvs, layer: 'background' } });
           });
         }
-      }), h(DOSImageInputButton, {
+      }), h(DOSImageInputButton2, {
         text: 'Choose Foreground Image',
         onFile: function onFile(file) {
           fileToRotatedCanvas(file, function (err, cvs) {
@@ -9641,8 +9672,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: numSlices,
-          onChange: function onChange(_ref3) {
-            var value = _ref3.target.value;
+          onChange: function onChange(_ref2) {
+            var value = _ref2.target.value;
             return dispatch({
               type: 'SLICE_COUNT_CHANGE',
               payload: value
@@ -9656,8 +9687,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: initialVelocity,
-          onChange: function onChange(_ref4) {
-            var value = _ref4.target.value;
+          onChange: function onChange(_ref3) {
+            var value = _ref3.target.value;
             return dispatch({
               type: 'INITIAL_VELOCITY_CHANGE',
               payload: value
@@ -9671,8 +9702,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: acceleration,
-          onChange: function onChange(_ref5) {
-            var value = _ref5.target.value;
+          onChange: function onChange(_ref4) {
+            var value = _ref4.target.value;
             return dispatch({
               type: 'ACCELERATION_CHANGE',
               payload: value
@@ -9686,8 +9717,8 @@ var InputPanel = function (_Component3) {
         h(DOSTextInput, {
           inputmode: 'numeric',
           value: maxStartOffset,
-          onChange: function onChange(_ref6) {
-            var value = _ref6.target.value;
+          onChange: function onChange(_ref5) {
+            var value = _ref5.target.value;
             return dispatch({
               type: 'MAX_START_OFFSET_CHANGE',
               payload: value
@@ -9700,7 +9731,7 @@ var InputPanel = function (_Component3) {
   return InputPanel;
 }(Component);
 
-var RootContainer = styled.div(_templateObject6, CHAR_LENGTH_EMS, VGA_BLUE, VGA_WHITE);
+var RootContainer = styled.div(_templateObject7, CHAR_LENGTH_EMS, VGA_BLUE, VGA_WHITE);
 
 var AppContainer = function AppContainer(props) {
 

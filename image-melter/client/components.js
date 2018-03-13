@@ -144,18 +144,47 @@ const DOSDivBox = DOSBoxMaker('div');
 
 // TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
-const DOSImageInputButton = ({ text, onFile }) => {
-  return (
-    <DOSLabel>
-      { text }
-      <DOSFileInput
-        type='file'
-        accept='image/*'
-        onChange={e => onFile(e.target.files[0])}
-      />
-    </DOSLabel>
-  )
-}
+// const DOSImageInputButton = styled(({ text, onFile, className }) => {
+//   return (
+//     <DOSLabel className={className}>
+//       { text }
+//       <DOSFileInput
+//         type='file'
+//         accept='image/*'
+//         onChange={e => onFile(e.target.files[0])}
+//       />
+//     </DOSLabel>
+//   )
+// })`
+//   &:hover {
+//     cursor: pointer;
+//   }
+// `;
+
+const DOSImageInputButton2 = styled(class extends Component {
+  
+  constructor() {
+    
+  }
+  
+  render() {
+    const { className, text, onFile } = this.props;
+    return (
+      <DOSLabel className={className}>
+        { text }
+        <DOSFileInput
+          type='file'
+          accept='image/*'
+          onChange={e => onFile(e.target.files[0])}
+        />
+      </DOSLabel>
+    )
+  }
+})`
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 const DOSPlainTextBox = styled.div`
   overflow: hidden;
@@ -175,7 +204,7 @@ class InputPanel extends Component {
     } = props;
     return h(DOSFormBox, { bgcolor: VGA_BRIGHT_MAGENTA, txtcolor: VGA_WHITE }, [
       
-      <DOSImageInputButton
+      <DOSImageInputButton2
         text='Choose Background Image'
         onFile={file => {
           fileToRotatedCanvas(file, (err, cvs) => {
@@ -185,7 +214,7 @@ class InputPanel extends Component {
         }}
       />,
       
-      <DOSImageInputButton
+      <DOSImageInputButton2
         text='Choose Foreground Image'
         onFile={file => {
           fileToRotatedCanvas(file, (err, cvs) => {
