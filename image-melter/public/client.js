@@ -9731,112 +9731,156 @@ var InputPanel = function (_Component4) {
   return InputPanel;
 }(Component);
 
-var FooterContent = function FooterContent() {
-  return h(
-    'footer',
-    null,
-    h(
-      'p',
-      null,
-      'Made by Drew Petersen. ',
-      h(
-        'a',
-        { href: 'https://twitter.com/kirbysayshi' },
-        'Twitter'
-      ),
-      '. ',
-      h(
-        'a',
-        { href: 'https://github.com/kirbysayshi' },
-        'Github'
-      ),
-      '. ',
-      h(
-        'a',
-        { href: 'https://glitch.com' },
-        'Remix this in Glitch!'
-      )
-    ),
-    h(
-      'dl',
-      null,
-      h(
-        'dt',
-        null,
-        'Interface Inspiration'
-      ),
-      h(
-        'dd',
-        null,
-        'https://www.vogons.org/viewtopic.php?t=16974'
-      ),
-      h(
-        'dd',
-        null,
-        'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter'
-      ),
-      h(
-        'dd',
-        null,
-        'https://github.com/davemandy/sneakers-effect'
-      ),
-      h(
-        'dd',
-        null,
-        'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'
-      ),
-      h(
-        'dt',
-        null,
-        'Learning Resources'
-      ),
-      h(
-        'dd',
-        null,
-        'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
-      ),
-      h(
-        'dd',
-        null,
-        'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'
-      ),
-      h(
-        'dt',
-        null,
-        'Technologies/Libraries Used'
-      ),
-      h(
-        'dd',
-        null,
-        'https://preactjs.com/'
-      ),
-      h(
-        'dd',
-        null,
-        'http://rollupjs.org/'
-      ),
-      h(
-        'dd',
-        null,
-        'https://www.styled-components.com'
-      ),
-      h(
-        'dt',
-        null,
-        'Assets'
-      ),
-      h(
-        'dd',
+var FooterContent = function (_Component5) {
+  inherits(FooterContent, _Component5);
+
+  function FooterContent(props) {
+    classCallCheck(this, FooterContent);
+
+    var _this6 = possibleConstructorReturn(this, (FooterContent.__proto__ || Object.getPrototypeOf(FooterContent)).call(this, props));
+
+    _this6.state = { collapsed: true };
+    return _this6;
+  }
+
+  createClass(FooterContent, [{
+    key: 'render',
+    value: function render$$1() {
+      var _this7 = this;
+
+      if (this.state.collapsed) {
+        return h(
+          'footer',
+          null,
+          h(
+            'p',
+            null,
+            h(
+              'a',
+              { href: '#', onClick: function onClick(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  _this7.setState({ collapsed: false });
+                } },
+              'BUT WHYYYYY'
+            )
+          )
+        );
+      }
+
+      return h(
+        'footer',
         null,
         h(
-          'a',
-          { href: 'http://laemeur.sdf.org/fonts/' },
-          '"Less Perfect DOS VGA" font via LAEMEUR'
+          'p',
+          null,
+          'This effect is somewhat difficult to achieve today. When DOOM was released in 1993, the common supported resolution was 320x200 pixels. The engine itself manipulated each pixel on the screen. But today, we rely on GPUs to composite graphics at the polygon and texture levels: there are too many pixels on the screen to compute each on the CPU sequentially! While this effect can be accomplished in WebGL, you probably can\'t save it and share it with your friends! Thus, wait a minute and render to a technology almost as old as DOOM itself: the animated GIF.'
+        ),
+        h(
+          'p',
+          null,
+          'Made by Drew Petersen. ',
+          h(
+            'a',
+            { href: 'https://twitter.com/kirbysayshi' },
+            'Twitter'
+          ),
+          '. ',
+          h(
+            'a',
+            { href: 'https://github.com/kirbysayshi' },
+            'Github'
+          ),
+          '. ',
+          h(
+            'a',
+            { href: 'https://glitch.com' },
+            'Remix this in Glitch!'
+          )
+        ),
+        h(
+          'dl',
+          null,
+          h(
+            'dt',
+            null,
+            'Interface Inspiration'
+          ),
+          h(
+            'dd',
+            null,
+            'https://www.vogons.org/viewtopic.php?t=16974'
+          ),
+          h(
+            'dd',
+            null,
+            'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter'
+          ),
+          h(
+            'dd',
+            null,
+            'https://github.com/davemandy/sneakers-effect'
+          ),
+          h(
+            'dd',
+            null,
+            'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'
+          ),
+          h(
+            'dt',
+            null,
+            'Learning Resources'
+          ),
+          h(
+            'dd',
+            null,
+            'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
+          ),
+          h(
+            'dd',
+            null,
+            'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'
+          ),
+          h(
+            'dt',
+            null,
+            'Technologies/Libraries Used'
+          ),
+          h(
+            'dd',
+            null,
+            'https://preactjs.com/'
+          ),
+          h(
+            'dd',
+            null,
+            'http://rollupjs.org/'
+          ),
+          h(
+            'dd',
+            null,
+            'https://www.styled-components.com'
+          ),
+          h(
+            'dt',
+            null,
+            'Assets'
+          ),
+          h(
+            'dd',
+            null,
+            h(
+              'a',
+              { href: 'http://laemeur.sdf.org/fonts/' },
+              '"Less Perfect DOS VGA" font via LAEMEUR'
+            )
+          )
         )
-      )
-    )
-  );
-};
+      );
+    }
+  }]);
+  return FooterContent;
+}(Component);
 
 var RootContainer = styled.div(_templateObject7, CHAR_LENGTH_EMS, VGA_BLUE, VGA_WHITE);
 

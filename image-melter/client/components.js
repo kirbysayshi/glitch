@@ -285,13 +285,21 @@ class FooterContent extends Component {
     if (this.state.collapsed) {
       return (
         <footer>
-          <a h
+          <p>
+            <a href="#" onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.setState({ collapsed: false });
+            }}>BUT WHYYYYY</a>
+          </p>
         </footer>
       )  
     }
     
     return (
       <footer>
+        <p>This effect is somewhat difficult to achieve today. When DOOM was released in 1993, the common supported resolution was 320x200 pixels. The engine itself manipulated each pixel on the screen. But today, we rely on GPUs to composite graphics at the polygon and texture levels: there are too many pixels on the screen to compute each on the CPU sequentially! While this effect can be accomplished in WebGL, you probably can't save it and share it with your friends! Thus, wait a minute and render to a technology almost as old as DOOM itself: the animated GIF.</p>
+      
         <p>
           Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch!</a>
         </p>
