@@ -142,41 +142,36 @@ const DOSFormBox = DOSBoxMaker('form');
 const DOSH1Box = DOSBoxMaker('h1');
 const DOSDivBox = DOSBoxMaker('div');
 
-// TODO: make this stateful so it can display the selected file name
-// TODO: drag n drop is now broken by hiding the input! How to fix???
-// const DOSImageInputButton = styled(({ text, onFile, className }) => {
-//   return (
-//     <DOSLabel className={className}>
-//       { text }
-//       <DOSFileInput
-//         type='file'
-//         accept='image/*'
-//         onChange={e => onFile(e.target.files[0])}
-//       />
-//     </DOSLabel>
-//   )
-// })`
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `;
 
+// TODO: drag n drop is now broken by hiding the input! How to fix???
 const DOSImageInputButton2 = styled(class extends Component {
   
-  constructor() {
-    
+  constructor(props) {
+    super(props);
+    this.state = {
+      fileName: null,
+    };
   }
   
   render() {
     const { className, text, onFile } = this.props;
+    const { fileName } = this.state;
     return (
       <DOSLabel className={className}>
         { text }
         <DOSFileInput
           type='file'
           accept='image/*'
-          onChange={e => onFile(e.target.files[0])}
+          onChange={e => {
+            const file = e.target.files[0];
+            this.setState({ fileName: file.name });
+            onFile(file);
+          }}
         />
+        {
+          fileName &&
+          <span style={{ float: 'right' }}>{fileName}</span>
+        }
       </DOSLabel>
     )
   }
@@ -278,6 +273,53 @@ class InputPanel extends Component {
   }
 }
 
+class FooterContent extends Component {
+  
+  constructor (props) {
+    super(props);
+    this.state = { collapsed: true }
+  }
+  
+  render () {
+    
+    if (this.state.collapsed) {
+      return (
+        <footer>
+          <a h
+        </footer>
+      )  
+    }
+    
+    return (
+      <footer>
+        <p>
+          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch!</a>
+        </p>
+
+        <dl>
+          <dt>Interface Inspiration</dt>
+          <dd>https://www.vogons.org/viewtopic.php?t=16974</dd>
+          <dd>https://archive.org/details/CommanderKeen6AliensAteMyBabySitter</dd>
+          <dd>https://github.com/davemandy/sneakers-effect</dd>
+          <dd>https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery</dd>
+
+          <dt>Learning Resources</dt>
+          <dd>https://en.wikipedia.org/wiki/VGA-compatible_text_mode</dd>
+          <dd>https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/</dd>
+
+          <dt>Technologies/Libraries Used</dt>
+          <dd>https://preactjs.com/</dd>
+          <dd>http://rollupjs.org/</dd>
+          <dd>https://www.styled-components.com</dd>
+
+          <dt>Assets</dt>
+          <dd><a href="http://laemeur.sdf.org/fonts/">"Less Perfect DOS VGA" font via LAEMEUR</a></dd>
+        </dl>
+      </footer>
+    )
+  }
+}
+
 const RootContainer = styled.div`
   min-height: 100vh;
   padding: ${CHAR_LENGTH_EMS};
@@ -340,31 +382,7 @@ export const AppContainer = (props) => {
         </div>
       </main>
 
-      <footer>
-        <p>
-          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch!</a>
-        </p>
-
-        <dl>
-          <dt>Interface Inspiration</dt>
-          <dd>https://www.vogons.org/viewtopic.php?t=16974</dd>
-          <dd>https://archive.org/details/CommanderKeen6AliensAteMyBabySitter</dd>
-          <dd>https://github.com/davemandy/sneakers-effect</dd>
-          <dd>https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery</dd>
-
-          <dt>Learning Resources</dt>
-          <dd>https://en.wikipedia.org/wiki/VGA-compatible_text_mode</dd>
-          <dd>https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/</dd>
-
-          <dt>Technologies/Libraries Used</dt>
-          <dd>https://preactjs.com/</dd>
-          <dd>http://rollupjs.org/</dd>
-          <dd>https://www.styled-components.com</dd>
-
-          <dt>Assets</dt>
-          <dd><a href="http://laemeur.sdf.org/fonts/">"Less Perfect DOS VGA" font via LAEMEUR</a></dd>
-        </dl>
-      </footer>
+      <FooterContent />
     </RootContainer>
   )
 }

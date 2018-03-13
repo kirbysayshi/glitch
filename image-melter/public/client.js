@@ -9578,38 +9578,31 @@ var DOSFormBox = DOSBoxMaker('form');
 var DOSH1Box = DOSBoxMaker('h1');
 var DOSDivBox = DOSBoxMaker('div');
 
-// TODO: make this stateful so it can display the selected file name
 // TODO: drag n drop is now broken by hiding the input! How to fix???
-// const DOSImageInputButton = styled(({ text, onFile, className }) => {
-//   return (
-//     <DOSLabel className={className}>
-//       { text }
-//       <DOSFileInput
-//         type='file'
-//         accept='image/*'
-//         onChange={e => onFile(e.target.files[0])}
-//       />
-//     </DOSLabel>
-//   )
-// })`
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `;
+var DOSImageInputButton2 = styled(function (_Component3) {
+  inherits(_class, _Component3);
 
-var DOSImageInputButton2 = styled(function () {
-  function _class2() {
-    classCallCheck(this, _class2);
-    this.state = {};
+  function _class(props) {
+    classCallCheck(this, _class);
+
+    var _this3 = possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
+
+    _this3.state = {
+      fileName: null
+    };
+    return _this3;
   }
 
-  createClass(_class2, [{
+  createClass(_class, [{
     key: 'render',
     value: function render$$1() {
+      var _this4 = this;
+
       var _props = this.props,
           className = _props.className,
           text = _props.text,
           onFile = _props.onFile;
+      var fileName = this.state.fileName;
 
       return h(
         DOSLabel,
@@ -9619,19 +9612,26 @@ var DOSImageInputButton2 = styled(function () {
           type: 'file',
           accept: 'image/*',
           onChange: function onChange(e) {
-            return onFile(e.target.files[0]);
+            var file = e.target.files[0];
+            _this4.setState({ fileName: file.name });
+            onFile(file);
           }
-        })
+        }),
+        fileName && h(
+          'span',
+          { style: { float: 'right' } },
+          fileName
+        )
       );
     }
   }]);
-  return _class2;
-}())(_templateObject5);
+  return _class;
+}(Component))(_templateObject5);
 
 var DOSPlainTextBox = styled.div(_templateObject6);
 
-var InputPanel = function (_Component3) {
-  inherits(InputPanel, _Component3);
+var InputPanel = function (_Component4) {
+  inherits(InputPanel, _Component4);
 
   function InputPanel() {
     classCallCheck(this, InputPanel);
@@ -9731,6 +9731,113 @@ var InputPanel = function (_Component3) {
   return InputPanel;
 }(Component);
 
+var FooterContent = function FooterContent() {
+  return h(
+    'footer',
+    null,
+    h(
+      'p',
+      null,
+      'Made by Drew Petersen. ',
+      h(
+        'a',
+        { href: 'https://twitter.com/kirbysayshi' },
+        'Twitter'
+      ),
+      '. ',
+      h(
+        'a',
+        { href: 'https://github.com/kirbysayshi' },
+        'Github'
+      ),
+      '. ',
+      h(
+        'a',
+        { href: 'https://glitch.com' },
+        'Remix this in Glitch!'
+      )
+    ),
+    h(
+      'dl',
+      null,
+      h(
+        'dt',
+        null,
+        'Interface Inspiration'
+      ),
+      h(
+        'dd',
+        null,
+        'https://www.vogons.org/viewtopic.php?t=16974'
+      ),
+      h(
+        'dd',
+        null,
+        'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter'
+      ),
+      h(
+        'dd',
+        null,
+        'https://github.com/davemandy/sneakers-effect'
+      ),
+      h(
+        'dd',
+        null,
+        'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'
+      ),
+      h(
+        'dt',
+        null,
+        'Learning Resources'
+      ),
+      h(
+        'dd',
+        null,
+        'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
+      ),
+      h(
+        'dd',
+        null,
+        'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'
+      ),
+      h(
+        'dt',
+        null,
+        'Technologies/Libraries Used'
+      ),
+      h(
+        'dd',
+        null,
+        'https://preactjs.com/'
+      ),
+      h(
+        'dd',
+        null,
+        'http://rollupjs.org/'
+      ),
+      h(
+        'dd',
+        null,
+        'https://www.styled-components.com'
+      ),
+      h(
+        'dt',
+        null,
+        'Assets'
+      ),
+      h(
+        'dd',
+        null,
+        h(
+          'a',
+          { href: 'http://laemeur.sdf.org/fonts/' },
+          '"Less Perfect DOS VGA" font via LAEMEUR'
+        )
+      )
+    )
+  );
+};
+
 var RootContainer = styled.div(_templateObject7, CHAR_LENGTH_EMS, VGA_BLUE, VGA_WHITE);
 
 var AppContainer = function AppContainer(props) {
@@ -9822,110 +9929,7 @@ var AppContainer = function AppContainer(props) {
         )
       )
     ),
-    h(
-      'footer',
-      null,
-      h(
-        'p',
-        null,
-        'Made by Drew Petersen. ',
-        h(
-          'a',
-          { href: 'https://twitter.com/kirbysayshi' },
-          'Twitter'
-        ),
-        '. ',
-        h(
-          'a',
-          { href: 'https://github.com/kirbysayshi' },
-          'Github'
-        ),
-        '. ',
-        h(
-          'a',
-          { href: 'https://glitch.com' },
-          'Remix this in Glitch!'
-        )
-      ),
-      h(
-        'dl',
-        null,
-        h(
-          'dt',
-          null,
-          'Interface Inspiration'
-        ),
-        h(
-          'dd',
-          null,
-          'https://www.vogons.org/viewtopic.php?t=16974'
-        ),
-        h(
-          'dd',
-          null,
-          'https://archive.org/details/CommanderKeen6AliensAteMyBabySitter'
-        ),
-        h(
-          'dd',
-          null,
-          'https://github.com/davemandy/sneakers-effect'
-        ),
-        h(
-          'dd',
-          null,
-          'https://github.com/kristopolous/BOOTSTRA.386/wiki/Gallery'
-        ),
-        h(
-          'dt',
-          null,
-          'Learning Resources'
-        ),
-        h(
-          'dd',
-          null,
-          'https://en.wikipedia.org/wiki/VGA-compatible_text_mode'
-        ),
-        h(
-          'dd',
-          null,
-          'https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/'
-        ),
-        h(
-          'dt',
-          null,
-          'Technologies/Libraries Used'
-        ),
-        h(
-          'dd',
-          null,
-          'https://preactjs.com/'
-        ),
-        h(
-          'dd',
-          null,
-          'http://rollupjs.org/'
-        ),
-        h(
-          'dd',
-          null,
-          'https://www.styled-components.com'
-        ),
-        h(
-          'dt',
-          null,
-          'Assets'
-        ),
-        h(
-          'dd',
-          null,
-          h(
-            'a',
-            { href: 'http://laemeur.sdf.org/fonts/' },
-            '"Less Perfect DOS VGA" font via LAEMEUR'
-          )
-        )
-      )
-    )
+    h(FooterContent, null)
   );
 };
 
