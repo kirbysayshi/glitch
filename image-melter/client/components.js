@@ -250,6 +250,7 @@ class InputPanel extends Component {
 }
 
 const RootContainer = styled.div`
+  min-height: 100vh;
   padding: ${CHAR_LENGTH_EMS};
   font-family: 'Less Perfect DOS VGA';
   background-color: ${VGA_BLUE};
@@ -312,7 +313,7 @@ export const AppContainer = (props) => {
 
       <footer>
         <p>
-          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch</a>
+          Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href="https://glitch.com">Remix this in Glitch!</a>
         </p>
 
         <dl>

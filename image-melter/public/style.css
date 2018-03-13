@@ -16,11 +16,13 @@
 
 html {
   width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 }
 
 body {
+  min-height: 100vh;
 /*   font-family: 'Less Perfect DOS VGA'; */
   margin: 0;
 /*   padding: 25px; */

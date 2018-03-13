@@ -9464,7 +9464,7 @@ var _templateObject = taggedTemplateLiteral(['\n  width: 0.1px;\n  height: 0.1px
     _templateObject3 = taggedTemplateLiteral(['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n'], ['\n  padding: 0;\n  width: 20%;\n  float: right;\n  text-align: right;\n  border: 0;\n  color: inherit;\n  background-color: transparent;\n']),
     _templateObject4 = taggedTemplateLiteral(['\n  position: relative;\n  z-index: 0;\n  overflow: hidden;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n    text-align: ', '\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n'], ['\n  position: relative;\n  z-index: 0;\n  overflow: hidden;\n\n  & > * {\n    padding: ', ';\n    background-color: ', ';\n    display: block;\n    position: relative;\n    border: 0.12em solid white;\n    margin: ', ';\n    color: ', ';\n    text-align: ', '\n  }\n\n  & > *::after {\n    position: absolute;\n    content: \'\';\n    background-color: ', ';\n    top: -', '; /* Must match margin */\n    right: -', ';\n    bottom: -', ';\n    left: -', ';\n    z-index: -1;\n  }\n']),
     _templateObject5 = taggedTemplateLiteral(['\n  overflow: hidden;\n'], ['\n  overflow: hidden;\n']),
-    _templateObject6 = taggedTemplateLiteral(['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
+    _templateObject6 = taggedTemplateLiteral(['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n'], ['\n  min-height: 100vh;\n  padding: ', ';\n  font-family: \'Less Perfect DOS VGA\';\n  background-color: ', ';\n  color: ', ';\n  z-index: -1;\n']);
 
 var RenderButton = function (_Component) {
   inherits(RenderButton, _Component);
@@ -9813,7 +9813,7 @@ var AppContainer = function AppContainer(props) {
         h(
           'a',
           { href: 'https://glitch.com' },
-          'Remix this in Glitch'
+          'Remix this in Glitch!'
         )
       ),
       h(
