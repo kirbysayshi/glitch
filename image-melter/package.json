@@ -9,8 +9,8 @@
   "scripts": {
     "bundle": "rollup -c ./rollup.config.js",
     "server": "node server.js",
-    "start": "run-s \"bundle\" server",
-    "//start": "rollup -w -c & babel-register server",
+    "start": "run-s server",
+    "watch": "rollup -w -c ./rollup.config.js",
     "postinstall": "cp node_modules/gif.js/dist/gif.worker.js public/"
   },
   "dependencies": {

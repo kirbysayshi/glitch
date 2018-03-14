@@ -11,9 +11,7 @@
       "^dist/"
     ],
     "include": [
-      "\\.json",
-      "^client/",
-      "^views/"
+      "\\.json"
     ]
   },
   "throttle": 400
