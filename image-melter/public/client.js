@@ -9781,6 +9781,22 @@ var FooterContent = function (_Component5) {
         h(
           'p',
           null,
+          'While my implementation is somewhat different, the basic idea is explained in this excellent article from 2014: ',
+          h(
+            'a',
+            { href: 'https://davidwalsh.name/canvas-effect' },
+            'Replicating the DOOM Screen Melt with JavaScript and Canvas'
+          ),
+          '. I didn\'t actually know about that article when I started, instead relying on the DOOM source code to understand the effect. I also tweaked the algorithm a bit to accomodate today\'s large images.'
+        ),
+        h(
+          'p',
+          null,
+          'Each frame of the animation is copied to a canvas, which is then passed into a Gif encoder running in a Web Worker. The first 50% of progress is the frame computation, while the second 50% is the Gif encoder creating the actual animated Gif. Note: rendering takes a while, but only because of Gif optimization. If the animation were rendered in realtime it would actually take much less time! But then you wouldn\'t be able to save it.'
+        ),
+        h(
+          'p',
+          null,
           'Made by Drew Petersen. ',
           h(
             'a',
