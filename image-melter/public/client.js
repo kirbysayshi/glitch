@@ -9762,7 +9762,7 @@ var FooterContent = function (_Component5) {
                   e.stopPropagation();
                   _this7.setState({ collapsed: false });
                 } },
-              'BUT WHYYYYY'
+              'How does this work?'
             )
           )
         );

@@ -290,7 +290,7 @@ class FooterContent extends Component {
               e.preventDefault();
               e.stopPropagation();
               this.setState({ collapsed: false });
-            }}>BUT WHYYYYY</a>
+            }}>How does this work?</a>
           </p>
         </footer>
       )  
@@ -301,6 +301,10 @@ class FooterContent extends Component {
     return (
       <footer>
         <p>This effect is somewhat difficult to achieve today. When DOOM was released in 1993, the common supported resolution was 320x200 pixels. The engine itself manipulated each pixel on the screen. But today, we rely on GPUs to composite graphics at the polygon and texture levels: there are too many pixels on the screen to compute each on the CPU sequentially! While this effect can be accomplished in WebGL, you probably can't save it and share it with your friends! Thus, wait a minute and render to a technology almost as old as DOOM itself: the animated GIF.</p>
+      
+        <p>While my implementation is somewhat different, the basic idea is explained in this excellent article from 2014: <a href='https://davidwalsh.name/canvas-effect'>Replicating the DOOM Screen Melt with JavaScript and Canvas</a>. I didn't actually know about that article when I started, instead relying on the DOOM source code to understand the effect. I also tweaked the algorithm a bit to accomodate today's large images.</p>
+        
+        <p>Each frame of the animation is copied to a canvas, which is then passed into a Gif encoder running in a Web Worker. The first 50% of progress is the frame computation, while the second 50% is the Gif encoder creating the actual animated gi
       
         <p>
           Made by Drew Petersen. <a href='https://twitter.com/kirbysayshi'>Twitter</a>. <a href='https://github.com/kirbysayshi'>Github</a>. <a href={glitchUrl}>Remix this in Glitch!</a>
