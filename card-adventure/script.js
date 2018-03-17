@@ -169,7 +169,7 @@ function render (root, state) {
   const locationList = () => {
     const isVoid = room.id === 'VOID';
     
-    const pairs = RoomList.map(r => `
+    const pairs = RoomList.slice(1).map(r => `
         ${r.name} [${r.id}]
       `).join('');
     
