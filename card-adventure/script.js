@@ -10,6 +10,9 @@ const RoomList = [
         back: 'Soon you will be transported and trapped. You should try to escape.',
       },
       {
+        back: 'Text in [BRACKETS] can be used as the target of an action.',
+      },
+      {
         back: 'When you\'re ready, type in the box: LOCATION FOYER',
       }
     ],
@@ -24,7 +27,8 @@ const RoomList = [
     name: 'Foyer',
     cards: [
       {
-        back: `You are in a splendid foyer of what appears to be an old mansion.
+        back: `
+              You are in a splendid foyer of what appears to be an old mansion.
               Behind you is a door so solid that even throwing your entire weight
               against it causes no perceptible give.`,
         onEnter: (game) => {}
@@ -72,17 +76,17 @@ let INITIAL_STATE = {
   locationState: {
     flippedCards: {},
   },
-  timeUnits: 30,
+  timeUnits: 0,
   messages: [],
 };
 
-let state = null;
+let state = undefined;
 
 function dispatch (action) {
   const prevState = state;
   const nextState = reduce(action, state);
   if (prevState !== nextState) {
-    render(scrollArea, state);  
+    render(scrollArea, nextState);  
   }
 }
 
@@ -124,12 +128,14 @@ function reduce (action, state=INITIAL_STATE) {
       // switch state
       return {
         ...state,
-        timeUnits: state.timeUnits - (Math.floor(Math.random() * 255) % 3),
+        timeUnits: state.timeUnits + (Math.floor(Math.random() * 255) % 3),
         roomId: dest.id,
         locationState: {},
       }
     }
   }
+  
+  return state;
 }
 
 function parseTextInput (value) {
@@ -163,6 +169,7 @@ function render (root, state) {
   const d = document.createElement('div');
   d.innerHTML = `
     <pre>
+      Locations: 
       Location: ${room.name} [${room.id}]
       Cards:
         ${crender(cards[0])}
@@ -175,10 +182,18 @@ function render (root, state) {
         ${crender(cards[7])}
         ${crender(cards[8])}
         ${crender(cards[9])}
+      Elapsed Time: ${state.timeUnits}
+      ${state.messages.slice(-5).map(m => { return `
+        ${m}`
+      })}
     </pre>
   `
   
   root.appendChild(d);
+  
+  requestAnimationFrame(() => {
+    window.scrollTo(0, document.body.clientHeight);
+  });
 }
 
 const scrollArea = document.createElement('div');
@@ -204,4 +219,3 @@ statusArea.appendChild(input);
 document.body.appendChild(statusArea);
 
 dispatch({ type: 'BOOOOOOOOOOT' });
-render(scrollArea, state);
