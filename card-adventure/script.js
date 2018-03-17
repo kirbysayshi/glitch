@@ -4,13 +4,13 @@ const RoomList = [
     name: 'The Starting Void',
     cards: [
       {
-        desc: 'Welcome to a story.',
+        back: 'Welcome to a story.',
       },
       {
-        desc: 'Soon you will be transported and trapped. You should try to escape.',
+        back: 'Soon you will be transported and trapped. You should try to escape.',
       },
       {
-        desc: 'When you\'re ready, type in the box: LOCATION FOYER',
+        back: 'When you\'re ready, type in the box: LOCATION FOYER',
       }
     ],
     onEnter: function (game) {
@@ -24,18 +24,18 @@ const RoomList = [
     name: 'Foyer',
     cards: [
       {
-        desc: `You are in a splendid foyer of what appears to be an old mansion.
+        back: `You are in a splendid foyer of what appears to be an old mansion.
               Behind you is a door so solid that even throwing your entire weight
               against it causes no perceptible give.`,
         onEnter: (game) => {}
       },
       {
         id: 'STATUE',
-        desc: 'A statue, maybe',
+        back: 'A statue, maybe',
       },
       {
         id: 'DOOR',
-        desc: 'A huge door'
+        back: 'A huge door'
       }
     ],
     onEnter: function (game) {
@@ -70,13 +70,15 @@ let state = {
   roomId: 'VOID',
   cardId: null,
   locationState: {
-    cardsFlipped: {},
+    flippedCards: {},
   },
   timeUnits: 30,
   messages: [],
 };
 
 function dispatch (action) {
+  
+  const prevState = state;
   
   if (action.type === 'TEXT_INPUT') {
     const cmd = parseTextInput(action.payload);
@@ -118,12 +120,15 @@ function dispatch (action) {
         ...state,
         timeUnits: state.timeUnits - ((Math.random() * 255) % 3),
         roomId: dest.id,
-        locat
+        locationState: {},
       }
       return;
     }
   }
   
+  if (prevState !== state) {
+    render(scrollArea, state);  
+  }
 }
 
 function parseTextInput (value) {
@@ -145,21 +150,34 @@ function parseTextInput (value) {
 function render (root, state) {
   const room = RoomList.find(r => r.id === state.roomId);
   
-  const introCard = room.cards[0];
-  const cards = room.cards.slice(1);
+  const { cards } = room;
   const currentCard = cards.find(c => c.id === state.cardId);
+  const { flippedCards = {} } = state.locationState;
   
-  const crender = card => `
-        
-  `
+  const crender = card => card ? `
+        [${card.id}]
+        ${flippedCards[card.id] ? card.back : card.front}
+  `: '';
   
   const d = document.createElement('div');
   d.innerHTML = `
     <pre>
       Location: ${room.name} [${room.id}]
-      Cards: 
+      Cards:
+        ${crender(cards[0])}
+        ${crender(cards[1])}
+        ${crender(cards[2])}
+        ${crender(cards[3])}
+        ${crender(cards[4])}
+        ${crender(cards[5])}
+        ${crender(cards[6])}
+        ${crender(cards[7])}
+        ${crender(cards[8])}
+        ${crender(cards[9])}
     </pre>
   `
+  
+  root.appendChild(d);
 }
 
 const scrollArea = document.createElement('div');
@@ -182,3 +200,5 @@ const statusArea = document.createElement('div');
 statusArea.appendChild(input);
 
 document.body.appendChild(statusArea);
+
+render(scrollArea, state);
