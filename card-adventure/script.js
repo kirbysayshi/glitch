@@ -1,6 +1,6 @@
 const RoomList = [
   {
-    id: 'void',
+    id: 'VOID',
     name: 'The Starting Void',
     cards: [
       {
@@ -20,7 +20,7 @@ const RoomList = [
   {
     // TODO: should this list just be a named object?
     // RoomList = { 'Foyer': { ... } etc
-    id: 'foyer',
+    id: 'FOYER',
     name: 'Foyer',
     cards: [
       {
@@ -30,9 +30,11 @@ const RoomList = [
         onEnter: (game) => {}
       },
       {
-        desc: 'A statue, maybe ',
+        id: 'STATUE',
+        desc: 'A statue, maybe',
       },
       {
+        id: 'DOOR',
         desc: 'A huge door'
       }
     ],
@@ -42,7 +44,7 @@ const RoomList = [
     }
   },
   {
-    id: 'study',
+    id: 'STUDY',
     name: 'Study',
     cards: [],
     onEnter: function (game) {
@@ -65,33 +67,68 @@ const ItemDeck = [
 ]
 
 let state = {
-  roomId: 'foyer',
+  roomId: 'FOYER',
   timeUnits: 30,
+  messages: [],
 };
-function CentralDispatch (action) {
+
+function dispatch (action) {
   
   if (action.type === 'TEXT_INPUT') {
-  
-    return Object.assign({}, state, {
+    const cmd = parseTextInput(action.payload);
+    
+    if (!cmd) {
+      // what to do?????
+      // chan.put() ??
+      state = {
+        ...state,
+        messages: [
+          ...state.messages,
+          'Unknown Command!',
+        ]
+      };
+      return;
+    }
+
+    if (cmd.type === 'CHANGE_LOCATION') {
+      const dest = RoomList.find(r => r.id === cmd.dest);
+      if (!dest) {
+        state = {
+          ...state,
+          messages: [
+            ...state.messages,
+            'Unknown Location!',
+          ]
+        };
+        return;
+      }
       
-    })
+      // check if the user can do this... how??
+      // decrement time
+      // switch state
+      state = {
+        ...state,
+        timeUnits: state.timeUnits - 
+        roomId: dest.id,
+      }
+      return;
+    }
   }
   
-  return state;
 }
 
 function parseTextInput (value) {
   const [textCmd, ...parts] = value.split(' ');
   
-  switch (textCmd.toLowerCase()) {
-    case 'location': return {
+  switch (textCmd.toUpperCase()) {
+    case 'LOCATION': return {
       type: 'CHANGE_LOCATION',
-      destination: '',
+      dest: parts[0],
     }
       
-    case 'move': return {
-      type: 'MOVE',
-      destination: '',
+    case 'LOOK': return {
+      type: 'LOOK',
+      dest: parts[0],
     }
   }
 }
@@ -106,6 +143,7 @@ input.onkeydown = e => {
   if (e.key === 'Enter') {
     const { value } = e.target;
     e.target.value = '';
+    dispatch({ type: 'TEXT_INPUT', payload: value });
   }
 }
 
