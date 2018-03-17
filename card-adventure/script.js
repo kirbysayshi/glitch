@@ -1,13 +1,39 @@
 const RoomList = [
   {
+    id: 'void',
+    name: 'The Starting Void',
+    cards: [
+      {
+        desc: 'Welcome to a story.',
+      },
+      {
+        desc: 'Soon you will be transported and trapped. You should try to escape.',
+      },
+      {
+        desc: 'When you\'re ready, type in the box: LOCATION FOYER',
+      }
+    ],
+    onEnter: function (game) {
+      console.log('onenter void!', game);
+    }
+  },
+  {
     // TODO: should this list just be a named object?
     // RoomList = { 'Foyer': { ... } etc
     id: 'foyer',
     name: 'Foyer',
     cards: [
       {
-        desc: 'A ',
+        desc: `You are in a splendid foyer of what appears to be an old mansion.
+              Behind you is a door so solid that even throwing your entire weight
+              against it causes no perceptible give.`,
         onEnter: (game) => {}
+      },
+      {
+        desc: 'A statue, maybe ',
+      },
+      {
+        desc: 'A huge door'
       }
     ],
     onEnter: function (game) {
