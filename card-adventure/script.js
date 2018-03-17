@@ -68,6 +68,10 @@ const ItemDeck = [
 
 let state = {
   roomId: 'VOID',
+  cardId: null,
+  locationState: {
+    cardsFlipped: {},
+  },
   timeUnits: 30,
   messages: [],
 };
@@ -114,6 +118,7 @@ function dispatch (action) {
         ...state,
         timeUnits: state.timeUnits - ((Math.random() * 255) % 3),
         roomId: dest.id,
+        locat
       }
       return;
     }
@@ -137,6 +142,25 @@ function parseTextInput (value) {
   }
 }
 
+function render (root, state) {
+  const room = RoomList.find(r => r.id === state.roomId);
+  
+  const introCard = room.cards[0];
+  const cards = room.cards.slice(1);
+  const currentCard = cards.find(c => c.id === state.cardId);
+  
+  const crender = card => `
+        
+  `
+  
+  const d = document.createElement('div');
+  d.innerHTML = `
+    <pre>
+      Location: ${room.name} [${room.id}]
+      Cards: 
+    </pre>
+  `
+}
 
 const scrollArea = document.createElement('div');
 document.body.appendChild(scrollArea);
