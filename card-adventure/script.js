@@ -30,6 +30,34 @@ const ItemDeck = [
   }
 ]
 
+let state = {
+  roomId: 'foyer',
+  timeUnits: 30,
+};
+function CentralDispatch (action) {
+  
+  if (action.type === 'TEXT_INPUT') {
+  
+    return Object.assign({}, state, {
+      
+    })
+  }
+  
+  return state;
+}
+
+function parseTextInput (value) {
+  const [textCmd, ...parts] = value.split(' ');
+  
+  switch (textCmd) {
+    case 'move': return {
+      type: 'MOVE',
+      destination: ''
+    }
+  }
+}
+
+
 const scrollArea = document.createElement('div');
 document.body.appendChild(scrollArea);
 
@@ -37,13 +65,15 @@ const input = document.createElement('input');
 input.type = 'text';
 input.onkeydown = e => {
   if (e.key === 'Enter') {
-    console.log('ENTER!');  
+    const { value } = e.target;
+    e.target.value = '';
   }
 }
 
 const statusArea = document.createElement('div');
-statusArea.style.width = '100vw';
-statusArea.style.width = '100vw';
+// statusArea.style.width = '100vw';
+// statusArea.style.height = '10vh';
+// statusArea.style.position = 'fixed';
 statusArea.appendChild(input);
 
 document.body.appendChild(statusArea);
