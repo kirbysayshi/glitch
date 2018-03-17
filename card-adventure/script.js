@@ -66,7 +66,7 @@ const ItemDeck = [
   }
 ]
 
-let state = {
+let INITIAL_STATE = {
   roomId: 'VOID',
   cardId: null,
   locationState: {
@@ -76,9 +76,17 @@ let state = {
   messages: [],
 };
 
+let state = null;
+
 function dispatch (action) {
-  
   const prevState = state;
+  const nextState = reduce(action, state);
+  if (prevState !== nextState) {
+    render(scrollArea, state);  
+  }
+}
+
+function reduce (action, state=INITIAL_STATE) {
   
   if (action.type === 'TEXT_INPUT') {
     const cmd = parseTextInput(action.payload);
@@ -86,14 +94,13 @@ function dispatch (action) {
     if (!cmd) {
       // what to do?????
       // chan.put() ??
-      state = {
+      return {
         ...state,
         messages: [
           ...state.messages,
           'Unknown Command!',
         ]
       };
-      return;
     }
     
     if (cmd.type === 'LOOK') {
@@ -103,31 +110,25 @@ function dispatch (action) {
     if (cmd.type === 'CHANGE_LOCATION') {
       const dest = RoomList.find(r => r.id === cmd.dest);
       if (!dest) {
-        state = {
+        return {
           ...state,
           messages: [
             ...state.messages,
             'Unknown Location!',
           ]
         };
-        return;
       }
       
       // check if the user can do this... how??
       // decrement time
       // switch state
-      state = {
+      return {
         ...state,
-        timeUnits: state.timeUnits - ((Math.random() * 255) % 3),
+        timeUnits: state.timeUnits - (Math.floor(Math.random() * 255) % 3),
         roomId: dest.id,
         locationState: {},
       }
-      return;
     }
-  }
-  
-  if (prevState !== state) {
-    render(scrollArea, state);  
   }
 }
 
@@ -155,8 +156,8 @@ function render (root, state) {
   const { flippedCards = {} } = state.locationState;
   
   const crender = card => card ? `
-        [${card.id}]
-        ${flippedCards[card.id] ? card.back : card.front}
+        ${card.id ? `[${card.id}]` : ''}
+        ${flippedCards[card.id] ? card.front : card.back}
   `: '';
   
   const d = document.createElement('div');
@@ -184,10 +185,11 @@ const scrollArea = document.createElement('div');
 document.body.appendChild(scrollArea);
 
 const input = document.createElement('input');
+input.style.textTransform = 'uppercase';
 input.type = 'text';
 input.onkeydown = e => {
   if (e.key === 'Enter') {
-    const { value } = e.target;
+    const value = e.target.value.toUpperCase();
     e.target.value = '';
     dispatch({ type: 'TEXT_INPUT', payload: value });
   }
@@ -201,4 +203,5 @@ statusArea.appendChild(input);
 
 document.body.appendChild(statusArea);
 
+dispatch({ type: 'BOOOOOOOOOOT' });
 render(scrollArea, state);
