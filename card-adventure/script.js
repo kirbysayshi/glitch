@@ -166,13 +166,23 @@ function render (root, state) {
         ${flippedCards[card.id] ? card.front : card.back}
   `: '';
   
+  const locationList = () => {
+    const isVoid = room.id === 'VOID';
+    
+    const pairs = RoomList.map(r => `
+        ${r.name} [${r.id}]
+      `).join('');
+    
+    return isVoid ? '' : `
+      Locations:
+        ${pairs}
+    `
+  }
+  
   const d = document.createElement('div');
   d.innerHTML = `
-    <pre>${room !== 'VOID' && `
-      Locations: ${RoomList.map(room => `
-        ${room.name} [${room.id}]
-      `).join('')}
-      }
+    <pre>
+      ${locationList(room)}
       Current Location: ${room.name} [${room.id}]
       Location Cards:
         ${crender(cards[0])}
