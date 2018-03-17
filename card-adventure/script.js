@@ -67,7 +67,7 @@ const ItemDeck = [
 ]
 
 let state = {
-  roomId: 'FOYER',
+  roomId: 'VOID',
   timeUnits: 30,
   messages: [],
 };
@@ -89,6 +89,10 @@ function dispatch (action) {
       };
       return;
     }
+    
+    if (cmd.type === 'LOOK') {
+      // ??  
+    }
 
     if (cmd.type === 'CHANGE_LOCATION') {
       const dest = RoomList.find(r => r.id === cmd.dest);
@@ -108,7 +112,7 @@ function dispatch (action) {
       // switch state
       state = {
         ...state,
-        timeUnits: state.timeUnits - 
+        timeUnits: state.timeUnits - ((Math.random() * 255) % 3),
         roomId: dest.id,
       }
       return;
