@@ -168,10 +168,13 @@ function render (root, state) {
   
   const d = document.createElement('div');
   d.innerHTML = `
-    <pre>
-      Locations: 
-      Location: ${room.name} [${room.id}]
-      Cards:
+    <pre>${room !== 'VOID' && `
+      Locations: ${RoomList.map(room => `
+        ${room.name} [${room.id}]
+      `).join('')}
+      }
+      Current Location: ${room.name} [${room.id}]
+      Location Cards:
         ${crender(cards[0])}
         ${crender(cards[1])}
         ${crender(cards[2])}
@@ -185,7 +188,7 @@ function render (root, state) {
       Elapsed Time: ${state.timeUnits}
       ${state.messages.slice(-5).map(m => { return `
         ${m}`
-      })}
+      }).join('')}
     </pre>
   `
   
