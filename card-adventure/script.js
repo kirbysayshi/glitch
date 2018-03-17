@@ -4,13 +4,21 @@ const RoomList = [
     // RoomList = { 'Foyer': { ... } etc
     id: 'foyer',
     name: 'Foyer',
+    cards: [
+      {
+        desc: 'A ',
+        onEnter: (game) => {}
+      }
+    ],
     onEnter: function (game) {
+      // TODO: does this function just yield ACTION() as many times as it wants?
       console.log('onenter foyer!', game);
     }
   },
   {
     id: 'study',
     name: 'Study',
+    cards: [],
     onEnter: function (game) {
       console.log('onenter study!', game);
     }
@@ -49,10 +57,15 @@ function CentralDispatch (action) {
 function parseTextInput (value) {
   const [textCmd, ...parts] = value.split(' ');
   
-  switch (textCmd) {
+  switch (textCmd.toLowerCase()) {
+    case 'location': return {
+      type: 'CHANGE_LOCATION',
+      destination: '',
+    }
+      
     case 'move': return {
       type: 'MOVE',
-      destination: ''
+      destination: '',
     }
   }
 }
