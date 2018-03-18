@@ -272,6 +272,18 @@ dispatch({ type: 'BOOOOOOOOOOT' });
 
 // the super game state loop
 take a player input
-if it
+if its valid, do it!
+
+if we enter a location, show the first card
+
+if we look at a card, show the card front
+
+if the card front has a side effect, do it!
+ -> show an item
+ -> add a location
+ -> trigger a fight
+ -> lock the player until resolved
+
+
 
 */
