@@ -60,7 +60,11 @@ const RoomList = [
       {
         id: 'DESK',
         back: 'A massive wooden desk',
-        front: 'Within the drawers of the desk you find an old 
+        front: 'Within the drawers of the desk you find an old key!',
+        onLook: (game) => {
+          // show item OLD_KEY
+          // OLD_KEY has a note attached: 'They always say "Do not write your passwords down". But what about k
+        }
       }
     ],
     onEnter: function (game) {
