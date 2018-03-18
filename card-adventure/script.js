@@ -266,3 +266,12 @@ statusArea.appendChild(input);
 document.body.appendChild(statusArea);
 
 dispatch({ type: 'BOOOOOOOOOOT' });
+
+
+/*
+
+// the super game state loop
+take a player input
+if it
+
+*/
