@@ -63,7 +63,7 @@ const RoomList = [
         front: 'Within the drawers of the desk you find an old key!',
         onLook: (game) => {
           // show item OLD_KEY
-          // OLD_KEY has a note attached: 'They always say "Do not write your passwords down". But what about k
+          // OLD_KEY has a note attached: 'They always say "Do not write your passwords down". But what if you forget where they lead? This is the ballroom key, in case I forget'
         }
       }
     ],
