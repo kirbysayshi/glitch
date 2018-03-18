@@ -91,6 +91,7 @@ function dispatch (action) {
   if (prevState !== nextState) {
     render(scrollArea, nextState);  
   }
+  state = nextState;
 }
 
 function reduce (action, state=INITIAL_STATE) {
