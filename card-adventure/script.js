@@ -113,7 +113,27 @@ function reduce (action, state=INITIAL_STATE) {
     if (cmd.type === 'LOOK') {
       const room = RoomList.find(r => r.id === state.roomId);
       const cards = room.cards.slice(1);
-      const card = cards.find(c => c.id === cmd.
+      const card = cards.find(c => c.id === cmd.dest);
+      if (!card) {
+        return {
+          ...state,
+          messages: [
+            ...state.messages,
+            'That is not a card in this room!',
+          ]
+        };  
+      }
+      
+      return {
+        ...state,
+        cardId: card.id,
+        locationState: {
+          ...state.locationState,
+          flippedCards: {
+            [card.id]: true,
+          }
+        }
+      }
     }
 
     if (cmd.type === 'CHANGE_LOCATION') {
@@ -168,7 +188,7 @@ function render (root, state) {
   
   const crender = card => card ? `
         ${card.id ? `[${card.id}]` : ''}
-        ${flippedCards[card.id] ? card.front : card.back}
+        ${flippedCards[card.id] ? '> ' + card.front : card.back}
   `: '';
   
   const locationList = () => {
