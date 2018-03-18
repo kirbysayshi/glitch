@@ -53,7 +53,16 @@ const RoomList = [
   {
     id: 'STUDY',
     name: 'Study',
-    cards: [],
+    cards: [
+      {
+        back: 'The study is austere, with lots of leathery objects and tables.',
+      },
+      {
+        id: 'DESK',
+        back: 'A massive wooden desk',
+        front: 'Within the drawers of the desk you find an old 
+      }
+    ],
     onEnter: function (game) {
       console.log('onenter study!', game);
     }
@@ -205,22 +214,17 @@ function render (root, state) {
     `
   }
   
+  const cardList = () => {
+    return cards.map(c => crender(c)).join('');
+  }
+  
   const d = document.createElement('div');
   d.innerHTML = `
     <pre>
       ${locationList(room)}
       Current Location: ${room.name} [${room.id}]
       Location Cards:
-        ${crender(cards[0])}
-        ${crender(cards[1])}
-        ${crender(cards[2])}
-        ${crender(cards[3])}
-        ${crender(cards[4])}
-        ${crender(cards[5])}
-        ${crender(cards[6])}
-        ${crender(cards[7])}
-        ${crender(cards[8])}
-        ${crender(cards[9])}
+        ${cardList()}
       Elapsed Time: ${state.timeUnits}
       ${state.messages.slice(-5).map(m => { return `
         ${m}`
