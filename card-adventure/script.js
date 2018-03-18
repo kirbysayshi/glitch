@@ -27,19 +27,19 @@ const RoomList = [
     name: 'Foyer',
     cards: [
       {
-        back: `
-              You are in a splendid foyer of what appears to be an old mansion.
-              Behind you is a door so solid that even throwing your entire weight
-              against it causes no perceptible give.`,
+        back: `You are in a splendid foyer of what appears to be an old mansion. Behind you is a door so solid that even throwing your entire weight against it causes no perceptible give.`,
         onEnter: (game) => {}
       },
       {
         id: 'STATUE',
         back: 'A statue, maybe',
+        front: 'You approach the statue and immediately stagger backwards. It\'s in your image! What could it mean?',
+        // TODO: make this a fight
       },
       {
         id: 'DOOR',
-        back: 'A huge door'
+        back: 'A huge door',
+        front: 'The door is immense, and so solid that even trying to rack your knuckles on the wood (is it even wood?) ',
       }
     ],
     onEnter: function (game) {
