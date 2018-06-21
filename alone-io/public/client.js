@@ -6,36 +6,36 @@
   
   const aloneRoot = document.querySelector('#alone-root');
   
-  // a helper function to call when our request for dreams is done
-  const getDreamsListener = function() {
-    // parse our response to convert to JSON
-    dreams = JSON.parse(this.responseText);
-    
-    // iterate through every dream and add it to our page
-    dreams.forEach( function(row) {
-      appendNewDream(row.dream);
-    });
-  }
-  
-  // request the dreams from our app's sqlite database
   const aloneReq = new XMLHttpRequest();
   aloneReq.onload = function () {
     let payload;
+    let el;
     try {
       payload = JSON.parse(this.responseText);
+      el = formatAsHTML(null, payload);
     } catch (e) {
-      
+      el = formatAsHTML(e);
     }
+    
+    aloneRoot.innerHTML = '';
+    aloneRoot.appendChild(el);
   }
-  aloneReq.open('get', '/getDreams');
+  aloneReq.open('get', '/alone');
   aloneReq.send();
   
   function formatAsHTML (err, data) {
-    const 
+    const el = document.createElement('div');
     if (err) {
-      
-      return 
+      el.textContent = err.message;
+      return el;
     }
+    
+    if (!data.alone) {
+      el.innerHTML = '<h2>YOU ARE NOT ALONE.</h2><p>The last signal was received at ' + data.lastTime + '.</p>';  
+    } else {
+      el.innerHTML = '<h2>YOU ARE ALONE.</h2><p>The last signal was received at ' + data.lastTime + '.</p>';  
+    }
+    
+    return el;
   }
-  
 })()
