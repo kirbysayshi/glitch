@@ -30,10 +30,12 @@
       return el;
     }
     
+    const localeDate = (new Date(data.lastUpdateMS)).toLocaleString();
+    
     if (!data.alone) {
-      el.innerHTML = '<h2>YOU ARE NOT ALONE.</h2><p>The last signal was received at ' + data.lastTime + '.</p>';  
+      el.innerHTML = '<h2>YOU ARE NOT ALONE.</h2><p>The last signal was received at ' + localeDate + '.</p>';  
     } else {
-      el.innerHTML = '<h2>YOU ARE ALONE.</h2><p>The last signal was received at ' + data.lastTime + '.</p>';  
+      el.innerHTML = '<h2>YOU ARE ALONE.</h2><p>The last signal was received at ' + localeDate + '.</p>';  
     }
     
     return el;
