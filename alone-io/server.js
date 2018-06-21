@@ -23,16 +23,16 @@ var db = new sqlite3.Database(dbFile);
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
 db.serialize(function(){
   if (!exists) {
-    db.run('CREATE TABLE Alone (lastUpdate TEXT)');
+    db.run('CREATE TABLE Alone (lastUpdate INT)');
     console.log('New table Alone created!');
     
     // insert default dreams
     db.serialize(function() {
-      db.run('INSERT INTO Alone (lastUpdate) VALUES (datetime(\'now\')');
+      db.run('INSERT INTO Alone (lastUpdate) VALUES (strftime(\'%s\',\'now\'))');
     });
   }
   else {
-    console.log('Database "Alone" ready to go!');
+    console.log('Database "Alone" ready to go!!');
     db.each('SELECT * from Alone', function(err, row) {
       if ( row ) {
         console.log('record:', row);
@@ -51,6 +51,7 @@ app.get("/", function (request, response) {
 // read the sqlite3 module docs and try to add your own! https://www.npmjs.com/package/sqlite3
 app.get('/alone', function(request, response) {
   db.all('SELECT lastUpdate from Alone', function(err, rows) {
+    if (err) response.send
     console.log('row?', rows);
     response.send(JSON.stringify(rows));
   });
